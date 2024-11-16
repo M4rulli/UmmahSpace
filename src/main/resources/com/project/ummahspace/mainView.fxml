@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <!-- Contenitore principale -->
+        <VBox alignment="CENTER" spacing="20">
+            <!-- Barra superiore -->
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 10;">
+                <children>
+                    <!-- Benvenuto Utente -->
+                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Benvenuto Utente" />
+                    <Pane HBox.hgrow="ALWAYS" /> <!-- Spaziatura dinamica -->
+                    <!-- Bottoni Profilo e Impostazioni -->
+                    <Button style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Profilo" />
+                    <Button style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Tema" />
+                </children>
+            </HBox>
+
+            <!-- Sezione Preghiere -->
+            <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10;">
+                <children>
+                    <!-- Preghiera Passata -->
+                    <VBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10; -fx-min-width: 200;">
+                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #555;" text="Preghiera Passata" />
+                        <Label style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Fajr - 05:30" />
+                    </VBox>
+
+                    <!-- Giorno Corrente -->
+                    <VBox alignment="CENTER" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10; -fx-min-width: 200;">
+                        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Oggi" />
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #555;" text="16 Novembre 2024" />
+                    </VBox>
+
+                    <!-- Preghiera Futura -->
+                    <VBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10; -fx-min-width: 200;">
+                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #555;" text="Preghiera Futura" />
+                        <Label style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Zuhr - 12:15" />
+                    </VBox>
+                </children>
+            </HBox>
+
+            <!-- TabPane per alternare tra Calendario e Tracker Spirituale -->
+            <TabPane prefWidth="700">
+                <tabs>
+                    <!-- Tab del Calendario -->
+                    <Tab text="Calendario">
+                        <content>
+                            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 20;">
+                                <!-- Mese corrente -->
+                                <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Eventi di Novembre" />
+
+                                <!-- GridPane del calendario -->
+                                <GridPane fx:id="calendarGrid" style="-fx-hgap: 10; -fx-vgap: 10; -fx-padding: 10;">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                        <ColumnConstraints minWidth="50" prefWidth="70" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="50" prefHeight="50" />
+                                        <RowConstraints minHeight="50" prefHeight="50" />
+                                        <RowConstraints minHeight="50" prefHeight="50" />
+                                        <RowConstraints minHeight="50" prefHeight="50" />
+                                        <RowConstraints minHeight="50" prefHeight="50" />
+                                    </rowConstraints>
+                                    <children>
+                                        <!-- Giorni della settimana -->
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Lun" GridPane.columnIndex="0" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Mar" GridPane.columnIndex="1" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Mer" GridPane.columnIndex="2" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Gio" GridPane.columnIndex="3" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Ven" GridPane.columnIndex="4" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Sab" GridPane.columnIndex="5" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #999;" text="Dom" GridPane.columnIndex="6" />
+
+                                        <!-- Esempi di giorni -->
+                                        <StackPane style="-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <Label text="1" />
+                                        </StackPane>
+                                        <StackPane style="-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <Label text="2" />
+                                        </StackPane>
+                                        <StackPane style="-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                            <Label text="3" />
+                                        </StackPane>
+                                        <!-- Giorno con evento -->
+                                        <StackPane style="-fx-background-color: #ffeb3b; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                            <Label style="-fx-font-weight: bold;" text="4" />
+                                        </StackPane>
+                                    </children>
+                                </GridPane>
+                            </VBox>
+                        </content>
+                    </Tab>
+
+                    <!-- Tab del Tracker Spirituale -->
+                    <Tab text="Tracker Spirituale">
+                        <content>
+                            <VBox alignment="CENTER" spacing="20">
+                                <!-- Titolo -->
+                                <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Tracker Spirituale" />
+
+                                <!-- Lettura del Corano -->
+                                <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10;">
+                                    <children>
+                                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Lettura del Corano" />
+                                        <ProgressBar progress="0.5" style="-fx-pref-width: 300px;" />
+                                        <Button style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5;" text="Aggiungi Lettura" />
+                                    </children>
+                                </VBox>
+
+                                <!-- Digiuno -->
+                                <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10;">
+                                    <children>
+                                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Digiuno" />
+                                        <ListView fx:id="fastingList" style="-fx-pref-height: 100px; -fx-pref-width: 300px;" />
+                                        <Button style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5;" text="Aggiungi Giorno di Digiuno" />
+                                    </children>
+                                </VBox>
+
+                                <!-- Preghiere -->
+                                <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10;">
+                                    <children>
+                                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Preghiere" />
+                                        <GridPane hgap="10" vgap="10">
+                                            <children>
+                                                <CheckBox text="Fajr" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                                <CheckBox text="Zuhr" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                                <CheckBox text="Asr" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                                <CheckBox text="Maghrib" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <CheckBox text="Isha" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                            </children>
+                                 <columnConstraints>
+                                    <ColumnConstraints />
+                                    <ColumnConstraints />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                    <RowConstraints />
+                                 </rowConstraints>
+                                        </GridPane>
+                                    </children>
+                                </VBox>
+                            </VBox>
+                        </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </VBox>
+    </children>
+</StackPane>

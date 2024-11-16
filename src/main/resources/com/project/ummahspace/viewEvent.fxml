@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+           style="-fx-background-color: #f4f4f4; -fx-padding: 20;">
+    <children>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+            <!-- Titolo -->
+            <Label text="Dettagli Evento" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+
+            <!-- Dettagli Evento -->
+            <VBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-padding: 20;">
+                <children>
+                    <Label text="Titolo: Titolo Evento" style="-fx-font-size: 16px; -fx-text-fill: #333;" />
+                    <Label text="Descrizione: Breve descrizione dell'evento." style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+                    <Label text="Data: 16 Novembre 2024" style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+                    <Label text="Orario: 18:00 - 19:30" style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+                    <Label text="Limite Partecipanti: 50" style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+                </children>
+            </VBox>
+
+            <!-- Pulsanti di Azione -->
+            <HBox spacing="20" alignment="CENTER">
+                <children>
+                    <Button text="Iscriviti" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
+                    <Button text="Torna al Calendario" style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
+                </children>
+            </HBox>
+        </VBox>
+    </children>
+</StackPane>
