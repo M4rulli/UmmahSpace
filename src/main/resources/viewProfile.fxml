@@ -41,7 +41,7 @@
             </GridPane>
 
             <!-- Cambia Password -->
-            <TitledPane collapsible="true" expanded="false" style="-fx-padding: 10;" text="Cambia Password">
+            <TitledPane collapsible="true" style="-fx-padding: 10;" text="Cambia Password">
                 <content>
                     <GridPane alignment="CENTER" hgap="20" style="-fx-padding: 10;" vgap="10">
                         <columnConstraints>
