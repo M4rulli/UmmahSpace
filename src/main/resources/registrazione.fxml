@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import org.controlsfx.control.ToggleSwitch?>
+<StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.grafico.RegistrazioneGUIController">
+    <children>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+            <!-- Titolo -->
+            <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Crea il tuo account UmmahSpace" />
+
+            <!-- Campi di input -->
+            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="15" style="-fx-padding: 10;">
+                <children>
+                    <!-- Nome -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Nome:" />
+                        <TextField fx:id="nomeField" prefHeight="26.0" prefWidth="346.0" promptText="Inserisci il tuo nome" style="-fx-pref-width: 250px;" />
+                    </HBox>
+
+                    <!-- Cognome -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Cognome:" />
+                        <TextField fx:id="cognomeField" promptText="Inserisci il tuo cognome" style="-fx-pref-width: 250px;" />
+                    </HBox>
+
+                    <!-- Username -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Username:" />
+                        <TextField fx:id="usernameField" promptText="Crea un username" style="-fx-pref-width: 250px;" />
+                    </HBox>
+
+                    <!-- Email -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Email:" />
+                        <TextField fx:id="emailField" promptText="Inserisci la tua email" style="-fx-pref-width: 250px;" />
+                    </HBox>
+
+                    <!-- Password -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Password:" />
+                        <PasswordField fx:id="passwordField" prefHeight="26.0" prefWidth="318.0" promptText="Crea una password" style="-fx-pref-width: 250px;" />
+                    </HBox>
+
+                    <!-- Conferma Password -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Conferma Password:" />
+                        <PasswordField fx:id="confermaPasswordField" promptText="Conferma la tua password" style="-fx-pref-width: 250px;" />
+                    </HBox>
+
+                    <!-- Checkbox per Organizzatore -->
+                    <CheckBox fx:id="organizzatoreCheckBox" style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Registrati come organizzatore" />
+                </children>
+            </VBox>
+
+            <!-- Switch per la persistenza -->
+            <HBox alignment="CENTER" spacing="10">
+                <Label style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Salvataggio dati:" />
+                <ToggleSwitch fx:id="persistenceSwitch" style="-fx-pref-width: 100px;" />
+                <Button fx:id="infoButton" style="-fx-font-size: 12px; -fx-padding: 5; -fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5;" text="Info" onAction="#onInfoButtonClicked" />
+            </HBox>
+
+            <!-- Bottone di Registrazione -->
+            <Button fx:id="registratiButton" onAction="#onSignUpClicked" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 50; -fx-border-radius: 5;" text="Registrati" />
+
+            <!-- Label per il messaggio di risultato -->
+            <Label fx:id="resultLabel" style="-fx-font-size: 14px; -fx-text-fill: green;" />
+
+            <!-- Testo cliccabile per tornare al login -->
+            <Label style="-fx-font-size: 14px; -fx-text-fill: #007bff; -fx-underline: true; -fx-cursor: hand;" text="Hai già un account? Accedi qui." />
+        </VBox>
+    </children>
+</StackPane>

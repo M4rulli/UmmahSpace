@@ -4,7 +4,7 @@ public class Partecipante extends Utente {
     private Tracker trackerSpirituale;
 
     // Costruttore
-    public Partecipante(String nome, String cognome, String username, String email, String password, Long idUtente, Boolean stato, Tracker trackerSpirituale) {
+    public Partecipante(String nome, String cognome, String username, String email, String password, Long idUtente, Boolean stato) {
         super(nome, cognome, username, email, password, idUtente, stato);
         this.trackerSpirituale = trackerSpirituale;
     }

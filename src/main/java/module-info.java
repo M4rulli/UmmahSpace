@@ -1,13 +1,14 @@
 module com.project.ummahspace {
-    requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.web;
-    requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
-    requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.ikonli.fontawesome5;
+    requires org.controlsfx.controls;
 
+    exports misc; // Esporta il pacchetto principale per l'applicazione
+    exports controllers.grafico;
+    exports controllers.applicativo;
+    exports engclasses.beans;
 
-    opens com.project.ummahspace to javafx.fxml, javafx.graphics;
-    exports com.project.ummahspace;
+    opens controllers.grafico to javafx.fxml; // Permette a JavaFX di accedere ai controller grafici
+    opens controllers.applicativo to javafx.fxml; // Se necessario
+    opens engclasses.beans to javafx.fxml; // Se necessario
 }

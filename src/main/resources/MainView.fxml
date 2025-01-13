@@ -3,7 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.grafico.MainViewGUIController">
     <children>
         <!-- Contenitore principale -->
         <VBox alignment="CENTER" spacing="20">
@@ -11,10 +12,13 @@
             <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 10;">
                 <children>
                     <!-- Benvenuto Utente -->
-                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Benvenuto Utente" />
+                    <Label fx:id="welcomeLabel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
                     <Pane HBox.hgrow="ALWAYS" /> <!-- Spaziatura dinamica -->
                     <!-- Bottoni Profilo e Impostazioni -->
-                    <Button style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Profilo" />
+                    <Button fx:id="profileButton" onAction="#onProfileButtonClicked"
+                            style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;"
+                            text="Profilo" />
+
                     <Button style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Tema" />
                 </children>
             </HBox>
@@ -137,15 +141,15 @@
                                                 <CheckBox text="Maghrib" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <CheckBox text="Isha" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                                             </children>
-                                 <columnConstraints>
-                                    <ColumnConstraints />
-                                    <ColumnConstraints />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints />
-                                    <RowConstraints />
-                                    <RowConstraints />
-                                 </rowConstraints>
+                                            <columnConstraints>
+                                                <ColumnConstraints />
+                                                <ColumnConstraints />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints />
+                                                <RowConstraints />
+                                                <RowConstraints />
+                                            </rowConstraints>
                                         </GridPane>
                                     </children>
                                 </VBox>
