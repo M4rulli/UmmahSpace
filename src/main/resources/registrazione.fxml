@@ -2,8 +2,8 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.*?>
 
-<?import org.controlsfx.control.ToggleSwitch?>
 <StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.grafico.RegistrazioneGUIController">
     <children>
         <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
@@ -16,7 +16,7 @@
                     <!-- Nome -->
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Nome:" />
-                        <TextField fx:id="nomeField" prefHeight="26.0" prefWidth="346.0" promptText="Inserisci il tuo nome" style="-fx-pref-width: 250px;" />
+                        <TextField fx:id="nomeField" prefHeight="26.0" prefWidth="343.0" promptText="Inserisci il tuo nome" style="-fx-pref-width: 250px;" />
                     </HBox>
 
                     <!-- Cognome -->
@@ -40,7 +40,7 @@
                     <!-- Password -->
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-text-fill: #333;" text="Password:" />
-                        <PasswordField fx:id="passwordField" prefHeight="26.0" prefWidth="318.0" promptText="Crea una password" style="-fx-pref-width: 250px;" />
+                        <PasswordField fx:id="passwordField" prefHeight="26.0" prefWidth="320.0" promptText="Crea una password" style="-fx-pref-width: 250px;" />
                     </HBox>
 
                     <!-- Conferma Password -->
@@ -58,7 +58,7 @@
             <HBox alignment="CENTER" spacing="10">
                 <Label style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Salvataggio dati:" />
                 <ToggleSwitch fx:id="persistenceSwitch" style="-fx-pref-width: 100px;" />
-                <Button fx:id="infoButton" style="-fx-font-size: 12px; -fx-padding: 5; -fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5;" text="Info" onAction="#onInfoButtonClicked" />
+                <Button fx:id="infoButton" onAction="#onInfoButtonClicked" style="-fx-font-size: 12px; -fx-padding: 5; -fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5;" text="Info" />
             </HBox>
 
             <!-- Bottone di Registrazione -->

@@ -1,4 +1,5 @@
 package model;
+import java.util.UUID;
 
 public abstract class Utente {
     protected String nome;
@@ -6,17 +7,17 @@ public abstract class Utente {
     protected String username;
     protected String email;
     protected String password;
-    protected Long idUtente;
+    protected String idUtente;
     protected Boolean stato;
 
     // Costruttore
-    public Utente(String nome, String cognome, String username, String email, String password, Long idUtente, Boolean stato) {
+    public Utente(String nome, String cognome, String username, String email, String password, String idUtente, Boolean stato) {
         this.nome = nome;
         this.cognome = cognome;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.idUtente = idUtente;
+        this.idUtente = UUID.randomUUID().toString(); // Genera un UUID univoco
         this.stato = stato;
     }
 
@@ -61,19 +62,4 @@ public abstract class Utente {
         this.password = password;
     }
 
-    public Long getIdUtente() {
-        return idUtente;
-    }
-
-    public void setIdUtente(Long idUtente) {
-        this.idUtente = idUtente;
-    }
-
-    public Boolean getStato() {
-        return stato;
-    }
-
-    public void setStato(Boolean stato) {
-        this.stato = stato;
-    }
 }

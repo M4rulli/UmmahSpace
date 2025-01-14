@@ -2,6 +2,7 @@ package controllers.applicativo;
 
 import engclasses.beans.RegistrazioneBean;
 import engclasses.dao.PartecipanteDAO;
+import javafx.scene.control.Alert;
 import misc.Session;
 import model.Partecipante;
 
@@ -29,7 +30,7 @@ public class GestisciProfiloPartecipanteController {
     }
 
     // Aggiorna i dati del profilo, incluso l'username
-    public boolean updateProfileData(RegistrazioneBean updatedBean, String oldUsername) {
+    public boolean updateProfileData(RegistrazioneBean updatedBean, String oldUsername, String currentPassword, String newPassword, String confirmPassword, String username) {
         boolean persistence = session.isPersistence();
 
         // Verifica se il partecipante con il vecchio username esiste
@@ -37,6 +38,18 @@ public class GestisciProfiloPartecipanteController {
         if (partecipante == null) {
             System.out.println("Partecipante non trovato con username: " + oldUsername);
             return false;
+        }
+
+        // Verifica se i campi della password sono stati compilati
+        if (currentPassword != null && !currentPassword.isEmpty() &&
+                newPassword != null && !newPassword.isEmpty() &&
+                confirmPassword != null && !confirmPassword.isEmpty()) {
+
+            // Cambia la password se i campi sono compilati
+            boolean passwordChanged = changePassword(currentPassword, newPassword, confirmPassword, username);
+            if (!passwordChanged) {
+                return false; // Interrompi se il cambio password fallisce
+            }
         }
 
         // Verifica se l'username è cambiato
@@ -73,15 +86,23 @@ public class GestisciProfiloPartecipanteController {
     // Modifica la password del partecipante
     public boolean changePassword(String currentPassword, String newPassword, String confirmPassword, String username) {
         boolean persistence = session.isPersistence();
-
         Partecipante partecipante = partecipanteDAO.selezionaPartecipante(username, persistence);
-        if (partecipante == null || !partecipante.getPassword().equals(currentPassword)) {
-            System.out.println("Password attuale non corretta o partecipante non trovato.");
+
+        // Controlla se la vecchia password corrisponde
+        if (!partecipante.getPassword().equals(currentPassword)) {
+            showAlert("Errore", "La vecchia password non è corretta.", Alert.AlertType.ERROR);
             return false;
         }
 
+        // Controlla se la nuova password coincide con la conferma
         if (!newPassword.equals(confirmPassword)) {
-            System.out.println("La nuova password e la conferma non coincidono.");
+            showAlert("Errore", "La nuova password e la conferma non coincidono.", Alert.AlertType.ERROR);
+            return false;
+        }
+
+        // Controlla se la nuova password è uguale alla vecchia
+        if (currentPassword.equals(newPassword)) {
+            showAlert("Errore", "La nuova password non può essere uguale a quella attuale.", Alert.AlertType.ERROR);
             return false;
         }
 
@@ -102,4 +123,13 @@ public class GestisciProfiloPartecipanteController {
         bean.setPassword(partecipante.getPassword());
         return bean;
     }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

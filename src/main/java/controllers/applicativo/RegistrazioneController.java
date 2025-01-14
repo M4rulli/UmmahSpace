@@ -1,22 +1,29 @@
 package controllers.applicativo;
 
 import engclasses.beans.RegistrazioneBean;
+import engclasses.dao.GestioneTrackerDAO;
 import engclasses.dao.PartecipanteDAO;
 import engclasses.dao.OrganizzatoreDAO;
+import misc.Session;
 import model.Partecipante;
 import model.Organizzatore;
 import misc.ValidationResult;
+import model.Tracker;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class RegistrazioneController {
 
     private final PartecipanteDAO partecipanteDAO;
     private final OrganizzatoreDAO organizzatoreDAO;
+    private final Session session;
 
-    public RegistrazioneController(PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
+
+    public RegistrazioneController(PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO, Session session) {
         this.partecipanteDAO = partecipanteDAO;
         this.organizzatoreDAO = organizzatoreDAO;
+        this.session = session;
     }
 
     public boolean registraUtente(RegistrazioneBean bean, boolean persistence) {
@@ -40,17 +47,33 @@ public class RegistrazioneController {
             return false;
         }
 
+        // Genera un ID univoco per il nuovo partecipante
+        String idUtente = UUID.randomUUID().toString();
+
         Partecipante partecipante = new Partecipante(
+                idUtente,  // ID univoco generato
                 bean.getNome(),
                 bean.getCognome(),
                 bean.getUsername(),
                 bean.getEmail(),
                 bean.getPassword(),
-                System.currentTimeMillis(),
                 true
         );
 
         partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
+
+        // Salva l'ID nella sessione
+        session.setIdUtente(idUtente);
+
+        // Crea il tracker associato
+        GestioneTrackerDAO trackerDAO = new GestioneTrackerDAO();
+        Tracker tracker = trackerDAO.creaTracker(idUtente);
+
+        // Log dell'operazione
+        System.out.println("Nuovo partecipante registrato:");
+        System.out.println("Tracker creato per l'utente con ID: " + idUtente);
+        System.out.println("Username: " + bean.getUsername());
+
         return true;
     }
 
@@ -60,13 +83,15 @@ public class RegistrazioneController {
             return false;
         }
 
+        String idUtente = UUID.randomUUID().toString();
+
         Organizzatore organizzatore = new Organizzatore(
+                idUtente,
                 bean.getNome(),
                 bean.getCognome(),
                 bean.getUsername(),
                 bean.getEmail(),
                 bean.getPassword(),
-                System.currentTimeMillis(),
                 true,
                 new ArrayList<>()
         );

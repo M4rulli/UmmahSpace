@@ -1,6 +1,7 @@
 package engclasses.beans;
 
 public class RegistrazioneBean {
+    private String idUtente;
     private String nome;
     private String cognome;
     private String username;
@@ -55,5 +56,14 @@ public class RegistrazioneBean {
 
     public void setSeiOrganizzatore(Boolean seiOrganizzatore) {
         this.seiOrganizzatore = seiOrganizzatore;
+    }
+
+
+    public String getIdUtente() {
+        return idUtente;
+    }
+
+    public void setIdUtente(String idUtente) {
+        this.idUtente = idUtente;
     }
 }

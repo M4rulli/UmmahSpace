@@ -16,11 +16,6 @@ public class ValidationResult {
         return errors.isEmpty();
     }
 
-    // Ritorna tutti gli errori
-    public List<String> getErrors() {
-        return errors;
-    }
-
     // Ritorna gli errori come una singola stringa
     public String getErrorMessages() {
         return String.join("\n", errors);

@@ -4,9 +4,11 @@ public class Session {
 
     private String currentUsername; // Username dell'utente attualmente connesso
     private boolean persistence; // Modalità di persistenza (buffer o database)
+    private String idUtente;
 
     public Session(boolean persistence) {
         this.persistence = persistence;
+        this.idUtente = idUtente;
     }
 
     public boolean isPersistence() {
@@ -23,6 +25,15 @@ public class Session {
 
     public String getCurrentUsername() {
         return this.currentUsername;
+    }
+
+    public String getIdUtente() {
+        return idUtente;
+    }
+
+    // Setter per l'ID Utente
+    public void setIdUtente(String idUtente) {
+        this.idUtente = idUtente;
     }
 
 }

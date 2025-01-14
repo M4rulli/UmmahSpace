@@ -40,7 +40,7 @@ public class RegistrazioneGUIController {
     private final Session session;
 
     public RegistrazioneGUIController(Session session, PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
-        this.registrazioneController = new RegistrazioneController(partecipanteDAO, organizzatoreDAO);
+        this.registrazioneController = new RegistrazioneController(partecipanteDAO, organizzatoreDAO, session);
         this.session = session;
     }
 

@@ -104,6 +104,7 @@ public class GestisciProfiloPartecipanteGUIController {
 
     @FXML
     private void onSaveButtonClicked() {
+        // Crea un bean con i dati aggiornati
         RegistrazioneBean updatedBean = new RegistrazioneBean();
         updatedBean.setNome(nameField.getText());
         updatedBean.setCognome(surnameField.getText());
@@ -125,7 +126,13 @@ public class GestisciProfiloPartecipanteGUIController {
             }
         }
 
-        boolean success = profileController.updateProfileData(updatedBean, currentUsername);
+        // Verifica se i campi password sono stati modificati
+        String currentPassword = currentPasswordField.getText();
+        String newPassword = newPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+        String username = usernameField.getText();
+
+        boolean success = profileController.updateProfileData(updatedBean, currentUsername, currentPassword, newPassword, confirmPassword, username);
 
         if (success) {
             currentUsername = updatedBean.getUsername(); // Aggiorna il currentUsername
@@ -135,6 +142,7 @@ public class GestisciProfiloPartecipanteGUIController {
                     updatedBean.getUsername(),
                     updatedBean.getEmail()
             );
+
 
             // Logga i nuovi dati alla console
             System.out.println("Profilo aggiornato: ");
@@ -225,5 +233,14 @@ public class GestisciProfiloPartecipanteGUIController {
                 !usernameField.getText().equals(originalUsername) ||
                 !emailField.getText().equals(originalEmail);
     }
+
+    private void showAlert(String title, String message, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
 }
