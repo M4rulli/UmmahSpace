@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="20" style="-fx-padding: 30; -fx-background-color: #f5f5f5; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);">
+    <Label text="Accedi al tuo spazio spirituale." style="-fx-font-size: 24px; -fx-text-fill: #333;" />
+
+    <!-- Form -->
+    <VBox spacing="15" alignment="CENTER">
+        <!-- Email -->
+        <VBox spacing="5">
+            <Label text="Email:" style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+            <TextField promptText="Inserisci la tua email" style="-fx-font-size: 14px; -fx-padding: 10;" />
+        </VBox>
+
+        <!-- Password -->
+        <VBox spacing="5">
+            <Label text="Password:" style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+            <PasswordField promptText="Inserisci la tua password" style="-fx-font-size: 14px; -fx-padding: 10;" />
+        </VBox>
+
+        <!-- Organizzatore -->
+        <CheckBox text="Sei un organizzatore?" style="-fx-font-size: 14px; -fx-text-fill: #666;" />
+    </VBox>
+
+    <!-- Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Login" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
+        <Button text="Accedi con Facebook" style="-fx-background-color: #3b5998; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
+    </HBox>
+
+    <!-- Link Registrazione -->
+    <Hyperlink fx:id="registrationLink"
+               text="Prima volta su UmmahSpace? Registrati in pochi istanti."
+               style="-fx-font-size: 14px; -fx-text-fill: #007bff; -fx-underline: true;" />
+</VBox>

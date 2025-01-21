@@ -1,13 +1,15 @@
 package controllers.applicativo;
 
+import controllers.grafico.RegistrazioneGUIController;
 import engclasses.beans.RegistrazioneBean;
 import engclasses.dao.GestioneTrackerDAO;
 import engclasses.dao.PartecipanteDAO;
 import engclasses.dao.OrganizzatoreDAO;
+import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
 import misc.Session;
 import model.Partecipante;
 import model.Organizzatore;
-import misc.ValidationResult;
 import model.Tracker;
 
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ public class RegistrazioneController {
     private final OrganizzatoreDAO organizzatoreDAO;
     private final Session session;
 
-
     public RegistrazioneController(PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO, Session session) {
         this.partecipanteDAO = partecipanteDAO;
         this.organizzatoreDAO = organizzatoreDAO;
@@ -27,10 +28,10 @@ public class RegistrazioneController {
     }
 
     public boolean registraUtente(RegistrazioneBean bean, boolean persistence) {
-        // Valida i dati
-        if (!isEmailValid(bean.getEmail())) {
-            System.out.println("Email non valida.");
-            return false;
+
+        // Validazione dei dati
+        if (!validaRegistrazione(bean)) {
+            return false; // Interrompi il flusso se ci sono errori
         }
 
         // Registra il partecipante o l'organizzatore in base alla persistenza
@@ -60,20 +61,20 @@ public class RegistrazioneController {
                 true
         );
 
-        partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
-
         // Salva l'ID nella sessione
         session.setIdUtente(idUtente);
+        session.setCurrentUsername(bean.getUsername());
 
-        // Crea il tracker associato
-        GestioneTrackerDAO trackerDAO = new GestioneTrackerDAO();
-        Tracker tracker = trackerDAO.creaTracker(idUtente);
+        // Salva il partecipante nel DAO
+        partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
+
+        // Salva il Tracker associato al partecipante nel TrackerDAO
+        GestioneTrackerDAO.aggiungiTracker(partecipante.getTrackerSpirituale());
 
         // Log dell'operazione
         System.out.println("Nuovo partecipante registrato:");
         System.out.println("Tracker creato per l'utente con ID: " + idUtente);
         System.out.println("Username: " + bean.getUsername());
-
         return true;
     }
 
@@ -100,61 +101,50 @@ public class RegistrazioneController {
         return true;
     }
 
-    public ValidationResult validateRegistrationData(RegistrazioneBean bean, String confirmPassword) {
-        ValidationResult result = new ValidationResult();
+    public boolean validaRegistrazione(RegistrazioneBean bean) {
 
-        // Controllo campi obbligatori
-        if (bean.getNome() == null || bean.getNome().isEmpty()) {
-            result.addError("Il nome non può essere vuoto.");
-        }
-        if (bean.getCognome() == null || bean.getCognome().isEmpty()) {
-            result.addError("Il cognome non può essere vuoto.");
-        }
-        if (bean.getUsername() == null || bean.getUsername().isEmpty()) {
-            result.addError("Lo username non può essere vuoto.");
-        }
-        if (bean.getEmail() == null || bean.getEmail().isEmpty()) {
-            result.addError("L'email non può essere vuota.");
-        }
-        if (bean.getPassword() == null || bean.getPassword().isEmpty()) {
-            result.addError("La password non può essere vuota.");
-        }
-        if (confirmPassword == null || confirmPassword.isEmpty()) {
-            result.addError("La conferma della password non può essere vuota.");
+        // StringBuilder per accumulare gli errori
+        StringBuilder errori = new StringBuilder();
+
+        // Validazione nome
+        if (bean.getNome() == null || bean.getNome().trim().isEmpty()) {
+            errori.append("Il nome non può essere vuoto.\n");
         }
 
+        // Validazione cognome
+        if (bean.getCognome() == null || bean.getCognome().trim().isEmpty()) {
+            errori.append("Il cognome non può essere vuoto.\n");
+        }
+
+        // Validazione username
+        if (bean.getUsername() == null || bean.getUsername().trim().isEmpty()) {
+            errori.append("L'username non può essere vuoto.\n");
+        }
+
+        // Validazione password
+        if (bean.getPassword() == null || bean.getPassword().trim().isEmpty()) {
+            errori.append("La password non può essere vuota.\n");
+        }
+
+        // Controllo sul matching delle password
+        if (bean.getPassword() != null && !bean.getPassword().equals(bean.getConfirmPassword())) {
+            errori.append("Le password non corrispondono.\n");
+        }
         // Validazione email
-        if (!isEmailValid(bean.getEmail())) {
-            result.addError("Email non valida. Inserisci un'email corretta.");
+        if (bean.getEmail() == null || bean.getEmail().trim().isEmpty()) {
+            errori.append("L'email non può essere vuota.\n");
+        } else if (!bean.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+            errori.append("L'email non è valida.\n");
         }
 
-        // Verifica password
-        if (!doPasswordsMatch(bean.getPassword(), confirmPassword)) {
-            result.addError("Le password non coincidono. Riprova.");
+        // Se ci sono errori, mostra una finestra di dialogo e ritorna false
+        if (errori.length() > 0) {
+            RegistrazioneGUIController.mostraMessaggioErrore(errori.toString());
+            return false;
         }
 
-        // Controlla disponibilità dello username
-        if (!isUsernameAvailable(bean.getUsername())) {
-            result.addError("Lo username è già in uso. Scegli un altro username.");
-        }
-
-        return result;
+        // Nessun errore
+        return true;
     }
 
-    public boolean isEmailValid(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-        return email != null && email.matches(emailRegex);
-    }
-
-    public boolean doPasswordsMatch(String password, String confirmPassword) {
-        return password != null && confirmPassword != null && password.equals(confirmPassword);
-    }
-
-    public boolean isUsernameAvailable(String username) {
-        return partecipanteDAO.selezionaPartecipante(username, false) == null &&
-                organizzatoreDAO.selezionaOrganizzatore(username, false) == null;
-    }
-    public PartecipanteDAO getPartecipanteDAO() {
-        return partecipanteDAO;
-    }
 }

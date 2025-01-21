@@ -16,19 +16,6 @@ public class GestisciProfiloPartecipanteController {
         this.session = session;
     }
 
-    // Recupera i dati del profilo del partecipante
-    public RegistrazioneBean getProfileData(String username) {
-        boolean persistence = session.isPersistence(); // Determina se usare buffer o DB
-
-        Partecipante partecipante = partecipanteDAO.selezionaPartecipante(username, persistence);
-        if (partecipante == null) {
-            System.out.println("Nessun profilo trovato per l'utente: " + username);
-            return null;
-        }
-
-        return convertToBean(partecipante);
-    }
-
     // Aggiorna i dati del profilo, incluso l'username
     public boolean updateProfileData(RegistrazioneBean updatedBean, String oldUsername, String currentPassword, String newPassword, String confirmPassword, String username) {
         boolean persistence = session.isPersistence();
@@ -77,8 +64,6 @@ public class GestisciProfiloPartecipanteController {
         partecipante.setEmail(updatedBean.getEmail());
 
         partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
-
-        System.out.println("Profilo aggiornato con successo.");
         return true;
     }
 
@@ -111,17 +96,6 @@ public class GestisciProfiloPartecipanteController {
 
         System.out.println("Password aggiornata con successo.");
         return true;
-    }
-
-    // Metodo di supporto per convertire un Partecipante in un RegistrazioneBean
-    private RegistrazioneBean convertToBean(Partecipante partecipante) {
-        RegistrazioneBean bean = new RegistrazioneBean();
-        bean.setNome(partecipante.getNome());
-        bean.setCognome(partecipante.getCognome());
-        bean.setUsername(partecipante.getUsername());
-        bean.setEmail(partecipante.getEmail());
-        bean.setPassword(partecipante.getPassword());
-        return bean;
     }
 
     private void showAlert(String title, String message, Alert.AlertType type) {

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="20"
+      alignment="TOP_CENTER"
+      style="-fx-padding: 20; -fx-background-color: #f9f9f9;">
+
+    <!-- Titolo Evento -->
+    <Label fx:id="titleLabel" text="Titolo Evento"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+
+    <!-- Dettagli Evento -->
+    <VBox spacing="15" alignment="TOP_LEFT" style="-fx-background-color: #fff; -fx-padding: 20; -fx-border-color: #ddd; -fx-border-radius: 10;">
+        <Label fx:id="organizerLabel" text="Organizzatore: Nome Cognome"
+               style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+        <Label fx:id="dateLabel" text="Data: 01/01/2025"
+               style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+        <Label fx:id="timeLabel" text="Orario: 10:00"
+               style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+        <Label fx:id="statusLabel" text="Stato: Aperto"
+               style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+        <Label fx:id="descriptionLabel" text="Descrizione: Questo è un evento importante."
+               wrapText="true"
+               style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+        <Label fx:id="participantsLabel" text="Iscritti: 10/50"
+               style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+    </VBox>
+
+    <!-- Pulsanti -->
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="backButton" text="Indietro"
+                style="-fx-background-color: #cccccc; -fx-text-fill: black; -fx-border-radius: 5; -fx-padding: 5 20;" />
+        <Button fx:id="registerButton" text="Registrati"
+                style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 20;" />
+    </HBox>
+</VBox>

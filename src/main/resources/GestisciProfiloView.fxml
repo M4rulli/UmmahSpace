@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.grafico.GestisciProfiloPartecipanteGUIController">
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" >
     <children>
         <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30; -fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-min-width: 500;">
             <!-- Titolo -->
@@ -73,9 +73,9 @@
             <!-- Sezione Pulsanti -->
             <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10;">
                 <children>
-                    <Button fx:id="editButton" onAction="#onEditButtonClicked" style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5;" text="Modifica" />
-                    <Button fx:id="saveButton" disable="true" onAction="#onSaveButtonClicked" style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5;" text="Salva Modifiche" />
-                    <Button fx:id="cancelButton" disable="true" onAction="#onBackButtonClicked" style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5;" text="Indietro" />
+                    <Button fx:id="editButton"  style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5;" text="Modifica" />
+                    <Button fx:id="saveButton" disable="true"  style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5;" text="Salva Modifiche" />
+                    <Button fx:id="backButton" disable="true"  style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5;" text="Indietro" />
                 </children>
             </HBox>
         </VBox>

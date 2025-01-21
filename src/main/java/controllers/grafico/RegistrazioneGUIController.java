@@ -5,15 +5,18 @@ import engclasses.beans.RegistrazioneBean;
 import engclasses.dao.PartecipanteDAO;
 import engclasses.dao.OrganizzatoreDAO;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import misc.Model;
 import misc.Session;
-import misc.ValidationResult;
-import model.Partecipante;
 import org.controlsfx.control.ToggleSwitch;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class RegistrazioneGUIController {
 
@@ -26,22 +29,34 @@ public class RegistrazioneGUIController {
     @FXML
     private PasswordField passwordField;
     @FXML
+    private PasswordField confermaPasswordField;
+    @FXML
     private TextField emailField;
     @FXML
     private CheckBox organizzatoreCheckBox;
     @FXML
-    private Label resultLabel;
+    private Button registratiButton;
     @FXML
     private ToggleSwitch persistenceSwitch;
     @FXML
-    private Button infoButton;
+    private Hyperlink loginLink;
 
     private final RegistrazioneController registrazioneController;
     private final Session session;
+    private final PartecipanteDAO partecipanteDAO;
+    private final OrganizzatoreDAO organizzatoreDAO;
 
     public RegistrazioneGUIController(Session session, PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
+        this.organizzatoreDAO = organizzatoreDAO;
         this.registrazioneController = new RegistrazioneController(partecipanteDAO, organizzatoreDAO, session);
+        this.partecipanteDAO = partecipanteDAO;
         this.session = session;
+    }
+
+    @FXML
+    private void initialize() {
+        registratiButton.setOnAction(event -> onSignUpClicked());
+        loginLink.setOnAction(event -> onHyperLinkLoginClicked());
     }
 
     @FXML
@@ -51,6 +66,7 @@ public class RegistrazioneGUIController {
         String cognome = cognomeField.getText().trim();
         String username = usernameField.getText();
         String password = passwordField.getText();
+        String confirmPassword = confermaPasswordField.getText();
         String email = emailField.getText();
         boolean isOrganizzatore = organizzatoreCheckBox.isSelected();
 
@@ -60,79 +76,51 @@ public class RegistrazioneGUIController {
         registrazioneBean.setCognome(cognome);
         registrazioneBean.setUsername(username);
         registrazioneBean.setPassword(password);
+        registrazioneBean.setConfirmPassword(confirmPassword);
         registrazioneBean.setEmail(email);
         registrazioneBean.setSeiOrganizzatore(isOrganizzatore);
 
         // Determina la modalità di persistenza dalla sessione
         boolean persistence = session.isPersistence();
 
-        // Validazione dei dati
-        ValidationResult validationResult = registrazioneController.validateRegistrationData(registrazioneBean, password);
-
-        if (!validationResult.isValid()) {
-            // Mostra messaggi di errore
-            mostraMessaggioErrore(validationResult.getErrorMessages());
-            return;
-        }
-
-        // Procede con la registrazione
+        // Chiamata al Controller Applicativo per la registrazione
         boolean success = registrazioneController.registraUtente(registrazioneBean, persistence);
 
         // Aggiorna la UI in base al risultato
-        if (success) {
-            mostraMessaggioConferma("Registrazione completata con successo!");
-            passaAllaScenaPrincipale(username);
-        } else {
-            mostraMessaggioErrore("Errore durante la registrazione. Verifica i dati inseriti.");
+        if (!success) {
+            return; // Esci dal metodo
         }
-    }
 
-    private void mostraMessaggioErrore(String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore");
-        alert.setContentText(messaggio);
-        alert.showAndWait();
-    }
-
-    private void mostraMessaggioConferma(String messaggio) {
+        // Se la registrazione ha avuto successo, mostra il messaggio di conferma e cambia scena
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Conferma");
-        alert.setContentText(messaggio);
-        alert.showAndWait();
-    }
-
-    private void passaAllaScenaPrincipale(String username) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
-            loader.setControllerFactory(param -> new MainViewGUIController(session, registrazioneController.getPartecipanteDAO(), username));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) resultLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("UmmahSpace");
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    public void initialize() {
-        persistenceSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            session.setPersistence(newValue);
-            System.out.println("Persistenza: " + (newValue ? "Abilitata" : "Disabilitata"));
-        });
-    }
-
-    @FXML
-    public void onInfoButtonClicked() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Informazioni su Persistenza");
+        alert.setTitle("Successo");
         alert.setHeaderText(null);
-        alert.setContentText("Questo switch permette di scegliere dove salvare i dati:\n"
-                + "- ON: I dati verranno salvati in modo permanente su database.\n"
-                + "- OFF: I dati verranno salvati temporaneamente in memoria (buffer).");
+        alert.setContentText("Registrazione completata con successo!");
+        alert.showAndWait();
+
+        // Cambia scena utilizzando la ViewFactory
+        Stage stage = (Stage) registratiButton.getScene().getWindow();
+        Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
+        Model.getInstance().getViewFactory().showMainView(session, partecipanteDAO, username); // Mostra la MainView
+    }
+
+    @FXML
+    private void onHyperLinkLoginClicked() {
+        // Apri la schermata di login tramite il Model
+        Model.getInstance().getViewFactory().showLogin(session, partecipanteDAO, organizzatoreDAO);
+
+        // Chiudi la finestra attuale
+        Stage stage = (Stage) loginLink.getScene().getWindow();
+        stage.close();
+    }
+
+    // Metodo per mostrare la finestra di dialogo con gli errori
+    public static void mostraMessaggioErrore(String messaggio) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Errore");
+        alert.setHeaderText("Risolvi i seguenti problemi:");
+        alert.setContentText(messaggio);
         alert.showAndWait();
     }
+
 }

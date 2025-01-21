@@ -38,7 +38,6 @@ public class PartecipanteDAO {
         if (persistence) {
             return recuperaDaDb(username);
         } else {
-            System.out.println("Tentativo di recupero dal buffer con username: " + username);
             return bufferPartecipanti.get(username);
         }
     }

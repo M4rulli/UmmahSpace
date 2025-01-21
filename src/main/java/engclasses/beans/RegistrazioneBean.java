@@ -1,13 +1,17 @@
 package engclasses.beans;
 
 public class RegistrazioneBean {
-    private String idUtente;
     private String nome;
     private String cognome;
     private String username;
     private String email;
     private String password;
     private Boolean seiOrganizzatore;
+    private String currentPassword;
+    private String newPassword;
+    private String confirmPassword;
+
+    public RegistrazioneBean() {}
 
     // Getter e Setter
     public String getNome() {
@@ -58,12 +62,29 @@ public class RegistrazioneBean {
         this.seiOrganizzatore = seiOrganizzatore;
     }
 
-
-    public String getIdUtente() {
-        return idUtente;
+    // Getter e Setter per le password
+    public String getCurrentPassword() {
+        return currentPassword;
     }
 
-    public void setIdUtente(String idUtente) {
-        this.idUtente = idUtente;
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
 }

@@ -2,37 +2,25 @@ package controllers.applicativo;
 
 import engclasses.beans.GestioneTrackerBean;
 import engclasses.dao.GestioneTrackerDAO;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.shape.Circle;
 import misc.Session;
 import model.Tracker;
-import javafx.fxml.FXML;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class GestioneTrackerController {
 
-    @FXML
-    private ProgressBar quranProgressBar;
-
-    @FXML
-    private Label goalLabel;
-
     private final GestioneTrackerDAO trackerDAO;
     private final Session session;
-
-
 
     public GestioneTrackerController(GestioneTrackerDAO trackerDAO, Session session) {
         this.trackerDAO = trackerDAO;
         this.session = session;
     }
 
+    public void addReading(GestioneTrackerBean trackerBean) {
 
-    public void addReading(int pages) {
+        // Recupera il numero di pagine lette dalla Bean
+        int pages = trackerBean.getLetturaCorano();
+
+        // Recupera il Tracker associato all'utente
         Tracker tracker = trackerDAO.getTrackerConId(session.getIdUtente());
 
         if (tracker == null) {
@@ -45,76 +33,51 @@ public class GestioneTrackerController {
             throw new IllegalArgumentException("Non puoi leggere più di 604 pagine.");
         }
 
-        tracker.setLetturaCorano(nuovePagine);
+        // Aggiunge le pagine al Tracker
+        tracker.setLetturaCorano(tracker.getLetturaCorano() + pages);
+
+        // Aggiorna il Tracker nella DAO
         trackerDAO.aggiornaTracker(tracker);
+    }
+
+
+    // Metodo per calcolare il progresso
+    public double calcolaProgresso(GestioneTrackerBean bean) {
+
+        int goal = bean.getGoal();
+        int pagesRead = bean.getLetturaCorano();
+
+        // Calcola il progresso
+        double progress = (goal > 0) ? (double) pagesRead / goal : 0.0;
+        return Math.min(progress, 1.0); // Limita il progresso a 100%
     }
 
 
     // Metodo per aggiornare le preghiere
-    public void aggiornaPreghiere(String idUtente, String preghiera) {
-        Tracker tracker = trackerDAO.getTrackerConId(idUtente);
+    public void aggiornaPreghiere(GestioneTrackerBean trackerBean) {
+        // Recupera il tracker associato all'utente
+        Tracker tracker = trackerDAO.getTrackerConId(session.getIdUtente());
+
         if (tracker == null) {
-            System.out.println("Errore: Tracker non trovato per l'utente con ID " + idUtente);
-            return;
+            throw new IllegalArgumentException("Tracker non trovato per l'utente.");
         }
 
-        // Aumenta il conteggio delle preghiere completate
-        tracker.setPreghiereComplete(tracker.getPreghiereComplete() + 1);
+        // Aggiorna lo stato delle preghiere
+        tracker.setPreghiera("Fajr", trackerBean.getPreghiera("Fajr"));
+        tracker.setPreghiera("Dhuhr", trackerBean.getPreghiera("Dhuhr"));
+        tracker.setPreghiera("Asr", trackerBean.getPreghiera("Asr"));
+        tracker.setPreghiera("Maghrib", trackerBean.getPreghiera("Maghrib"));
+        tracker.setPreghiera("Isha", trackerBean.getPreghiera("Isha"));
 
+        // Salva i dati aggiornati nella DAO
         trackerDAO.aggiornaTracker(tracker);
-        System.out.println("Preghiera aggiornata per l'utente con ID " + idUtente);
     }
 
-    // Metodo per aggiornare la lettura del Corano
-    public void aggiornaLetturaCorano(String idUtente, int pagine) {
-        Tracker tracker = trackerDAO.getTrackerConId(idUtente);
-        if (tracker == null) {
-            System.out.println("Errore: Tracker non trovato per l'utente con ID " + idUtente);
-            return;
-        }
-
-        // Aggiorna il conteggio delle pagine lette
-        tracker.setLetturaCorano(tracker.getLetturaCorano() + pagine);
-
-        trackerDAO.aggiornaTracker(tracker);
-        System.out.println("Lettura del Corano aggiornata per l'utente con ID " + idUtente);
-    }
-
-    // Metodo per aggiornare i giorni di digiuno
-    public void aggiornaGiorniDigiuno(String idUtente, int giorni) {
-        Tracker tracker = trackerDAO.getTrackerConId(idUtente);
-        if (tracker == null) {
-            System.out.println("Errore: Tracker non trovato per l'utente con ID " + idUtente);
-            return;
-        }
-
-        // Aggiorna il conteggio dei giorni di digiuno
-        tracker.setGiorniDigiuno(tracker.getGiorniDigiuno() + giorni);
-
-        trackerDAO.aggiornaTracker(tracker);
-        System.out.println("Giorni di digiuno aggiornati per l'utente con ID " + idUtente);
-    }
-
-    // Metodo per aggiornare il progresso della barra
-    public void updateProgress(Tracker tracker, ProgressBar quranProgressBar, Label goalLabel) {
-
-        if (tracker != null) {
-            int goal = tracker.getGoal();
-            int letturaCorano = tracker.getLetturaCorano();
-
-            // Calcola il progresso
-            double progress = goal > 0 ? (double) letturaCorano / goal : 0;
-
-            // Aggiorna la ProgressBar
-            quranProgressBar.setProgress(progress);
-
-            // Aggiorna l'etichetta dell'obiettivo
-            goalLabel.setText("Obiettivo giornaliero: " + goal + " pagine");
-        }
-    }
 
     // Metodo per impostare l'obiettivo giornaliero
-    public void setDailyGoal(int goal, String idUtente) {
+    public void setDailyGoal(GestioneTrackerBean trackerBean, String idUtente) {
+        // Validazione dei dati
+        int goal = trackerBean.getGoal();
         if (goal <= 0) {
             System.err.println("Errore: il goal deve essere maggiore di 0.");
             return;
@@ -136,21 +99,21 @@ public class GestioneTrackerController {
         }
     }
 
-    // Metodo per aggiornare il bean del tracker
-    public GestioneTrackerBean getTrackerData(String idUtente) {
-        Tracker tracker = trackerDAO.getTrackerConId(idUtente);
+    public void aggiornaDigiuno(GestioneTrackerBean bean) {
 
+        // Recupera il Tracker dalla DAO
+        Tracker tracker = trackerDAO.getTrackerConId(session.getIdUtente());
         if (tracker == null) {
             throw new IllegalArgumentException("Tracker non trovato per l'utente.");
         }
 
-        GestioneTrackerBean bean = new GestioneTrackerBean();
-        bean.setLetturaCorano(tracker.getLetturaCorano());
-        bean.setGiorniDigiuno(tracker.getGiorniDigiuno());
-        bean.setPreghiereComplete(tracker.getPreghiereComplete());
-        bean.setGoal(tracker.getGoal());
+        // Aggiorna i dati del Tracker
+        tracker.setHaDigiunato(bean.isHaDigiunato());
+        tracker.setNoteDigiuno(bean.getNoteDigiuno());
+        tracker.setMotivazioniDigiuno(bean.getMotivazioniDigiuno());
 
-        return bean;
+        // Salva il Tracker aggiornato nella DAO
+        trackerDAO.aggiornaTracker(tracker);
     }
 
 

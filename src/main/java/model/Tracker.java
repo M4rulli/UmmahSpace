@@ -1,5 +1,9 @@
 package model;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 public class Tracker {
 
     private int letturaCorano; // Numero di pagine lette del Corano
@@ -7,6 +11,9 @@ public class Tracker {
     private int preghiereComplete; // Numero di preghiere completate
     private final String idUtente; // ID dell'utente associato al tracker
     private int goal;
+    private boolean haDigiunato;
+    private String noteDigiuno;
+    private Set<String> motivazioniDigiuno;
 
     // Costruttore completo
     public Tracker(int letturaCorano, int giorniDigiuno, int preghiereComplete, String idUtente, int goal) {
@@ -26,22 +33,6 @@ public class Tracker {
         this.letturaCorano = letturaCorano;
     }
 
-    public int getGiorniDigiuno() {
-        return giorniDigiuno;
-    }
-
-    public void setGiorniDigiuno(int giorniDigiuno) {
-        this.giorniDigiuno = giorniDigiuno;
-    }
-
-    public int getPreghiereComplete() {
-        return preghiereComplete;
-    }
-
-    public void setPreghiereComplete(int preghiereComplete) {
-        this.preghiereComplete = preghiereComplete;
-    }
-
     public String getIdUtente() {
         return idUtente;
     }
@@ -57,15 +48,34 @@ public class Tracker {
         this.goal = goal;
     }
 
-    // Metodo toString per debug
-    @Override
-    public String toString() {
-        return "Tracker{" +
-                "letturaCorano=" + letturaCorano +
-                ", giorniDigiuno=" + giorniDigiuno +
-                ", preghiereComplete=" + preghiereComplete +
-                ", idUtente=" + idUtente +
-                '}';
+    public boolean isHaDigiunato() {
+        return haDigiunato;
+    }
+
+    public void setHaDigiunato(boolean haDigiunato) {
+        this.haDigiunato = haDigiunato;
+    }
+
+    public void setNoteDigiuno(String noteDigiuno) {
+        this.noteDigiuno = noteDigiuno;
+    }
+
+    public Set<String> getMotivazioniDigiuno() {
+        return motivazioniDigiuno;
+    }
+
+    public void setMotivazioniDigiuno(Set<String> motivazioniDigiuno) {
+        this.motivazioniDigiuno = motivazioniDigiuno;
+    }
+
+    private Map<String, Boolean> preghiere = new HashMap<>();
+
+    public void setPreghiera(String nome, boolean completata) {
+        preghiere.put(nome, completata);
+    }
+
+    public boolean getPreghiera(String nome) {
+        return preghiere.getOrDefault(nome, false);
     }
 
 }

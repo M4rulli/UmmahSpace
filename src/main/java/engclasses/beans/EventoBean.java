@@ -1,41 +1,30 @@
-package model;
+package engclasses.beans;
 
-
-public class Evento {
-    // Attributi privati
+public class EventoBean {
+    private long idEvento;
     private String titolo;
     private String descrizione;
     private String data;
     private String orario;
     private int limitePartecipanti;
     private int iscritti;
-    private String link;
     private String nomeOrganizzatore;
     private String cognomeOrganizzatore;
     private boolean stato;
-    private long idEvento;
 
-    // Costruttore vuoto (necessario per alcuni framework e inizializzazioni manuali)
-    public Evento() {
-    }
-
-    // Costruttore con tutti i campi
-    public Evento(String titolo, String descrizione, String data, String orario, int limitePartecipanti, int iscritti,
-                  String link, String nomeOrganizzatore, String cognomeOrganizzatore, boolean stato, long idEvento) {
-        this.titolo = titolo;
-        this.descrizione = descrizione;
-        this.data = data;
-        this.orario = orario;
-        this.limitePartecipanti = limitePartecipanti;
-        this.iscritti = iscritti;
-        this.link = link;
-        this.nomeOrganizzatore = nomeOrganizzatore;
-        this.cognomeOrganizzatore = cognomeOrganizzatore;
-        this.stato = stato;
-        this.idEvento = idEvento;
+    // Costruttore vuoto
+    public EventoBean() {
     }
 
     // Getter e Setter
+    public long getIdEvento() {
+        return idEvento;
+    }
+
+    public void setIdEvento(long idEvento) {
+        this.idEvento = idEvento;
+    }
+
     public String getTitolo() {
         return titolo;
     }
@@ -84,14 +73,6 @@ public class Evento {
         this.iscritti = iscritti;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
     public String getNomeOrganizzatore() {
         return nomeOrganizzatore;
     }
@@ -108,7 +89,7 @@ public class Evento {
         this.cognomeOrganizzatore = cognomeOrganizzatore;
     }
 
-    public boolean getStato() {
+    public boolean isStato() {
         return stato;
     }
 
@@ -116,30 +97,23 @@ public class Evento {
         this.stato = stato;
     }
 
-    public long getIdEvento() {
-        return idEvento;
+    public boolean isChiuso() {
+        return !stato || iscritti >= limitePartecipanti;
     }
 
-    public void setIdEvento(long idEvento) {
-        this.idEvento = idEvento;
-    }
-
-    // Metodo toString per rappresentare l'entità in formato leggibile
     @Override
     public String toString() {
-        return "Evento{" +
-                "titolo='" + titolo + '\'' +
+        return "EventoBean{" +
+                "idEvento=" + idEvento +
+                ", titolo='" + titolo + '\'' +
                 ", descrizione='" + descrizione + '\'' +
                 ", data='" + data + '\'' +
                 ", orario='" + orario + '\'' +
                 ", limitePartecipanti=" + limitePartecipanti +
                 ", iscritti=" + iscritti +
-                ", link='" + link + '\'' +
                 ", nomeOrganizzatore='" + nomeOrganizzatore + '\'' +
                 ", cognomeOrganizzatore='" + cognomeOrganizzatore + '\'' +
                 ", stato=" + stato +
-                ", idEvento=" + idEvento +
                 '}';
     }
-
 }

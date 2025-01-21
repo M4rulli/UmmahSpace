@@ -5,14 +5,10 @@ import engclasses.beans.RegistrazioneBean;
 import engclasses.dao.PartecipanteDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import misc.Model;
 import misc.Session;
 import model.Partecipante;
-
-import java.io.IOException;
 
 public class GestisciProfiloPartecipanteGUIController {
 
@@ -21,33 +17,24 @@ public class GestisciProfiloPartecipanteGUIController {
     private final PartecipanteDAO partecipanteDAO;
     @FXML
     private TextField nameField;
-
     @FXML
     private TextField surnameField;
-
     @FXML
     private TextField usernameField;
-
     @FXML
     private TextField emailField;
-
     @FXML
     private PasswordField currentPasswordField;
-
     @FXML
     private PasswordField newPasswordField;
-
     @FXML
     private PasswordField confirmPasswordField;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button saveButton;
-
     @FXML
-    private Button cancelButton;
+    private Button backButton;
 
     private final GestisciProfiloPartecipanteController profileController;
     private String originalName;
@@ -65,9 +52,13 @@ public class GestisciProfiloPartecipanteGUIController {
         this.partecipante = partecipanteDAO.selezionaPartecipante(currentUsername, session.isPersistence());
     }
 
-
     @FXML
     public void initialize() {
+        backButton.setOnAction(event -> {onBackButtonClicked();});
+        saveButton.setOnAction(event -> {onSaveButtonClicked();});
+        editButton.setOnAction(event -> {onEditButtonClicked();});
+
+
         boolean persistence = session.isPersistence();
         Partecipante partecipante = partecipanteDAO.selezionaPartecipante(currentUsername, persistence);
 
@@ -165,7 +156,11 @@ public class GestisciProfiloPartecipanteGUIController {
     private void onBackButtonClicked() {
         // Controlla se le modifiche sono abilitate
         if (saveButton.isDisable()) { // Nessuna modifica abilitata
-            tornaAllaScenaPrincipale();
+
+            Stage currentStage = (Stage) backButton.getScene().getWindow();
+            Model.getInstance().getViewFactory().closeStage(currentStage); // Chiudi la finestra corrente
+            Model.getInstance().getViewFactory().showMainView(session, partecipanteDAO, currentUsername);
+
         } else { // Modifiche abilitate, mostra un avviso
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Modifiche non salvate");
@@ -179,28 +174,11 @@ public class GestisciProfiloPartecipanteGUIController {
             // Gestisci la risposta dell'utente
             alert.showAndWait().ifPresent(response -> {
                 if (response == buttonYes) {
-                    tornaAllaScenaPrincipale();
+                    Stage stage = (Stage) backButton.getScene().getWindow();
+                    Model.getInstance().getViewFactory().closeStage(stage);
+                    Model.getInstance().getViewFactory().showMainView(session, partecipanteDAO, currentUsername);
                 }
             });
-        }
-    }
-
-
-    private void tornaAllaScenaPrincipale() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
-
-            // Configura manualmente il controller
-            loader.setControllerFactory(param -> new MainViewGUIController(session, partecipanteDAO, currentUsername));
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) nameField.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("UmmahSpace");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -211,7 +189,7 @@ public class GestisciProfiloPartecipanteGUIController {
         emailField.setEditable(false);
 
         saveButton.setDisable(true);
-        cancelButton.setDisable(false);
+        backButton.setDisable(false);
         editButton.setDisable(false);
     }
 
@@ -222,25 +200,8 @@ public class GestisciProfiloPartecipanteGUIController {
         emailField.setEditable(true);
 
         saveButton.setDisable(false);
-        cancelButton.setDisable(false);
+        backButton.setDisable(false);
         editButton.setDisable(true);
     }
-
-
-    private boolean hasChanges() {
-        return !nameField.getText().equals(originalName) ||
-                !surnameField.getText().equals(originalSurname) ||
-                !usernameField.getText().equals(originalUsername) ||
-                !emailField.getText().equals(originalEmail);
-    }
-
-    private void showAlert(String title, String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
 
 }
