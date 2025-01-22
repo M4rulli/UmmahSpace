@@ -11,11 +11,9 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         // Inizializza gli oggetti necessari
         Session sessione = new Session(false);
-        PartecipanteDAO partecipanteDAO = new PartecipanteDAO();
-        OrganizzatoreDAO organizzatoreDAO = new OrganizzatoreDAO();
 
         // Usa la ViewFactory per mostrare la finestra di registrazione
-        Model.getInstance().getViewFactory().showRegistration(sessione, partecipanteDAO, organizzatoreDAO);
+        Model.getInstance().getViewFactory().showRegistration(sessione);
     }
 
     public static void main(String[] args) {

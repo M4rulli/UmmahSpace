@@ -1,5 +1,8 @@
 package misc;
 
+import controllers.grafico.GestioneTrackerGUIController;
+import engclasses.beans.GestioneTrackerBean;
+
 /**
  * La classe Session rappresenta lo stato corrente di una sessione utente
  * all'interno dell'applicazione. Fornisce le informazioni chiave sull'utente
@@ -16,11 +19,11 @@ public class Session {
     private String currentUsername; // Username dell'utente attualmente connesso
     private boolean persistence; // Modalità di persistenza (buffer o database)
     private String idUtente;
-
+    private GestioneTrackerBean trackerBean; // Oggetto per gestire il tracker
+    private GestioneTrackerGUIController gestioneTrackerGUIController;
 
     public Session(boolean persistence) {
         this.persistence = persistence;
-        this.idUtente = idUtente;
     }
 
     public boolean isPersistence() {
@@ -35,6 +38,10 @@ public class Session {
         this.currentUsername = newUsername;
     }
 
+    public void setIdUtente(String idUtente) {
+        this.idUtente = idUtente;
+    }
+
     public String getIdUtente() {
         return idUtente;
     }
@@ -42,10 +49,17 @@ public class Session {
     public String getCurrentUsername() {
         return this.currentUsername; // Assumendo che currentUsername sia una proprietà già definita
     }
-
-    // Setter per l'ID Utente
-    public void setIdUtente(String idUtente) {
-        this.idUtente = idUtente;
+    public void setTracker(GestioneTrackerBean trackerBean) {
+        this.trackerBean = trackerBean;
+    }
+    public GestioneTrackerBean getTracker() {
+        return trackerBean;
+    }
+    public GestioneTrackerGUIController getGestioneTrackerGUIController() {
+        return gestioneTrackerGUIController;
     }
 
+    public void setGestioneTrackerGUIController(GestioneTrackerGUIController gestioneTrackerGUIController) {
+        this.gestioneTrackerGUIController = gestioneTrackerGUIController;
+    }
 }

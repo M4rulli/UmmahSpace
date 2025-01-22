@@ -2,14 +2,16 @@ package engclasses.dao;
 
 import engclasses.beans.PartecipanteBean;
 import model.Evento;
+import model.IscrizionePartecipante;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class IscrizioneEventoDAO {
-    private static List<Evento> eventiBuffer = new ArrayList<>();
-    private final Map<Long, List<String>> partecipantiBuffer = new HashMap<>();
+    private static final List<Evento> eventiBuffer = new ArrayList<>();
+    private static final Map<Long, List<String>> partecipantiBuffer = new HashMap<>();
 
     // Popola inizialmente il buffer con eventi hard-coded
     static {
@@ -21,7 +23,7 @@ public class IscrizioneEventoDAO {
     }
 
     // Metodo per ottenere tutti gli eventi nel buffer
-    public List<Evento> getEventiPerMeseAnno(int mese, int anno) {
+    public static List<Evento> getEventiPerMeseAnno(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
         for (Evento evento : eventiBuffer) {
             String[] dataSplit = evento.getData().split("-");
@@ -35,9 +37,9 @@ public class IscrizioneEventoDAO {
         return eventiPerMeseAnno;
     }
 
-    public void aggiungiPartecipanteAdEvento(PartecipanteBean partecipanteBean) {
-        long idEvento = partecipanteBean.getIdEvento();
-        String idUtente = partecipanteBean.getIdUtente();
+    public static void aggiungiPartecipanteAdEvento(IscrizionePartecipante iscrizionePartecipante) {
+        long idEvento = iscrizionePartecipante.getIdEvento();
+        String idUtente = iscrizionePartecipante.getIdUtente();
 
         partecipantiBuffer.putIfAbsent(idEvento, new ArrayList<>());
         List<String> partecipanti = partecipantiBuffer.get(idEvento);
@@ -49,7 +51,7 @@ public class IscrizioneEventoDAO {
     }
 
     // Metodo per ottenere un evento dal buffer tramite il suo ID
-    public Evento getEventoById(long idEvento) {
+    public static Evento getEventoById(long idEvento) {
         for (Evento evento : eventiBuffer) {
             if (evento.getIdEvento() == idEvento) {
                 return evento;
@@ -58,7 +60,7 @@ public class IscrizioneEventoDAO {
         return null; // Ritorna null se non viene trovato l'evento
     }
 
-    public void aggiornaEvento(Evento eventoAggiornato) {
+    public static void aggiornaEvento(Evento eventoAggiornato) {
         for (int i = 0; i < eventiBuffer.size(); i++) {
             Evento evento = eventiBuffer.get(i);
             if (evento.getIdEvento() == eventoAggiornato.getIdEvento()) {

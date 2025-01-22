@@ -6,7 +6,6 @@ import engclasses.beans.PartecipanteBean;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import misc.Session;
 
@@ -41,14 +40,11 @@ public class DettagliEventoGUIController {
     @FXML
     private Label participantsLabel;
 
-
     private final EventoBean evento;
-    private final IscrizioneEventoController iscrizioneEventoController;
     private final Session session;
 
-    public DettagliEventoGUIController(EventoBean evento, IscrizioneEventoController iscrizioneEventoController, Session session) {
+    public DettagliEventoGUIController(EventoBean evento, Session session) {
         this.evento = evento;
-        this.iscrizioneEventoController = iscrizioneEventoController;
         this.session = session;
     }
 
@@ -83,6 +79,8 @@ public class DettagliEventoGUIController {
     @FXML
     public void onRegistratiButton() {
 
+        IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController();
+
         // Recupera i dati dalla Sessione e dall'evento corrente
         String idUtente = session.getIdUtente();
         long idEvento = evento.getIdEvento();;
@@ -100,7 +98,7 @@ public class DettagliEventoGUIController {
             boolean successo = iscrizioneEventoController.iscriviPartecipante(partecipanteBean);
 
             if (successo) {
-                mostraMessaggioConferma("Iscrizione completata con successo!");
+                mostraMessaggioConferma();
             } else {
                 mostraMessaggioErrore("Errore durante l'iscrizione all'evento.");
             }
@@ -114,11 +112,11 @@ public class DettagliEventoGUIController {
         stage.close();
     }
 
-    private void mostraMessaggioConferma(String messaggio) {
+    private void mostraMessaggioConferma() {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
         alert.setTitle("Conferma");
         alert.setHeaderText(null);
-        alert.setContentText(messaggio);
+        alert.setContentText("Iscrizione completata con successo!");
         alert.showAndWait();
     }
 

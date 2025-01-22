@@ -3,14 +3,7 @@ package model;
 public class Partecipante extends Utente {
     private Tracker trackerSpirituale;
 
-
-    // Costruttore 1: Tracker fornito come parametro
-    public Partecipante(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato, Tracker trackerSpirituale) {
-        super(nome, cognome, username, email, password, idUtente, stato);
-        this.trackerSpirituale = trackerSpirituale; // Tracker fornito esternamente
-    }
-
-    // Costruttore 2: Tracker inizializzato con valori di default
+    // Costruttore con Tracker inizializzato a valori di default
     public Partecipante(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato) {
         super(nome, cognome, username, email, password, idUtente, stato);
         this.trackerSpirituale = new Tracker(0, 0, 0, idUtente, 0); // Tracker inizializzato con valori default

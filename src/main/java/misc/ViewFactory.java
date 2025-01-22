@@ -1,11 +1,7 @@
 package misc;
 
-import controllers.applicativo.IscrizioneEventoController;
 import controllers.grafico.*;
 import engclasses.beans.EventoBean;
-import engclasses.dao.GestioneTrackerDAO;
-import engclasses.dao.OrganizzatoreDAO;
-import engclasses.dao.PartecipanteDAO;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,28 +37,24 @@ public class ViewFactory {
     }
 
     public void closeStage(Stage stage) {
-        if (stage != null) {
             stage.close();
-        } else {
-            System.err.println("Stage è null, impossibile chiudere la finestra.");
-        }
     }
 
-    public void showRegistration(Session session, PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
+    public void showRegistration(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/RegistrazioneView.fxml"));
-        loader.setController(new RegistrazioneGUIController(session, partecipanteDAO, organizzatoreDAO)); // Iniettare il controller personalizzato
+        loader.setController(new RegistrazioneGUIController (session)); // Iniettare il controller personalizzato
         showStage(loader, "UmmahSpace - Registrazione");
     }
 
-    public void showLogin(Session session, PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
+    public void showLogin(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/LoginView.fxml"));
-        loader.setController(new LoginGUIController(session, partecipanteDAO, organizzatoreDAO)); // Iniettare il controller personalizzato
+        loader.setController(new LoginGUIController(session)); // Iniettare il controller personalizzato
         showStage(loader, "UmmahSpace - Accesso");
     }
 
-    public void showMainView(Session session, PartecipanteDAO partecipanteDAO, String username) {
+    public void showMainView(Session session) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
-            loader.setController(new MainViewGUIController(session, partecipanteDAO, username));
+            loader.setController(new MainViewGUIController(session));
             showStage(loader, "UmmahSpace");
     }
 
@@ -85,11 +77,15 @@ public class ViewFactory {
         }
     }
 
-    public void loadTrackerView(Pane parentContainer, Session session, PartecipanteDAO partecipanteDAO, String currentUsername, GestioneTrackerDAO trackerDAO) {
+    public void loadTrackerView(Pane parentContainer, Session session) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrackerView.fxml"));
-            loader.setController(new controllers.grafico.GestioneTrackerGUIController(session, partecipanteDAO, currentUsername, trackerDAO));
+            GestioneTrackerGUIController trackerController = new GestioneTrackerGUIController(session);
+            loader.setController(trackerController);
+
             Parent trackerView = loader.load();
+
+            session.setGestioneTrackerGUIController(trackerController);
 
             // Svuota il contenitore e aggiunge il contenuto del Tracker
             parentContainer.getChildren().clear();
@@ -101,16 +97,16 @@ public class ViewFactory {
         }
     }
 
-    public void showSettings(Session session, PartecipanteDAO partecipanteDAO, String username) {
+    public void showSettings(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestisciProfiloView.fxml"));
-        loader.setController(new GestisciProfiloPartecipanteGUIController(session, partecipanteDAO, username)); // Iniettare il controller personalizzato
+        loader.setController(new GestisciProfiloPartecipanteGUIController(session)); // Iniettare il controller personalizzato
         showStage(loader, "Gestione Profilo");
     }
 
-    public void showEventiGiornalieri(List<EventoBean> eventi, IscrizioneEventoController iscrizioneEventoController, Session session) {
+    public void showEventiGiornalieri(List<EventoBean> eventi, Session session) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
-            loader.setController(new EventiGiornalieriGUIController(eventi, iscrizioneEventoController, session)); // Inietta il controller con i dati
+            loader.setController(new EventiGiornalieriGUIController(session)); // Inietta il controller con i dati
             Parent root = loader.load();
 
             Stage stage = new Stage();
@@ -124,9 +120,9 @@ public class ViewFactory {
         }
     }
 
-    public void showEventDetailsView(EventoBean evento, IscrizioneEventoController iscrizioneEventoController, Session session) {
+    public void showEventDetailsView(EventoBean evento, Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/DettagliEventoView.fxml"));
-        loader.setController(new DettagliEventoGUIController(evento, iscrizioneEventoController, session )); // Iniettare il controller personalizzato
+        loader.setController(new DettagliEventoGUIController(evento, session )); // Iniettare il controller personalizzato
         showStage(loader, "Dettagli Evento");
     }
 }

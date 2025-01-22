@@ -8,22 +8,57 @@ import model.Partecipante;
 
 public class GestisciProfiloPartecipanteController {
 
-    private final PartecipanteDAO partecipanteDAO;
     private final Session session;
 
-    public GestisciProfiloPartecipanteController(PartecipanteDAO partecipanteDAO, Session session) {
-        this.partecipanteDAO = partecipanteDAO;
+    public GestisciProfiloPartecipanteController(Session session) {
         this.session = session;
     }
 
     // Aggiorna i dati del profilo, incluso l'username
-    public boolean updateProfileData(RegistrazioneBean updatedBean, String oldUsername, String currentPassword, String newPassword, String confirmPassword, String username) {
+    public boolean aggiornaProfiloPartecipante(RegistrazioneBean updatedBean, String currentPassword, String newPassword, String confirmPassword) {
         boolean persistence = session.isPersistence();
+        StringBuilder errori = new StringBuilder();
 
-        // Verifica se il partecipante con il vecchio username esiste
-        Partecipante partecipante = partecipanteDAO.selezionaPartecipante(oldUsername, persistence);
-        if (partecipante == null) {
-            System.out.println("Partecipante non trovato con username: " + oldUsername);
+        // Verifica se il partecipante esiste
+        Partecipante partecipanteEsistente = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), persistence);
+        if (partecipanteEsistente == null) {
+            System.out.println("Partecipante non trovato con username: " + session.getCurrentUsername());
+            return false;
+        }
+
+        // Validazione nome
+        if (updatedBean.getNome() == null || updatedBean.getNome().trim().isEmpty()) {
+            errori.append("Il nome non può essere vuoto.\n");
+        }
+
+        // Validazione cognome
+        if (updatedBean.getCognome() == null || updatedBean.getCognome().trim().isEmpty()) {
+            errori.append("Il cognome non può essere vuoto.\n");
+        }
+
+        // Validazione username
+        if (updatedBean.getUsername() == null || updatedBean.getUsername().trim().isEmpty()) {
+            errori.append("L'username non può essere vuoto.\n");
+        } else if (!partecipanteEsistente.getUsername().equals(updatedBean.getUsername())) {
+            Partecipante partecipanteConNuovoUsername = PartecipanteDAO.selezionaPartecipante("username", updatedBean.getUsername(), persistence);
+            if (partecipanteConNuovoUsername != null) {
+                errori.append("Username già in uso. \n");
+            }
+        }
+
+        // Validazione email
+        if (updatedBean.getEmail() == null || updatedBean.getEmail().trim().isEmpty()) {
+            errori.append("L'email non può essere vuota.\n");
+        } else if (!partecipanteEsistente.getEmail().equals(updatedBean.getEmail())) {
+            Partecipante partecipanteConNuovaEmail = PartecipanteDAO.selezionaPartecipante("email", updatedBean.getEmail(), persistence);
+            if (partecipanteConNuovaEmail != null) {
+                errori.append("Email già in uso \n");
+            }
+        }
+
+        // Se ci sono errori, mostra una finestra di dialogo e ritorna false
+        if (errori.length() > 0) {
+            showAlert("Errore", errori.toString(), Alert.AlertType.WARNING);
             return false;
         }
 
@@ -33,48 +68,51 @@ public class GestisciProfiloPartecipanteController {
                 confirmPassword != null && !confirmPassword.isEmpty()) {
 
             // Cambia la password se i campi sono compilati
-            boolean passwordChanged = changePassword(currentPassword, newPassword, confirmPassword, username);
+            boolean passwordChanged = changePassword(currentPassword, newPassword, confirmPassword, session.getCurrentUsername());
             if (!passwordChanged) {
                 return false; // Interrompi se il cambio password fallisce
             }
         }
 
-        // Verifica se l'username è cambiato
-        if (!oldUsername.equals(updatedBean.getUsername())) {
-            // Controlla se il nuovo username è già utilizzato
-            if (partecipanteDAO.selezionaPartecipante(updatedBean.getUsername(), persistence) != null) {
-                System.out.println("Errore: Username già in uso: " + updatedBean.getUsername());
-                return false;
-            }
+        // Crea un nuovo modello Partecipante con i dati aggiornati
+        Partecipante partecipanteAggiornato = new Partecipante(
+                partecipanteEsistente.getIdUtente(),
+                updatedBean.getNome(),
+                updatedBean.getCognome(),
+                updatedBean.getUsername(),
+                updatedBean.getEmail(),
+                updatedBean.getPassword(),
+                partecipanteEsistente.isStato() // Mantieni lo stato originale
+        );
 
-            // Aggiorna l'username
-            if (!partecipanteDAO.updatePartecipanteUsername(oldUsername, updatedBean.getUsername())) {
-                System.out.println("Errore durante l'aggiornamento dell'username.");
-                return false;
-            }
-
-            // Aggiorna il currentUsername nella sessione
-            session.setCurrentUsername(updatedBean.getUsername());
-            System.out.println("Aggiornamento del buffer completato. Nuovo username: " + updatedBean.getUsername());
+        // Passa il nuovo modello alla DAO per l'aggiornamento
+        if (!PartecipanteDAO.aggiornaPartecipante(partecipanteAggiornato, persistence)) {
+            System.out.println("Errore durante l'aggiornamento del partecipante.");
+            return false;
         }
 
-        // Aggiorna gli altri dati del partecipante
-        partecipante.setNome(updatedBean.getNome());
-        partecipante.setCognome(updatedBean.getCognome());
-        partecipante.setEmail(updatedBean.getEmail());
+        // Aggiorna il currentUsername nella sessione se necessario
+        if (!session.getCurrentUsername().equals(updatedBean.getUsername())) {
+            session.setCurrentUsername(updatedBean.getUsername());
+        }
 
-        partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
+        System.out.println("Aggiornamento completato per il partecipante: " + updatedBean.getUsername());
         return true;
     }
-
 
     // Modifica la password del partecipante
     public boolean changePassword(String currentPassword, String newPassword, String confirmPassword, String username) {
         boolean persistence = session.isPersistence();
-        Partecipante partecipante = partecipanteDAO.selezionaPartecipante(username, persistence);
+
+        // Recupera il partecipante esistente
+        Partecipante partecipanteEsistente = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), persistence);
+        if (partecipanteEsistente == null) {
+            showAlert("Errore", "Partecipante non trovato.", Alert.AlertType.ERROR);
+            return false;
+        }
 
         // Controlla se la vecchia password corrisponde
-        if (!partecipante.getPassword().equals(currentPassword)) {
+        if (!partecipanteEsistente.getPassword().equals(currentPassword)) {
             showAlert("Errore", "La vecchia password non è corretta.", Alert.AlertType.ERROR);
             return false;
         }
@@ -91,10 +129,23 @@ public class GestisciProfiloPartecipanteController {
             return false;
         }
 
-        partecipante.setPassword(newPassword);
-        partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
+        // Crea un nuovo modello di partecipante con la password aggiornata
+        Partecipante partecipanteAggiornato = new Partecipante(
+                partecipanteEsistente.getIdUtente(),
+                partecipanteEsistente.getNome(),
+                partecipanteEsistente.getCognome(),
+                partecipanteEsistente.getUsername(),
+                partecipanteEsistente.getEmail(),
+                newPassword, // Nuova password
+                partecipanteEsistente.isStato()
+        );
 
-        System.out.println("Password aggiornata con successo.");
+        // Passa il nuovo modello alla DAO per l'aggiornamento
+        if (!PartecipanteDAO.aggiornaPartecipante(partecipanteAggiornato, persistence)) {
+            showAlert("Errore", "Impossibile aggiornare la password.", Alert.AlertType.ERROR);
+            return false;
+        }
+        System.out.println("Password aggiornata con successo per l'utente: " + username);
         return true;
     }
 

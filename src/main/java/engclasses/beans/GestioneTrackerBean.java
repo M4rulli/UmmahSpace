@@ -1,19 +1,19 @@
 package engclasses.beans;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class GestioneTrackerBean {
 
     private int letturaCorano; // Numero di pagine del Corano lette
-    private int giorniDigiuno; // Numero di giorni di digiuno
-    private int preghiereComplete; // Numero di preghiere completate
     private int goal;
     private boolean haDigiunato;
     private String noteDigiuno;
     private Set<String> motivazioniDigiuno;
-    private String idUtente; // ID univoco dell'utente associato al tracker
+    private double progress;
+    private String idUtente; // ID dell'utente
 
     public GestioneTrackerBean() {}
 
@@ -26,17 +26,12 @@ public class GestioneTrackerBean {
         this.letturaCorano = letturaCorano;
     }
 
-
     public int getGoal() {
-        return this.goal; // Assumendo che il goal sia una proprietà del Tracker
+        return this.goal;
     }
 
     public void setGoal(int goal) {
-        if (goal > 0) {
-            this.goal = goal;
-        } else {
-            System.err.println("Errore: goal deve essere maggiore di zero.");
-        }
+        this.goal = goal;
     }
 
     public boolean isHaDigiunato() {
@@ -55,12 +50,12 @@ public class GestioneTrackerBean {
         this.noteDigiuno = noteDigiuno;
     }
 
-    public Set<String> getMotivazioniDigiuno() {
-        return motivazioniDigiuno;
-    }
-
     public void setMotivazioniDigiuno(Set<String> motivazioniDigiuno) {
         this.motivazioniDigiuno = motivazioniDigiuno;
+    }
+
+    public Set<String> getMotivazioniDigiuno() {
+        return motivazioniDigiuno != null ? motivazioniDigiuno : new HashSet<>();
     }
 
     private Map<String, Boolean> preghiere = new HashMap<>();
@@ -73,5 +68,19 @@ public class GestioneTrackerBean {
         return preghiere.getOrDefault(nome, false);
     }
 
+    public double getProgresso() {
+        return progress;
+    }
 
+    public void setProgresso(double progress) {
+        this.progress = progress;
+    }
+
+    public String getIdUtente() {
+        return idUtente;
+    }
+
+    public void setIdUtente(String idUtente) {
+        this.idUtente = idUtente;
+    }
 }

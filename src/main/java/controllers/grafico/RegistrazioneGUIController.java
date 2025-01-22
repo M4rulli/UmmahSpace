@@ -2,21 +2,12 @@ package controllers.grafico;
 
 import controllers.applicativo.RegistrazioneController;
 import engclasses.beans.RegistrazioneBean;
-import engclasses.dao.PartecipanteDAO;
-import engclasses.dao.OrganizzatoreDAO;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import misc.Model;
 import misc.Session;
 import org.controlsfx.control.ToggleSwitch;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class RegistrazioneGUIController {
 
@@ -41,15 +32,10 @@ public class RegistrazioneGUIController {
     @FXML
     private Hyperlink loginLink;
 
-    private final RegistrazioneController registrazioneController;
     private final Session session;
-    private final PartecipanteDAO partecipanteDAO;
-    private final OrganizzatoreDAO organizzatoreDAO;
+    private boolean persistence = false;
 
-    public RegistrazioneGUIController(Session session, PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
-        this.organizzatoreDAO = organizzatoreDAO;
-        this.registrazioneController = new RegistrazioneController(partecipanteDAO, organizzatoreDAO, session);
-        this.partecipanteDAO = partecipanteDAO;
+    public RegistrazioneGUIController(Session session) {
         this.session = session;
     }
 
@@ -57,10 +43,15 @@ public class RegistrazioneGUIController {
     private void initialize() {
         registratiButton.setOnAction(event -> onSignUpClicked());
         loginLink.setOnAction(event -> onHyperLinkLoginClicked());
+        // Configura il ToggleSwitch
+        persistenceSwitch.setOnMouseClicked(event -> togglePersistence());
+        persistenceSwitch.setSelected(persistence);
     }
 
     @FXML
     public void onSignUpClicked() {
+        boolean persistence = session.isPersistence();
+
         // Raccoglie i dati dalla UI
         String nome = nomeField.getText().trim();
         String cognome = cognomeField.getText().trim();
@@ -80,10 +71,8 @@ public class RegistrazioneGUIController {
         registrazioneBean.setEmail(email);
         registrazioneBean.setSeiOrganizzatore(isOrganizzatore);
 
-        // Determina la modalità di persistenza dalla sessione
-        boolean persistence = session.isPersistence();
-
         // Chiamata al Controller Applicativo per la registrazione
+        RegistrazioneController registrazioneController = new RegistrazioneController(session);
         boolean success = registrazioneController.registraUtente(registrazioneBean, persistence);
 
         // Aggiorna la UI in base al risultato
@@ -101,13 +90,15 @@ public class RegistrazioneGUIController {
         // Cambia scena utilizzando la ViewFactory
         Stage stage = (Stage) registratiButton.getScene().getWindow();
         Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
-        Model.getInstance().getViewFactory().showMainView(session, partecipanteDAO, username); // Mostra la MainView
+        Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
     }
 
     @FXML
     private void onHyperLinkLoginClicked() {
+        // Forza la persistenza a true
+        session.setPersistence(true);
         // Apri la schermata di login tramite il Model
-        Model.getInstance().getViewFactory().showLogin(session, partecipanteDAO, organizzatoreDAO);
+        Model.getInstance().getViewFactory().showLogin(session);
 
         // Chiudi la finestra attuale
         Stage stage = (Stage) loginLink.getScene().getWindow();
@@ -123,4 +114,14 @@ public class RegistrazioneGUIController {
         alert.showAndWait();
     }
 
+    // Metodo per gestire il cambio di stato dello switch
+    private void togglePersistence() {
+        persistence = persistenceSwitch.isSelected(); // Cambia il valore della persistenza
+        session.setPersistence(persistence); // Salva il nuovo valore della persistenza nella sessione
+        if (persistence) {
+            System.out.println("Il salvataggio ora avviene nel database.");
+        } else {
+            System.out.println("Il salvataggio ora avviene nel buffer.");
+        }
+    }
 }

@@ -2,6 +2,7 @@ module com.project.ummahspace {
     requires javafx.fxml;
     requires com.dlsc.formsfx;
     requires org.controlsfx.controls;
+    requires java.sql;
 
     exports misc; // Esporta il pacchetto principale per l'applicazione
     exports controllers.grafico;

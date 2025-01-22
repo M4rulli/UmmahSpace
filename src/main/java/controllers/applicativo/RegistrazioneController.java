@@ -17,13 +17,9 @@ import java.util.UUID;
 
 public class RegistrazioneController {
 
-    private final PartecipanteDAO partecipanteDAO;
-    private final OrganizzatoreDAO organizzatoreDAO;
     private final Session session;
 
-    public RegistrazioneController(PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO, Session session) {
-        this.partecipanteDAO = partecipanteDAO;
-        this.organizzatoreDAO = organizzatoreDAO;
+    public RegistrazioneController(Session session) {
         this.session = session;
     }
 
@@ -34,7 +30,7 @@ public class RegistrazioneController {
             return false; // Interrompi il flusso se ci sono errori
         }
 
-        // Registra il partecipante o l'organizzatore in base alla persistenza
+        // Registra il partecipante o l'organizzatore in base alla persistenza (DA RIVEDERE!!!)
         if (bean.getSeiOrganizzatore()) {
             return registraOrganizzatore(bean, persistence);
         } else {
@@ -43,10 +39,6 @@ public class RegistrazioneController {
     }
 
     private boolean registraPartecipante(RegistrazioneBean bean, boolean persistence) {
-        if (partecipanteDAO.selezionaPartecipante(bean.getUsername(), persistence) != null) {
-            System.out.println("Username già in uso per un partecipante.");
-            return false;
-        }
 
         // Genera un ID univoco per il nuovo partecipante
         String idUtente = UUID.randomUUID().toString();
@@ -61,48 +53,28 @@ public class RegistrazioneController {
                 true
         );
 
-        // Salva l'ID nella sessione
+        // Salva l'ID, l'username e lo stato della persistenza nella sessione
         session.setIdUtente(idUtente);
         session.setCurrentUsername(bean.getUsername());
 
         // Salva il partecipante nel DAO
-        partecipanteDAO.aggiungiPartecipante(partecipante, persistence);
+        PartecipanteDAO.aggiungiPartecipante(partecipante, persistence);
 
         // Salva il Tracker associato al partecipante nel TrackerDAO
-        GestioneTrackerDAO.aggiungiTracker(partecipante.getTrackerSpirituale());
+        GestioneTrackerDAO.saveOrUpdateTracker(partecipante.getTrackerSpirituale(), session.isPersistence());
 
         // Log dell'operazione
-        System.out.println("Nuovo partecipante registrato:");
+        System.out.println("Nuovo partecipante registrato con username: " + bean.getUsername());
         System.out.println("Tracker creato per l'utente con ID: " + idUtente);
-        System.out.println("Username: " + bean.getUsername());
         return true;
     }
 
+    // Da inserire
     private boolean registraOrganizzatore(RegistrazioneBean bean, boolean persistence) {
-        if (organizzatoreDAO.selezionaOrganizzatore(bean.getUsername(), persistence) != null) {
-            System.out.println("Username già in uso per un organizzatore.");
-            return false;
-        }
-
-        String idUtente = UUID.randomUUID().toString();
-
-        Organizzatore organizzatore = new Organizzatore(
-                idUtente,
-                bean.getNome(),
-                bean.getCognome(),
-                bean.getUsername(),
-                bean.getEmail(),
-                bean.getPassword(),
-                true,
-                new ArrayList<>()
-        );
-
-        organizzatoreDAO.aggiungiOrganizzatore(organizzatore, persistence);
         return true;
     }
 
     public boolean validaRegistrazione(RegistrazioneBean bean) {
-
         // StringBuilder per accumulare gli errori
         StringBuilder errori = new StringBuilder();
 
@@ -119,6 +91,11 @@ public class RegistrazioneController {
         // Validazione username
         if (bean.getUsername() == null || bean.getUsername().trim().isEmpty()) {
             errori.append("L'username non può essere vuoto.\n");
+        } else {
+            // Verifica se l'username esiste già
+            if (PartecipanteDAO.selezionaPartecipante("username", bean.getUsername(), session.isPersistence()) != null) {
+                errori.append("L'username è già in uso.\n");
+            }
         }
 
         // Validazione password
@@ -130,15 +107,21 @@ public class RegistrazioneController {
         if (bean.getPassword() != null && !bean.getPassword().equals(bean.getConfirmPassword())) {
             errori.append("Le password non corrispondono.\n");
         }
+
         // Validazione email
         if (bean.getEmail() == null || bean.getEmail().trim().isEmpty()) {
             errori.append("L'email non può essere vuota.\n");
         } else if (!bean.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
             errori.append("L'email non è valida.\n");
+        } else {
+            // Verifica se l'email esiste già
+            if (PartecipanteDAO.selezionaPartecipante("email", bean.getEmail(), session.isPersistence()) != null) {
+                errori.append("L'email è già in uso.\n");
+            }
         }
 
         // Se ci sono errori, mostra una finestra di dialogo e ritorna false
-        if (errori.length() > 0) {
+        if (!errori.isEmpty()) {
             RegistrazioneGUIController.mostraMessaggioErrore(errori.toString());
             return false;
         }

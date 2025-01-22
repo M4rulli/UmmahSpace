@@ -5,11 +5,11 @@ import engclasses.beans.EventoBean;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import misc.Model;
 import misc.Session;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class EventiGiornalieriGUIController {
@@ -17,19 +17,26 @@ public class EventiGiornalieriGUIController {
     @FXML
     private VBox eventContainer;
 
-    private final List<EventoBean> eventi;
-    private final IscrizioneEventoController iscrizioneEventoController;
     private final Session session;
 
-
-    public EventiGiornalieriGUIController(List<EventoBean> eventi, IscrizioneEventoController iscrizioneEventoController, Session session) {
-        this.eventi = eventi;
-        this.iscrizioneEventoController = iscrizioneEventoController;
+    public EventiGiornalieriGUIController(Session session) {
         this.session = session;
     }
 
     @FXML
     public void initialize() {
+
+        // Ottieni mese e anno correnti dal controller grafico
+        int currentMonth = LocalDate.now().getMonthValue();
+        int currentYear = LocalDate.now().getYear();
+
+        // Crea un'istanza del controller applicativo
+        IscrizioneEventoController applicativoController = new IscrizioneEventoController();
+
+        // Recupera tutti gli eventi del mese corrente
+        List<EventoBean> eventi = applicativoController.getTuttiGliEventiDelMese(currentMonth, currentYear);
+
+        // Popola la GUI con gli eventi
         for (EventoBean evento : eventi) {
 
             // Crea una sezione card-like per ogni evento
@@ -55,7 +62,7 @@ public class EventiGiornalieriGUIController {
             Button detailButton = new Button("Visualizza Dettagli");
             detailButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
 
-            detailButton.setOnAction(e -> showEventDetails(evento, iscrizioneEventoController, session));
+            detailButton.setOnAction(e -> showEventDetails(evento, session));
 
             card.getChildren().addAll(titleLabel, timeLabel, organizerLabel, statusLabel, detailButton);
             card.setSpacing(10);
@@ -68,9 +75,7 @@ public class EventiGiornalieriGUIController {
         eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10;");
     }
 
-    private void showEventDetails(EventoBean evento, IscrizioneEventoController iscrizioneEventoController, Session session) {
-        Model.getInstance().getViewFactory().showEventDetailsView(
-                evento, iscrizioneEventoController, session  // Passa la bean dell'evento
-        );
+    private void showEventDetails(EventoBean evento, Session session) {
+        Model.getInstance().getViewFactory().showEventDetailsView(evento, session);  // Passa la bean dell'evento
     }
 }

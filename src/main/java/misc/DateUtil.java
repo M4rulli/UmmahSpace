@@ -21,6 +21,7 @@ public class DateUtil {
      *         "Data: [data gregoriana] / [data Hijri]"
      *         Esempio: "Data: 13 Gennaio 2025 / Jumada al-Thani 1446"
      */
+
     public static String getSynchronizedDate() {
         // Ottiene la data odierna nel calendario gregoriano
         LocalDate todayGregorian = LocalDate.now();

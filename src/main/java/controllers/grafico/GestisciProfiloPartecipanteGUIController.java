@@ -12,9 +12,8 @@ import model.Partecipante;
 
 public class GestisciProfiloPartecipanteGUIController {
 
-    private String currentUsername;
     private final Session session;
-    private final PartecipanteDAO partecipanteDAO;
+
     @FXML
     private TextField nameField;
     @FXML
@@ -36,20 +35,14 @@ public class GestisciProfiloPartecipanteGUIController {
     @FXML
     private Button backButton;
 
-    private final GestisciProfiloPartecipanteController profileController;
+    private String currentUsername;
     private String originalName;
     private String originalSurname;
     private String originalUsername;
     private String originalEmail;
-    private Partecipante partecipante; // Campo per il partecipante corrente
 
-
-    public GestisciProfiloPartecipanteGUIController(Session session, PartecipanteDAO partecipanteDAO, String currentUsername) {
+    public GestisciProfiloPartecipanteGUIController(Session session) {
         this.session = session;
-        this.partecipanteDAO = partecipanteDAO;
-        this.profileController = new GestisciProfiloPartecipanteController(partecipanteDAO, session);
-        this.currentUsername = currentUsername;
-        this.partecipante = partecipanteDAO.selezionaPartecipante(currentUsername, session.isPersistence());
     }
 
     @FXML
@@ -58,9 +51,8 @@ public class GestisciProfiloPartecipanteGUIController {
         saveButton.setOnAction(event -> {onSaveButtonClicked();});
         editButton.setOnAction(event -> {onEditButtonClicked();});
 
-
         boolean persistence = session.isPersistence();
-        Partecipante partecipante = partecipanteDAO.selezionaPartecipante(currentUsername, persistence);
+        Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("IdUtente", session.getIdUtente(), persistence);
 
         if (partecipante != null) {
             initializeProfile(
@@ -102,20 +94,7 @@ public class GestisciProfiloPartecipanteGUIController {
         updatedBean.setUsername(usernameField.getText());
         updatedBean.setEmail(emailField.getText());
 
-        GestisciProfiloPartecipanteController profileController = new GestisciProfiloPartecipanteController(partecipanteDAO, session);
-
-        // Controlla se l'username è già in uso
-        if (!updatedBean.getUsername().equals(partecipante.getUsername())) {
-            boolean usernameExists = partecipanteDAO.selezionaPartecipante(updatedBean.getUsername(), session.isPersistence()) != null;
-            if (usernameExists) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Errore");
-                alert.setHeaderText("Username già in uso");
-                alert.setContentText("L'username scelto è già utilizzato. Scegli un altro username.");
-                alert.showAndWait();
-                return; // Interrompi il salvataggio
-            }
-        }
+        GestisciProfiloPartecipanteController profileController = new GestisciProfiloPartecipanteController(session);
 
         // Verifica se i campi password sono stati modificati
         String currentPassword = currentPasswordField.getText();
@@ -123,7 +102,7 @@ public class GestisciProfiloPartecipanteGUIController {
         String confirmPassword = confirmPasswordField.getText();
         String username = usernameField.getText();
 
-        boolean success = profileController.updateProfileData(updatedBean, currentUsername, currentPassword, newPassword, confirmPassword, username);
+        boolean success = profileController.aggiornaProfiloPartecipante(updatedBean, currentPassword, newPassword, confirmPassword);
 
         if (success) {
             currentUsername = updatedBean.getUsername(); // Aggiorna il currentUsername
@@ -133,7 +112,6 @@ public class GestisciProfiloPartecipanteGUIController {
                     updatedBean.getUsername(),
                     updatedBean.getEmail()
             );
-
 
             // Logga i nuovi dati alla console
             System.out.println("Profilo aggiornato: ");
@@ -159,7 +137,7 @@ public class GestisciProfiloPartecipanteGUIController {
 
             Stage currentStage = (Stage) backButton.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(currentStage); // Chiudi la finestra corrente
-            Model.getInstance().getViewFactory().showMainView(session, partecipanteDAO, currentUsername);
+            Model.getInstance().getViewFactory().showMainView(session);
 
         } else { // Modifiche abilitate, mostra un avviso
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -176,7 +154,7 @@ public class GestisciProfiloPartecipanteGUIController {
                 if (response == buttonYes) {
                     Stage stage = (Stage) backButton.getScene().getWindow();
                     Model.getInstance().getViewFactory().closeStage(stage);
-                    Model.getInstance().getViewFactory().showMainView(session, partecipanteDAO, currentUsername);
+                    Model.getInstance().getViewFactory().showMainView(session);
                 }
             });
         }

@@ -1,6 +1,6 @@
 package controllers.grafico;
 
-import engclasses.dao.GestioneTrackerDAO;
+import engclasses.beans.GestioneTrackerBean;
 import engclasses.dao.PartecipanteDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,9 +17,6 @@ import java.util.Locale;
 public class MainViewGUIController {
 
     private final Session session;
-    private final PartecipanteDAO partecipanteDAO;
-    private final String currentUsername;
-    private final GestioneTrackerDAO trackerDAO;
 
     @FXML
     private Label welcomeLabel;
@@ -32,31 +29,33 @@ public class MainViewGUIController {
     @FXML
     private StackPane trackerContainer; // Contenitore per il tracker
 
-
-    public MainViewGUIController(Session session, PartecipanteDAO partecipanteDAO, String username) {
+    public MainViewGUIController(Session session) {
         this.session = session;
-        this.partecipanteDAO = partecipanteDAO;
-        this.currentUsername = username;
-        this.trackerDAO = new GestioneTrackerDAO();
     }
 
     @FXML
     private void initialize() {
-        setWelcomeMessage(currentUsername);
-        // Configurare l'handler manualmente
-        profileButton.setOnAction(event -> onProfileButtonClicked());
 
+        setWelcomeMessage();
+        // Configura l'handler
+        profileButton.setOnAction(event -> onProfileButtonClicked());
         // Carica la sotto-vista del Calendario
         Model.getInstance().getViewFactory().loadCalendarioView(calendarioContainer, session);
         // Carica la sotto-vista del Tracker
-        Model.getInstance().getViewFactory().loadTrackerView(trackerContainer, session, partecipanteDAO, currentUsername, trackerDAO);
+        Model.getInstance().getViewFactory().loadTrackerView(trackerContainer, session);
         // Altri inizializzatori
         aggiornaData();
+
+        // Da rivedere
+        GestioneTrackerGUIController gestioneTrackerGUIController = session.getGestioneTrackerGUIController();
+        GestioneTrackerBean trackerBean = session.getTracker();
+        gestioneTrackerGUIController.aggiornaUIConTracker(trackerBean);
     }
 
-    public void setWelcomeMessage(String username) {
+    // Da rivedere
+    public void setWelcomeMessage() {
         boolean persistence = session.isPersistence();
-        Partecipante partecipante = partecipanteDAO.selezionaPartecipante(username, persistence);
+        Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente",session.getIdUtente(), persistence);
 
         if (partecipante != null) {
             welcomeLabel.setText("Benvenuto, " + partecipante.getNome() + "!");
@@ -75,7 +74,7 @@ public class MainViewGUIController {
             Model.getInstance().getViewFactory().closeStage(currentStage);
 
             // Apri la finestra delle impostazioni
-            Model.getInstance().getViewFactory().showSettings(session, partecipanteDAO, currentUsername);
+            Model.getInstance().getViewFactory().showSettings(session);
         } catch (Exception e) {
             e.printStackTrace();
         }

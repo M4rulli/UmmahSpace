@@ -1,42 +1,97 @@
 package controllers.grafico;
 
-import engclasses.dao.OrganizzatoreDAO;
-import engclasses.dao.PartecipanteDAO;
+import controllers.applicativo.LoginController;
+import engclasses.beans.GestioneTrackerBean;
+import engclasses.beans.LoginBean;
 import javafx.fxml.FXML;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
-import misc.Model;
 import misc.Session;
+import misc.Model;
 
 public class LoginGUIController {
 
     @FXML
-    private Hyperlink registrationLink;
-    private final OrganizzatoreDAO organizzatoreDAO;
-    private final Session session;
-    private final PartecipanteDAO partecipanteDAO;
+    private TextField usernameField;
 
-    public LoginGUIController(Session session, PartecipanteDAO partecipanteDAO, OrganizzatoreDAO organizzatoreDAO) {
-        this.partecipanteDAO = partecipanteDAO;
+    @FXML
+    private PasswordField passwordField;
+
+    @FXML
+    private Button loginButton;
+
+    @FXML
+    private Hyperlink registrationLink;
+
+    private final Session session;
+
+    public LoginGUIController(Session session) {
         this.session = session;
-        this.organizzatoreDAO = organizzatoreDAO;
     }
 
     @FXML
-    public void initialize() {
-        // Imposta il listener sul link per la registrazione
+    private void initialize() {
+        // Log per indicare la zona corrente
+        System.out.println("Zona Login. Persistenza attiva: " + session.isPersistence());
+
+        // Assegna l'azione al link di registrazione
         registrationLink.setOnAction(event -> onHyperLinkRegistrationClicked());
+
+        // Assegna l'azione al bottone di login
+
+        loginButton.setOnAction(event -> onLoginClicked());
     }
 
-
-    // Metodo che gestisce il click sull'hyperlink per la registrazione.
     @FXML
     private void onHyperLinkRegistrationClicked() {
-        // Usa il Model per aprire la schermata di registrazione
-        Model.getInstance().getViewFactory().showRegistration(session, partecipanteDAO, organizzatoreDAO);
+        // Forza lo stato della persistenza su false
+        session.setPersistence(false);
 
-        // Chiude la finestra attuale
+        // Cambia scena a Registrazione tramite il Model
+        Model.getInstance().getViewFactory().showRegistration(session);
+
+        // Chiude la scena attuale
         Stage stage = (Stage) registrationLink.getScene().getWindow();
         stage.close();
     }
+
+    @FXML
+    private void onLoginClicked() {
+        // Preleva i campi username e password dalla GUI
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+
+        // Crea una bean con i campi prelevati
+        LoginBean loginBean = new LoginBean();
+        loginBean.setUsername(username);
+        loginBean.setPassword(password);
+
+        // Invia i dati al controller applicativo
+        LoginController loginController = new LoginController();
+        GestioneTrackerBean trackerBean = loginController.effettuaLogin(loginBean, session.isPersistence());
+
+        if (trackerBean != null) {
+            // Aggiorna la sessione
+            session.setCurrentUsername(username);
+            session.setIdUtente(trackerBean.getIdUtente());
+            session.setTracker(trackerBean); // Salva il tracker nella sessione
+
+            // Mostra messaggio di successo e passa alla MainView
+            System.out.println("Login effettuato con successo!");
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
+            Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
+        } else {
+            System.out.println("Login non effettuato.");
+        }
+    }
+
+    // Metodo di utilità per mostrare un messaggio di errore
+    public static void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

@@ -17,7 +17,7 @@ public abstract class Utente {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.idUtente = UUID.randomUUID().toString(); // Genera un UUID univoco
+        this.idUtente = idUtente; // Genera un UUID univoco
         this.stato = stato;
     }
 
@@ -62,4 +62,11 @@ public abstract class Utente {
         this.password = password;
     }
 
+    public String getIdUtente() {
+       return idUtente;
+    }
+
+    public boolean isStato() {
+        return stato;
+    }
 }

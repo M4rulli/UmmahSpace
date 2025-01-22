@@ -47,8 +47,7 @@ public class CalendarioGUIController {
             "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"
     };
 
-    private IscrizioneEventoController iscrizioneEventoController;
-    private Session session;
+    private final Session session;
 
     public CalendarioGUIController(Session session) {
         this.session = session;
@@ -56,7 +55,6 @@ public class CalendarioGUIController {
 
     @FXML
     public void initialize() {
-        iscrizioneEventoController = new IscrizioneEventoController(new IscrizioneEventoDAO());
         currentMonth = YearMonth.now();
         updateCalendar();
 
@@ -72,6 +70,8 @@ public class CalendarioGUIController {
     }
 
     void updateCalendar() {
+
+        IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController();
 
         // Aggiorna il titolo con il mese e l'anno
         monthYearLabel.setText(MESI[currentMonth.getMonthValue() - 1] + " " + currentMonth.getYear());
@@ -136,7 +136,7 @@ public class CalendarioGUIController {
         if (!eventi.isEmpty()) {
             calendarCell.setOnMouseClicked(e -> {
                 // Apri la vista con la lista degli eventi
-                Model.getInstance().getViewFactory().showEventiGiornalieri(eventi,iscrizioneEventoController,session);
+                Model.getInstance().getViewFactory().showEventiGiornalieri(eventi, session);
             });
         }
     }

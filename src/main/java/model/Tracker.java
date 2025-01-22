@@ -1,6 +1,7 @@
 package model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,12 +61,24 @@ public class Tracker {
         this.noteDigiuno = noteDigiuno;
     }
 
-    public Set<String> getMotivazioniDigiuno() {
-        return motivazioniDigiuno;
+    public String getNoteDigiuno() {
+        return noteDigiuno;
+    }
+
+    public int getGiorniDigiuno() {
+        return giorniDigiuno;
+    }
+
+    public int getPreghiereComplete() {
+        return preghiereComplete;
     }
 
     public void setMotivazioniDigiuno(Set<String> motivazioniDigiuno) {
         this.motivazioniDigiuno = motivazioniDigiuno;
+    }
+
+    public Set<String> getMotivazioniDigiuno() {
+        return motivazioniDigiuno != null ? motivazioniDigiuno : new HashSet<>();
     }
 
     private Map<String, Boolean> preghiere = new HashMap<>();

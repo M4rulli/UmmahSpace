@@ -3,30 +3,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="20" style="-fx-padding: 30; -fx-background-color: #f5f5f5; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);">
-    <Label text="Accedi al tuo spazio spirituale." style="-fx-font-size: 24px; -fx-text-fill: #333;" />
+<VBox alignment="CENTER" spacing="20" style="-fx-padding: 30; -fx-background-color: #f5f5f5; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
+    <Label style="-fx-font-size: 24px; -fx-text-fill: #333;" text="Accedi al tuo spazio spirituale." />
 
     <!-- Form -->
     <VBox spacing="15" alignment="CENTER">
-        <!-- Email -->
+        <!-- Username -->
         <VBox spacing="5">
-            <Label text="Email:" style="-fx-font-size: 16px; -fx-text-fill: #666;" />
-            <TextField promptText="Inserisci la tua email" style="-fx-font-size: 14px; -fx-padding: 10;" />
+            <Label text="Username:" style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+            <TextField fx:id="usernameField" promptText="Inserisci il tuo username" style="-fx-font-size: 14px; -fx-padding: 10;" />
         </VBox>
 
         <!-- Password -->
         <VBox spacing="5">
             <Label text="Password:" style="-fx-font-size: 16px; -fx-text-fill: #666;" />
-            <PasswordField promptText="Inserisci la tua password" style="-fx-font-size: 14px; -fx-padding: 10;" />
+            <PasswordField fx:id="passwordField" promptText="Inserisci la tua password" style="-fx-font-size: 14px; -fx-padding: 10;" />
         </VBox>
 
         <!-- Organizzatore -->
-        <CheckBox text="Sei un organizzatore?" style="-fx-font-size: 14px; -fx-text-fill: #666;" />
+        <CheckBox fx:id="organizerCheckBox" text="Sei un organizzatore?" style="-fx-font-size: 14px; -fx-text-fill: #666;" />
     </VBox>
 
-    <!-- Buttons -->
+    <!-- Bottoni -->
     <HBox spacing="15" alignment="CENTER">
-        <Button text="Login" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
+        <Button fx:id="loginButton" text="Login" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
         <Button text="Accedi con Facebook" style="-fx-background-color: #3b5998; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
     </HBox>
 

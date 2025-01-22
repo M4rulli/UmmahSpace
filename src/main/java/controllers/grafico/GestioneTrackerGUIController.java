@@ -2,8 +2,6 @@ package controllers.grafico;
 
 import controllers.applicativo.GestioneTrackerController;
 import engclasses.beans.GestioneTrackerBean;
-import engclasses.dao.GestioneTrackerDAO;
-import engclasses.dao.PartecipanteDAO;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,9 +18,6 @@ import java.util.Set;
 public class GestioneTrackerGUIController {
 
     private final Session session;
-    private final PartecipanteDAO partecipanteDAO;
-    private final String currentUsername;
-    private final GestioneTrackerDAO trackerDAO;
 
     @FXML
     private Label dateLabel2;
@@ -59,11 +54,8 @@ public class GestioneTrackerGUIController {
     @FXML
     private TextArea fastingNotes;
 
-    public GestioneTrackerGUIController(Session session, PartecipanteDAO partecipanteDAO, String currentUsername, GestioneTrackerDAO trackerDAO) {
+    public GestioneTrackerGUIController(Session session) {
         this.session = session;
-        this.partecipanteDAO = partecipanteDAO;
-        this.currentUsername = currentUsername;
-        this.trackerDAO = new GestioneTrackerDAO();
     }
 
     @FXML
@@ -111,7 +103,7 @@ public class GestioneTrackerGUIController {
                 trackerBean.setLetturaCorano(pages);
 
                 // Passa la Bean al Controller Applicativo
-                GestioneTrackerController trackerController = new GestioneTrackerController(new GestioneTrackerDAO(), session);
+                GestioneTrackerController trackerController = new GestioneTrackerController(session);
                 trackerController.addReading(trackerBean);
 
                 // Aggiorna la UI
@@ -154,8 +146,8 @@ public class GestioneTrackerGUIController {
                 trackerBean.setGoal(goal);
 
                 // Passa la Bean al Controller Applicativo
-                GestioneTrackerController trackerController = new GestioneTrackerController(new GestioneTrackerDAO(), session);
-                trackerController.setDailyGoal(trackerBean, session.getIdUtente());
+                GestioneTrackerController trackerController = new GestioneTrackerController(session);
+                trackerController.setDailyGoal(trackerBean);
 
                 // Aggiorna la UI
                 aggiornaBarra();
@@ -172,28 +164,20 @@ public class GestioneTrackerGUIController {
 
     private void aggiornaBarra() {
 
-        int nuovoGoal = trackerDAO.getTrackerConId(session.getIdUtente()).getGoal(); // Recupera il valore attuale
-        int nuovePagineLette = trackerDAO.getTrackerConId(session.getIdUtente()).getLetturaCorano(); // Pagine lette
+        // Crea un'istanza del controller applicativo
+        GestioneTrackerController gestioneTrackerController = new GestioneTrackerController(session);
 
-        // Crea la Bean temporanea per trasmettere i dati
-        GestioneTrackerBean bean = new GestioneTrackerBean();
-        bean.setGoal(nuovoGoal);
-        bean.setLetturaCorano(nuovePagineLette);
-
-        // Passa la Bean al Controller Applicativo
-        GestioneTrackerController controller = new GestioneTrackerController(trackerDAO, session);
-        double progress = controller.calcolaProgresso(bean);
+        // Ottieni i dati del tracker tramite il controller applicativo e crea la Bean temporanea per trasmettere i dati
+        GestioneTrackerBean bean = gestioneTrackerController.aggiornaBarraConProgresso(session.isPersistence());
 
         // Aggiorna la barra di progresso
-        quranProgressBar.setProgress(progress);
+        quranProgressBar.setProgress(bean.getProgresso());
         quranProgressBar.setStyle("-fx-accent: gold;"); // Cambia colore in oro
 
         // Aggiorna le etichette
         goalLabel.setText("Obiettivo giornaliero: " + bean.getGoal() + " pagine");
         pagesReadLabel.setText("Pagine lette: " + bean.getLetturaCorano());
 
-        // Log di debug (può essere rimosso)
-        System.out.println("UI aggiornata: Goal = " + bean.getGoal() + ", Pagine lette = " + bean.getLetturaCorano() + ", Progresso = " + progress);
     }
 
     private void setupPrayerButtons() {
@@ -245,7 +229,7 @@ public class GestioneTrackerGUIController {
         bean.setMotivazioniDigiuno(motivazioni);
 
         // Passa i dati al Controller Applicativo
-        GestioneTrackerController controller = new GestioneTrackerController(trackerDAO, session);
+        GestioneTrackerController controller = new GestioneTrackerController(session);
         controller.aggiornaDigiuno(bean);
 
         // Mostra un messaggio di conferma
@@ -274,7 +258,7 @@ public class GestioneTrackerGUIController {
         trackerBean.setPreghiera("Isha", ishaDone);
 
         // Passare al Controller Applicativo
-        GestioneTrackerController controller = new GestioneTrackerController(trackerDAO, session);
+        GestioneTrackerController controller = new GestioneTrackerController(session);
         controller.aggiornaPreghiere(trackerBean);
 
         // Mostrare messaggio di conferma
@@ -284,5 +268,39 @@ public class GestioneTrackerGUIController {
         alert.setContentText("Le preghiere sono state salvate con successo!");
         alert.showAndWait();
     }
+
+    public void aggiornaUIConTracker(GestioneTrackerBean trackerBean) {
+        if (trackerBean == null) {
+            System.out.println("Errore: Bean tracker è null. Impossibile aggiornare l'interfaccia.");
+            return;
+        }
+
+        // Aggiorna lo stato delle preghiere
+        fajrCircle.setFill(trackerBean.getPreghiera("Fajr") ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
+        dhuhrCircle.setFill(trackerBean.getPreghiera("Dhuhr") ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
+        asrCircle.setFill(trackerBean.getPreghiera("Asr") ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
+        maghribCircle.setFill(trackerBean.getPreghiera("Maghrib") ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
+        ishaCircle.setFill(trackerBean.getPreghiera("Isha") ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
+
+        // Aggiorna la barra di progresso e le etichette del Corano
+        double progress = (double) trackerBean.getLetturaCorano() / 604;
+        quranProgressBar.setProgress(Math.min(progress, 1.0));
+        quranProgressBar.setStyle("-fx-accent: gold;");
+        pagesReadLabel.setText("Pagine lette: " + trackerBean.getLetturaCorano());
+        goalLabel.setText("Obiettivo giornaliero: " + trackerBean.getGoal() + " pagine");
+
+        // Aggiorna i dati relativi al digiuno
+        fastingSwitch.setSelected(trackerBean.isHaDigiunato());
+        fastingNotes.setText(trackerBean.getNoteDigiuno() != null ? trackerBean.getNoteDigiuno() : "");
+
+        sunnahCheckBox.setSelected(trackerBean.getMotivazioniDigiuno().contains("Sunnah"));
+        makeUpCheckBox.setSelected(trackerBean.getMotivazioniDigiuno().contains("Recupero di un digiuno"));
+        specificVoluntaryCheckBox.setSelected(trackerBean.getMotivazioniDigiuno().contains("Volontario Specifico"));
+        generalVoluntaryCheckBox.setSelected(trackerBean.getMotivazioniDigiuno().contains("Volontario Generale"));
+
+        // Log di debug
+        System.out.println("Interfaccia aggiornata con i dati del Tracker.");
+    }
+
 
 }
