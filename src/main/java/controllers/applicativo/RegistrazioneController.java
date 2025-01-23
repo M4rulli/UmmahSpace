@@ -127,6 +127,7 @@ public class RegistrazioneController {
         }
 
         // Nessun errore
+        System.out.println("Verifica di unicità completata.");
         return true;
     }
 

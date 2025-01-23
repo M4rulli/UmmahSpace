@@ -45,23 +45,13 @@ public class MainViewGUIController {
         Model.getInstance().getViewFactory().loadTrackerView(trackerContainer, session);
         // Altri inizializzatori
         aggiornaData();
-
-        // Da rivedere
-        GestioneTrackerGUIController gestioneTrackerGUIController = session.getGestioneTrackerGUIController();
-        GestioneTrackerBean trackerBean = session.getTracker();
-        gestioneTrackerGUIController.aggiornaUIConTracker(trackerBean);
     }
 
-    // Da rivedere
+    // Da rivedere!!!
     public void setWelcomeMessage() {
         boolean persistence = session.isPersistence();
         Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente",session.getIdUtente(), persistence);
-
-        if (partecipante != null) {
-            welcomeLabel.setText("Benvenuto, " + partecipante.getNome() + "!");
-        } else {
-            System.out.println("Errore: Partecipante non trovato.");
-        }
+        welcomeLabel.setText("Benvenuto, " + partecipante.getNome() + "!");
     }
 
     @FXML

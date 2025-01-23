@@ -31,6 +31,7 @@ CREATE TABLE Tracker (
     giorniDigiuno INT NOT NULL DEFAULT 0,   -- Numero di giorni di digiuno completati
     preghiereComplete INT NOT NULL DEFAULT 0, -- Numero di preghiere completate
     goal INT NOT NULL DEFAULT 0,            -- Obiettivo giornaliero
+    progress DOUBLE NOT NULL DEFAULT 0,      -- Progresso attuale
     haDigiunato BOOLEAN NOT NULL DEFAULT 0, -- Indica se l'utente ha digiunato
     noteDigiuno TEXT,                       -- Note relative al digiuno
     fajr BOOLEAN NOT NULL DEFAULT 0,        -- Stato della preghiera Fajr
@@ -38,4 +39,5 @@ CREATE TABLE Tracker (
     asr BOOLEAN NOT NULL DEFAULT 0,         -- Stato della preghiera Asr
     maghrib BOOLEAN NOT NULL DEFAULT 0,     -- Stato della preghiera Maghrib
     isha BOOLEAN NOT NULL DEFAULT 0         -- Stato della preghiera Isha
+
 );

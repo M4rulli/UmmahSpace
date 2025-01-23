@@ -7,6 +7,7 @@ import engclasses.beans.LoginBean;
 import engclasses.dao.GestioneTrackerDAO;
 import engclasses.dao.PartecipanteDAO;
 import javafx.scene.control.Alert;
+import misc.GestioneTrackerBeanFactory;
 import misc.Model;
 import misc.Session;
 import model.Partecipante;
@@ -42,20 +43,7 @@ public class LoginController {
 
         // Crea una GestioneTrackerBean con i dati del Tracker
         if (tracker != null) {
-            GestioneTrackerBean trackerBean = new GestioneTrackerBean();
-            trackerBean.setIdUtente(partecipante.getIdUtente());
-            trackerBean.setLetturaCorano(tracker.getLetturaCorano());
-            trackerBean.setGoal(tracker.getGoal());
-            trackerBean.setHaDigiunato(tracker.isHaDigiunato());
-            trackerBean.setNoteDigiuno(tracker.getNoteDigiuno());
-            trackerBean.setMotivazioniDigiuno(tracker.getMotivazioniDigiuno());
-            trackerBean.setPreghiera("Fajr", tracker.getPreghiera("Fajr"));
-            trackerBean.setPreghiera("Dhuhr", tracker.getPreghiera("Dhuhr"));
-            trackerBean.setPreghiera("Asr", tracker.getPreghiera("Asr"));
-            trackerBean.setPreghiera("Maghrib", tracker.getPreghiera("Maghrib"));
-            trackerBean.setPreghiera("Isha", tracker.getPreghiera("Isha"));
-
-            return trackerBean;
+            return GestioneTrackerBeanFactory.createTrackerBeanFromFactory(tracker);
         } else {
             System.out.println("Nessun tracker trovato per l'utente: " + partecipante.getIdUtente());
             return null;

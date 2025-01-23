@@ -46,7 +46,8 @@ public class GestioneTrackerDAO {
                         rs.getInt("giorniDigiuno"),
                         rs.getInt("preghiereComplete"),
                         idUtente,
-                        rs.getInt("goal")
+                        rs.getInt("goal"),
+                        rs.getDouble("progress")
                 );
                 tracker.setHaDigiunato(rs.getBoolean("haDigiunato"));
                 tracker.setNoteDigiuno(rs.getString("noteDigiuno"));
@@ -68,10 +69,10 @@ public class GestioneTrackerDAO {
     }
 
     private static void saveOrUpdateTrackerInDb(Tracker tracker) {
-        String query = "INSERT INTO Tracker (idUtente, letturaCorano, giorniDigiuno, preghiereComplete, goal, haDigiunato, noteDigiuno, fajr, dhuhr, asr, maghrib, isha) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+        String query = "INSERT INTO Tracker (idUtente, letturaCorano, giorniDigiuno, preghiereComplete, goal, progress, haDigiunato, noteDigiuno, fajr, dhuhr, asr, maghrib, isha) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE letturaCorano = VALUES(letturaCorano), giorniDigiuno = VALUES(giorniDigiuno), " +
-                "preghiereComplete = VALUES(preghiereComplete), goal = VALUES(goal), haDigiunato = VALUES(haDigiunato), " +
+                "preghiereComplete = VALUES(preghiereComplete), goal = VALUES(goal), progress = VALUES(progress), haDigiunato = VALUES(haDigiunato), " +
                 "noteDigiuno = VALUES(noteDigiuno), fajr = VALUES(fajr), dhuhr = VALUES(dhuhr), asr = VALUES(asr), maghrib = VALUES(maghrib), isha = VALUES(isha)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -81,13 +82,14 @@ public class GestioneTrackerDAO {
             stmt.setInt(3, tracker.getGiorniDigiuno());
             stmt.setInt(4, tracker.getPreghiereComplete());
             stmt.setInt(5, tracker.getGoal());
-            stmt.setBoolean(6, tracker.isHaDigiunato());
-            stmt.setString(7, tracker.getNoteDigiuno());
-            stmt.setBoolean(8, tracker.getPreghiera("Fajr"));
-            stmt.setBoolean(9, tracker.getPreghiera("Dhuhr"));
-            stmt.setBoolean(10, tracker.getPreghiera("Asr"));
-            stmt.setBoolean(11, tracker.getPreghiera("Maghrib"));
-            stmt.setBoolean(12, tracker.getPreghiera("Isha"));
+            stmt.setDouble(6,tracker.getProgresso());
+            stmt.setBoolean(7, tracker.isHaDigiunato());
+            stmt.setString(8, tracker.getNoteDigiuno());
+            stmt.setBoolean(9, tracker.getPreghiera("Fajr"));
+            stmt.setBoolean(10, tracker.getPreghiera("Dhuhr"));
+            stmt.setBoolean(11, tracker.getPreghiera("Asr"));
+            stmt.setBoolean(12, tracker.getPreghiera("Maghrib"));
+            stmt.setBoolean(13, tracker.getPreghiera("Isha"));
 
             stmt.executeUpdate();
             System.out.println("Tracker aggiornato nel database per l'utente con ID: " + tracker.getIdUtente());
@@ -107,7 +109,6 @@ public class GestioneTrackerDAO {
 
     private static void saveOrUpdateTrackerInBuffer(Tracker tracker) {
         trackerBuffer.put(tracker.getIdUtente(), tracker);
-        System.out.println("Tracker aggiornato nel buffer per l'utente con ID: " + tracker.getIdUtente());
     }
 
 }

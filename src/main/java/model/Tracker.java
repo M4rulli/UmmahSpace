@@ -8,21 +8,23 @@ import java.util.Set;
 public class Tracker {
 
     private int letturaCorano; // Numero di pagine lette del Corano
-    private int giorniDigiuno; // Numero di giorni di digiuno
-    private int preghiereComplete; // Numero di preghiere completate
+    private final int giorniDigiuno; // Numero di giorni di digiuno
+    private final int preghiereComplete; // Numero di preghiere completate
     private final String idUtente; // ID dell'utente associato al tracker
     private int goal;
     private boolean haDigiunato;
     private String noteDigiuno;
     private Set<String> motivazioniDigiuno;
+    private double progress;
 
     // Costruttore completo
-    public Tracker(int letturaCorano, int giorniDigiuno, int preghiereComplete, String idUtente, int goal) {
+    public Tracker(int letturaCorano, int giorniDigiuno, int preghiereComplete, String idUtente, int goal, double progress) {
         this.letturaCorano = letturaCorano;
         this.giorniDigiuno = giorniDigiuno;
         this.preghiereComplete = preghiereComplete;
         this.idUtente = idUtente;
         this.goal = goal;
+        this.progress = progress;
     }
 
     // Getter e Setter
@@ -91,4 +93,11 @@ public class Tracker {
         return preghiere.getOrDefault(nome, false);
     }
 
+    public double getProgresso() {
+        return progress;
+    }
+
+    public void setProgresso(double progress) {
+        this.progress = progress;
+    }
 }

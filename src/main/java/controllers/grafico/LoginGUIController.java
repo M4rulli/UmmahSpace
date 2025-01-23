@@ -38,7 +38,6 @@ public class LoginGUIController {
         registrationLink.setOnAction(event -> onHyperLinkRegistrationClicked());
 
         // Assegna l'azione al bottone di login
-
         loginButton.setOnAction(event -> onLoginClicked());
     }
 

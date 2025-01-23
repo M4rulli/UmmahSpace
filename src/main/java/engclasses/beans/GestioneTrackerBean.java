@@ -17,7 +17,6 @@ public class GestioneTrackerBean {
 
     public GestioneTrackerBean() {}
 
-    // Getter e Setter
     public int getLetturaCorano() {
         return letturaCorano;
     }

@@ -136,7 +136,7 @@ public class CalendarioGUIController {
         if (!eventi.isEmpty()) {
             calendarCell.setOnMouseClicked(e -> {
                 // Apri la vista con la lista degli eventi
-                Model.getInstance().getViewFactory().showEventiGiornalieri(eventi, session);
+                Model.getInstance().getViewFactory().showEventiGiornalieri(session);
             });
         }
     }

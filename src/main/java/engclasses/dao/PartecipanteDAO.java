@@ -13,7 +13,7 @@ import java.util.Map;
 public class PartecipanteDAO {
 
     // Buffer per memorizzare temporaneamente i partecipanti
-    private static Map<String, Partecipante> bufferPartecipanti = new HashMap<>();
+    private static final Map<String, Partecipante> bufferPartecipanti = new HashMap<>();
 
     // Costruttore
     public PartecipanteDAO() {}
@@ -29,7 +29,7 @@ public class PartecipanteDAO {
 
     // Salva un partecipante nel buffer temporaneo
     private static void salvaInBuffer(Partecipante partecipante) {
-        bufferPartecipanti.put(partecipante.getUsername(), partecipante);
+        bufferPartecipanti.put(partecipante.getIdUtente(), partecipante);
     }
 
     // Salva un partecipante nel database
@@ -55,18 +55,10 @@ public class PartecipanteDAO {
     // Seleziona un partecipante in base al campo specificato (es. username, email, idUtente)
     public static Partecipante selezionaPartecipante(String campo, String valore, boolean persistence) {
         if (persistence) {
-            return recuperaDaDb(campo, valore); // Recupera dal database
+            // Recupera dal database
+            return recuperaDaDb(campo, valore);
         } else {
-            // Cerca nel buffer
-            for (Partecipante partecipante : bufferPartecipanti.values()) {
-                if ((campo.equals("idUtente") && partecipante.getIdUtente().equals(valore)) ||
-                        (campo.equals("username") && partecipante.getUsername().equals(valore)) ||
-                        (campo.equals("email") && partecipante.getEmail().equals(valore))) {
-                    return partecipante;
-                }
-            }
-            System.out.println("Partecipante non trovato nel buffer con " + campo + ": " + valore);
-            return null;
+            return bufferPartecipanti.get(valore);
         }
     }
 
@@ -137,19 +129,9 @@ public class PartecipanteDAO {
             stmt.setString(5, partecipanteAggiornato.getPassword());
             stmt.setString(6, partecipanteAggiornato.getIdUtente());
 
-            // Debug: stampa i dati da aggiornare
-            System.out.println("Dati aggiornamento:");
-            System.out.println("Nome: " + partecipanteAggiornato.getNome());
-            System.out.println("Cognome: " + partecipanteAggiornato.getCognome());
-            System.out.println("Username: " + partecipanteAggiornato.getUsername());
-            System.out.println("Email: " + partecipanteAggiornato.getEmail());
-            System.out.println("Password: " + partecipanteAggiornato.getPassword());
-            System.out.println("ID Utente: " + partecipanteAggiornato.getIdUtente());
-
             // Esegue l'update
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
-                System.out.println("Partecipante aggiornato nel database: " + partecipanteAggiornato.getUsername());
                 return true;
             } else {
                 System.out.println("Errore: Nessuna riga aggiornata. Verifica l'ID Utente.");
@@ -162,7 +144,7 @@ public class PartecipanteDAO {
     }
 
     private static boolean aggiornaInBuffer(Partecipante partecipanteAggiornato) {
-        String username = partecipanteAggiornato.getUsername();
+        String username = partecipanteAggiornato.getIdUtente();
 
         if (!bufferPartecipanti.containsKey(username)) {
             System.out.println("Errore: Partecipante non trovato nel buffer.");

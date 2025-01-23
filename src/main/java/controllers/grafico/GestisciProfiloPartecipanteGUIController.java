@@ -41,8 +41,11 @@ public class GestisciProfiloPartecipanteGUIController {
     private String originalUsername;
     private String originalEmail;
 
+    private final GestisciProfiloPartecipanteController gestisciProfiloPartecipanteController;
+
     public GestisciProfiloPartecipanteGUIController(Session session) {
         this.session = session;
+        this.gestisciProfiloPartecipanteController = new GestisciProfiloPartecipanteController(session);
     }
 
     @FXML
@@ -52,18 +55,13 @@ public class GestisciProfiloPartecipanteGUIController {
         editButton.setOnAction(event -> {onEditButtonClicked();});
 
         boolean persistence = session.isPersistence();
-        Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("IdUtente", session.getIdUtente(), persistence);
-
-        if (partecipante != null) {
-            initializeProfile(
-                    partecipante.getNome(),
-                    partecipante.getCognome(),
-                    partecipante.getUsername(),
-                    partecipante.getEmail()
-            );
-        } else {
-            System.out.println("Errore: Partecipante non trovato.");
-        }
+        // Recupera i dati dell'utente
+        RegistrazioneBean bean = gestisciProfiloPartecipanteController.inizializzaProfilo(session.getIdUtente());
+        initializeProfile(
+                bean.getNome(),
+                bean.getCognome(),
+                bean.getUsername(),
+                bean.getEmail());
     }
 
     public void initializeProfile(String name, String surname, String username, String email) {

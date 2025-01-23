@@ -103,7 +103,7 @@ public class ViewFactory {
         showStage(loader, "Gestione Profilo");
     }
 
-    public void showEventiGiornalieri(List<EventoBean> eventi, Session session) {
+    public void showEventiGiornalieri(Session session) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
             loader.setController(new EventiGiornalieriGUIController(session)); // Inietta il controller con i dati

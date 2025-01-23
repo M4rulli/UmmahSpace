@@ -15,9 +15,8 @@
                     <!-- Benvenuto Utente -->
                     <Label fx:id="welcomeLabel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;" />
                     <Pane HBox.hgrow="ALWAYS" /> <!-- Spaziatura dinamica -->
-                    <!-- Bottoni Profilo e Impostazioni -->
-                    <Button fx:id="profileButton" style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Profilo" />
-
+                    <!-- Bottoni Profilo e Tema -->
+                    <Button fx:id="profileButton" style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Profilo"/>
                     <Button style="-fx-font-size: 14px; -fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 5 15;" text="Tema" />
                 </children>
             </HBox>

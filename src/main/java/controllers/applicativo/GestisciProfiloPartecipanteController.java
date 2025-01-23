@@ -14,6 +14,22 @@ public class GestisciProfiloPartecipanteController {
         this.session = session;
     }
 
+    // Metodo per popolare i campi del profilo utente
+    public RegistrazioneBean inizializzaProfilo(String idUtente) {
+
+        // Recupero dei dati
+        Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente", idUtente, session.isPersistence());
+
+        // Creare una bean per il trasferimento
+        RegistrazioneBean bean = new RegistrazioneBean();
+        bean.setNome(partecipante.getNome());
+        bean.setCognome(partecipante.getCognome());
+        bean.setUsername(partecipante.getUsername());
+        bean.setEmail(partecipante.getEmail());
+
+        return bean;
+    }
+
     // Aggiorna i dati del profilo, incluso l'username
     public boolean aggiornaProfiloPartecipante(RegistrazioneBean updatedBean, String currentPassword, String newPassword, String confirmPassword) {
         boolean persistence = session.isPersistence();
@@ -49,10 +65,12 @@ public class GestisciProfiloPartecipanteController {
         // Validazione email
         if (updatedBean.getEmail() == null || updatedBean.getEmail().trim().isEmpty()) {
             errori.append("L'email non può essere vuota.\n");
+        } else if (!updatedBean.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            errori.append("Il formato dell'email non è valido.\n");
         } else if (!partecipanteEsistente.getEmail().equals(updatedBean.getEmail())) {
             Partecipante partecipanteConNuovaEmail = PartecipanteDAO.selezionaPartecipante("email", updatedBean.getEmail(), persistence);
             if (partecipanteConNuovaEmail != null) {
-                errori.append("Email già in uso \n");
+                errori.append("Email già in uso.\n");
             }
         }
 
@@ -96,7 +114,6 @@ public class GestisciProfiloPartecipanteController {
             session.setCurrentUsername(updatedBean.getUsername());
         }
 
-        System.out.println("Aggiornamento completato per il partecipante: " + updatedBean.getUsername());
         return true;
     }
 
