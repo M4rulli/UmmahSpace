@@ -1,0 +1,39 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main  # Esegui l'analisi su ogni push al branch principale
+  pull_request:
+    branches:
+      - main  # Esegui l'analisi su ogni PR verso il branch principale
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout del codice
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Java
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Step 3: Build del progetto
+      - name: Build with Maven
+        run: mvn clean verify
+
+      # Step 4: Esegui l'analisi SonarCloud
+      - name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Usa il segreto configurato
+        run: mvn sonar:sonar \
+          -Dsonar.projectKey=M4rulli_UmmahSpace \
+          -Dsonar.organization=m4rulli \
+          -Dsonar.host.url=https://sonarcloud.io
