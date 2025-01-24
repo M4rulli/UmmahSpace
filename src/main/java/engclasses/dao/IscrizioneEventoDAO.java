@@ -1,6 +1,5 @@
 package engclasses.dao;
 
-import engclasses.beans.PartecipanteBean;
 import model.Evento;
 import model.IscrizionePartecipante;
 
@@ -15,14 +14,14 @@ public class IscrizioneEventoDAO {
 
     // Popola inizialmente il buffer con eventi hard-coded
     static {
-        eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", 50, 10, "", "Mario", "Rossi", true, 1));
-        eventiBuffer.add(new Evento("Evento 2", "Descrizione 2", "2025-01-02", "15:00", 30, 5, "", "Luca", "Bianchi", true, 2));
-        eventiBuffer.add(new Evento("Evento 3", "Descrizione 3", "2025-01-03", "09:00", 20, 15, "", "Anna", "Verdi", true, 3));
-        eventiBuffer.add(new Evento("Evento 4", "Descrizione 4", "2025-01-03", "09:00", 20, 20, "", "Romolo", "Remo", true, 4));
-        eventiBuffer.add(new Evento("Evento 5", "Descrizione 5", "2025-01-03", "09:00", 20, 20, "", "Ciao", "Darwin", true, 5));
+        eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", 50, 10, "www.evento1.com", "Mario", "Rossi", true, 1, ""));
+        eventiBuffer.add(new Evento("Evento 2", "Descrizione 2", "2025-01-02", "15:00", 30, 5, "www.evento2.com", "Luca", "Bianchi", true, 2, ""));
+        eventiBuffer.add(new Evento("Evento 3", "Descrizione 3", "2025-01-03", "09:00", 20, 15, "www.evento3.com", "Anna", "Verdi", true, 3, ""));
+        eventiBuffer.add(new Evento("Evento 4", "Descrizione 4", "2025-01-03", "09:00", 20, 20, "www.evento4.com", "Romolo", "Remo", true, 4, ""));
+        eventiBuffer.add(new Evento("Evento 5", "Descrizione 5", "2025-01-03", "09:00", 20, 20, "www.evento5.com", "Ciao", "Darwin", true, 5, ""));
     }
 
-    // Metodo per ottenere tutti gli eventi nel buffer
+        // Metodo per ottenere tutti gli eventi nel buffer
     public static List<Evento> getEventiPerMeseAnno(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
         for (Evento evento : eventiBuffer) {

@@ -14,6 +14,7 @@ public class Evento {
     private String cognomeOrganizzatore;
     private boolean stato;
     private long idEvento;
+    private String idOrganizzatore;
 
     // Costruttore vuoto (necessario per alcuni framework e inizializzazioni manuali)
     public Evento() {
@@ -21,7 +22,7 @@ public class Evento {
 
     // Costruttore con tutti i campi
     public Evento(String titolo, String descrizione, String data, String orario, int limitePartecipanti, int iscritti,
-                  String link, String nomeOrganizzatore, String cognomeOrganizzatore, boolean stato, long idEvento) {
+                  String link, String nomeOrganizzatore, String cognomeOrganizzatore, boolean stato, long idEvento, String IdOrganizzatore) {
         this.titolo = titolo;
         this.descrizione = descrizione;
         this.data = data;
@@ -33,6 +34,7 @@ public class Evento {
         this.cognomeOrganizzatore = cognomeOrganizzatore;
         this.stato = stato;
         this.idEvento = idEvento;
+        this.idOrganizzatore = IdOrganizzatore;
     }
 
     // Getter e Setter
@@ -124,6 +126,14 @@ public class Evento {
         this.idEvento = idEvento;
     }
 
+    public String getIdOrganizzatore() {
+        return idOrganizzatore;
+    }
+
+    public void setIdOrganizzatore(String idOrganizzatore) {
+        this.idOrganizzatore = idOrganizzatore;
+    }
+
     // Metodo toString per rappresentare l'entità in formato leggibile
     @Override
     public String toString() {
@@ -139,6 +149,7 @@ public class Evento {
                 ", cognomeOrganizzatore='" + cognomeOrganizzatore + '\'' +
                 ", stato=" + stato +
                 ", idEvento=" + idEvento +
+                ", idOrganizzatore=" + idOrganizzatore +
                 '}';
     }
 

@@ -2,21 +2,16 @@ package controllers.grafico;
 
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
-import engclasses.dao.IscrizioneEventoDAO;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import misc.Model;
 import misc.Session;
-import model.Evento;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
@@ -133,10 +128,16 @@ public class CalendarioGUIController {
 
     // Listener alla Cella
     private void attachEventClickAction(List<EventoBean> eventi, StackPane calendarCell) {
+        boolean isOrganizer = session.isOrganizzatore();  // Recupera il flag se l'utente è un organizzatore
         if (!eventi.isEmpty()) {
             calendarCell.setOnMouseClicked(e -> {
-                // Apri la vista con la lista degli eventi
-                Model.getInstance().getViewFactory().showEventiGiornalieri(session);
+                if (isOrganizer) {
+                    // Se è un organizzatore, mostra gli eventi dell'organizzatore
+                    Model.getInstance().getViewFactory().showEventiOrganizzatore(session, eventi);
+                } else {
+                    // Se è un partecipante, mostra la lista degli eventi disponibili
+                    Model.getInstance().getViewFactory().showEventiGiornalieri(session);
+                }
             });
         }
     }

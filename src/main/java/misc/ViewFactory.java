@@ -37,25 +37,25 @@ public class ViewFactory {
     }
 
     public void closeStage(Stage stage) {
-            stage.close();
+        stage.close();
     }
 
     public void showRegistration(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/RegistrazioneView.fxml"));
-        loader.setController(new RegistrazioneGUIController (session)); // Iniettare il controller personalizzato
+        loader.setController(new RegistrazioneGUIController(session));
         showStage(loader, "UmmahSpace - Registrazione");
     }
 
     public void showLogin(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/LoginView.fxml"));
-        loader.setController(new LoginGUIController(session)); // Iniettare il controller personalizzato
+        loader.setController(new LoginGUIController(session));
         showStage(loader, "UmmahSpace - Accesso");
     }
 
     public void showMainView(Session session) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
-            loader.setController(new MainViewGUIController(session));
-            showStage(loader, "UmmahSpace");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
+        loader.setController(new MainViewGUIController(session));
+        showStage(loader, "UmmahSpace");
     }
 
     public void loadCalendarioView(Pane parentContainer, Session session) {
@@ -99,20 +99,20 @@ public class ViewFactory {
 
     public void showSettings(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestisciProfiloView.fxml"));
-        loader.setController(new GestisciProfiloPartecipanteGUIController(session)); // Iniettare il controller personalizzato
+        loader.setController(new GestisciProfiloPartecipanteGUIController(session));
         showStage(loader, "Gestione Profilo");
     }
 
     public void showEventiGiornalieri(Session session) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
-            loader.setController(new EventiGiornalieriGUIController(session)); // Inietta il controller con i dati
+            loader.setController(new EventiGiornalieriGUIController(session));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("Eventi Giornalieri");
-            stage.setScene(new Scene(root, 400, 450)); // Imposta dimensioni predefinite
-            stage.setResizable(false); // Rendi la finestra non ridimensionabile
+            stage.setScene(new Scene(root, 400, 450));
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,7 +122,23 @@ public class ViewFactory {
 
     public void showEventDetailsView(EventoBean evento, Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/DettagliEventoView.fxml"));
-        loader.setController(new DettagliEventoGUIController(evento, session )); // Iniettare il controller personalizzato
+        loader.setController(new DettagliEventoGUIController(evento, session));
         showStage(loader, "Dettagli Evento");
+    }
+
+    public void showEventiOrganizzatore(Session session, List<EventoBean> eventiOrganizzatore) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiOrganizzatoreView.fxml"));
+            loader.setController(new EventiOrganizzatoreGUIController(eventiOrganizzatore, session)); // Passa la ViewFactory
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Eventi dell'Organizzatore");
+            stage.setScene(new Scene(root, 500, 600));
+            stage.setResizable(false);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
+        }
     }
 }

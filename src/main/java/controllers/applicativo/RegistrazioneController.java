@@ -8,11 +8,13 @@ import engclasses.dao.OrganizzatoreDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import misc.Session;
+import model.Evento;
 import model.Partecipante;
 import model.Organizzatore;
 import model.Tracker;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RegistrazioneController {
@@ -30,11 +32,11 @@ public class RegistrazioneController {
             return false; // Interrompi il flusso se ci sono errori
         }
 
-        // Registra il partecipante o l'organizzatore in base alla persistenza (DA RIVEDERE!!!)
+        // Registra l'organizzatore o il partecipante
         if (bean.getSeiOrganizzatore()) {
-            return registraOrganizzatore(bean, persistence);
+            return registraOrganizzatore(bean, persistence); // Solo organizzatori
         } else {
-            return registraPartecipante(bean, persistence);
+            return registraPartecipante(bean, persistence); // Solo partecipanti
         }
     }
 
@@ -71,8 +73,38 @@ public class RegistrazioneController {
 
     // Da inserire
     private boolean registraOrganizzatore(RegistrazioneBean bean, boolean persistence) {
+
+        // Genera un ID univoco per il nuovo organizzatore
+        String idUtente = UUID.randomUUID().toString();
+
+        // Crea una lista eventi vuota per il nuovo organizzatore
+        List<Evento> listaEventi = new ArrayList<>();
+
+        Organizzatore organizzatore = new Organizzatore(
+                idUtente,  // ID univoco generato
+                bean.getNome(),
+                bean.getCognome(),
+                bean.getUsername(),
+                bean.getEmail(),
+                bean.getPassword(),
+                true,       // Indica che è un organizzatore
+                listaEventi // Lista eventi inizialmente vuota
+        );
+
+        // Salva l'ID, l'username e lo stato della persistenza nella sessione
+        session.setIdUtente(idUtente);
+        session.setCurrentUsername(bean.getUsername());
+
+        // Salva l'organizzatore nel DAO
+        OrganizzatoreDAO.aggiungiOrganizzatore(organizzatore, persistence);
+
+        // Log dell'operazione
+        System.out.println("Nuovo organizzatore registrato con username: " + bean.getUsername());
+        System.out.println("Lista eventi inizializzata per l'utente con ID: " + idUtente);
         return true;
     }
+
+
 
     public boolean validaRegistrazione(RegistrazioneBean bean) {
         // StringBuilder per accumulare gli errori

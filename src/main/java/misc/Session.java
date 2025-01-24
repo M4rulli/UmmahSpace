@@ -21,6 +21,7 @@ public class Session {
     private String idUtente;
     private GestioneTrackerBean trackerBean; // Oggetto per gestire il tracker
     private GestioneTrackerGUIController gestioneTrackerGUIController;
+    private boolean isOrganizzatore;
 
     public Session(boolean persistence) {
         this.persistence = persistence;
@@ -61,5 +62,11 @@ public class Session {
 
     public void setGestioneTrackerGUIController(GestioneTrackerGUIController gestioneTrackerGUIController) {
         this.gestioneTrackerGUIController = gestioneTrackerGUIController;
+    }
+    public boolean isOrganizzatore() {
+        return isOrganizzatore;
+    }
+    public void setOrganizzatore(boolean organizzatore) {
+        isOrganizzatore = organizzatore;
     }
 }

@@ -1,82 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-           style="-fx-background-color: #f4f4f4; -fx-padding: 20;">
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+        <GridPane hgap="20" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10;" vgap="15">
             <!-- Titolo -->
-            <Label text="Aggiungi Nuovo Evento" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+            <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Aggiungi Nuovo Evento" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
 
-            <!-- Campi di input -->
-            <VBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10; -fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-padding: 20;">
-                <children>
-                    <!-- Titolo -->
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="Titolo:" style="-fx-font-size: 16px; -fx-text-fill: #333;" />
-                        <TextField promptText="Inserisci il titolo dell'evento" style="-fx-pref-width: 250px;" />
-                    </HBox>
+            <!-- Campo Titolo -->
+            <Label style="-fx-font-size: 16px;" text="Titolo:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextArea promptText="Inserisci il titolo" style="-fx-pref-height: 40px;" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
 
-                    <!-- Descrizione -->
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="Descrizione:" style="-fx-font-size: 16px; -fx-text-fill: #333;" />
-                        <TextArea promptText="Inserisci una breve descrizione (100 caratteri)" style="-fx-pref-width: 250px; -fx-pref-height: 100px;" />
-                    </HBox>
+            <!-- Campo Descrizione -->
+            <Label style="-fx-font-size: 16px;" text="Descrizione:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextArea promptText="Inserisci una breve descrizione" style="-fx-pref-height: 60px;" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
 
-                    <!-- Data -->
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="Data:" style="-fx-font-size: 16px; -fx-text-fill: #333;" />
-                        <DatePicker style="-fx-pref-width: 250px;" />
-                    </HBox>
+            <!-- Selettore Orario -->
+            <Label style="-fx-font-size: 16px;" text="Orario:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <ComboBox promptText="Seleziona un orario" style="-fx-pref-width: 250px;" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="00:00 - 01:00" />
+                        <String fx:value="01:00 - 02:00" />
+                        <String fx:value="02:00 - 03:00" />
+                        <String fx:value="03:00 - 04:00" />
+                        <String fx:value="04:00 - 05:00" />
+                        <String fx:value="05:00 - 06:00" />
+                        <String fx:value="06:00 - 07:00" />
+                        <String fx:value="07:00 - 08:00" />
+                        <String fx:value="08:00 - 09:00" />
+                        <String fx:value="09:00 - 10:00" />
+                        <String fx:value="10:00 - 11:00" />
+                        <String fx:value="11:00 - 12:00" />
+                        <String fx:value="12:00 - 13:00" />
+                        <String fx:value="13:00 - 14:00" />
+                        <String fx:value="14:00 - 15:00" />
+                        <String fx:value="15:00 - 16:00" />
+                        <String fx:value="16:00 - 17:00" />
+                        <String fx:value="17:00 - 18:00" />
+                        <String fx:value="18:00 - 19:00" />
+                        <String fx:value="19:00 - 20:00" />
+                        <String fx:value="20:00 - 21:00" />
+                        <String fx:value="21:00 - 22:00" />
+                        <String fx:value="22:00 - 23:00" />
+                        <String fx:value="23:00 - 00:00" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
 
-                    <!-- Selettore di Fasce Orarie -->
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="Fasce Orarie:" style="-fx-font-size: 16px; -fx-text-fill: #333;" />
-                        <ListView style="-fx-pref-width: 250px; -fx-pref-height: 200px;">
-                            <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="00:00 - 01:00" />
-                                    <String fx:value="01:00 - 02:00" />
-                                    <String fx:value="02:00 - 03:00" />
-                                    <String fx:value="03:00 - 04:00" />
-                                    <String fx:value="04:00 - 05:00" />
-                                    <String fx:value="05:00 - 06:00" />
-                                    <String fx:value="06:00 - 07:00" />
-                                    <String fx:value="07:00 - 08:00" />
-                                    <String fx:value="08:00 - 09:00" />
-                                    <String fx:value="09:00 - 10:00" />
-                                    <String fx:value="10:00 - 11:00" />
-                                    <String fx:value="11:00 - 12:00" />
-                                    <String fx:value="12:00 - 13:00" />
-                                    <String fx:value="13:00 - 14:00" />
-                                    <String fx:value="14:00 - 15:00" />
-                                    <String fx:value="15:00 - 16:00" />
-                                    <String fx:value="16:00 - 17:00" />
-                                    <String fx:value="17:00 - 18:00" />
-                                    <String fx:value="18:00 - 19:00" />
-                                    <String fx:value="19:00 - 20:00" />
-                                    <String fx:value="20:00 - 21:00" />
-                                    <String fx:value="21:00 - 22:00" />
-                                    <String fx:value="22:00 - 23:00" />
-                                    <String fx:value="23:00 - 00:00" />
-                                </FXCollections>
-                            </items>
-                        </ListView>
-                    </HBox>
-                </children>
-            </VBox>
-
-            <!-- Bottoni di Azione -->
-            <HBox spacing="20" alignment="CENTER">
-                <children>
-                    <Button text="Aggiungi Evento" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
-                    <Button text="Annulla" style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" />
-                </children>
+            <!-- Bottoni Azione -->
+            <HBox alignment="CENTER" spacing="20" GridPane.columnSpan="2" GridPane.rowIndex="6">
+                <Button style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" text="Aggiungi Evento" />
+                <Button style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 10 20; -fx-border-radius: 5;" text="Annulla" />
             </HBox>
-        </VBox>
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
     </children>
 </StackPane>
