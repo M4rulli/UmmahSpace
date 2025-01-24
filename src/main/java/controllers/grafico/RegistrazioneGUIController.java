@@ -2,6 +2,7 @@ package controllers.grafico;
 
 import controllers.applicativo.RegistrazioneController;
 import engclasses.beans.RegistrazioneBean;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -46,6 +47,7 @@ public class RegistrazioneGUIController {
         // Configura il ToggleSwitch
         persistenceSwitch.setOnMouseClicked(event -> togglePersistence());
         persistenceSwitch.setSelected(persistence);
+        organizzatoreCheckBox.setOnAction(event -> listenOrganizzatoreCheckBox());
     }
 
     @FXML
@@ -123,5 +125,9 @@ public class RegistrazioneGUIController {
         } else {
             System.out.println("Il salvataggio ora avviene nel buffer.");
         }
+    }
+
+    private void listenOrganizzatoreCheckBox() {
+        session.setIsOrganizzatore(organizzatoreCheckBox.isSelected()); // Aggiorna lo stato nella sessione
     }
 }

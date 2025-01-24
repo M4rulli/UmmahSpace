@@ -49,9 +49,7 @@ public class MainViewGUIController {
 
     // Da rivedere!!!
     public void setWelcomeMessage() {
-        boolean persistence = session.isPersistence();
-        Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente",session.getIdUtente(), persistence);
-        welcomeLabel.setText("Benvenuto, " + partecipante.getNome() + "!");
+        welcomeLabel.setText("Benvenuto, " + session.getNome() + "!");
     }
 
     @FXML

@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS Eventi (
     stato BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+-- Tabella Tracker
 CREATE TABLE Tracker (
     idUtente VARCHAR(255) PRIMARY KEY,      -- ID univoco dell'utente (chiave primaria)
     letturaCorano INT NOT NULL DEFAULT 0,   -- Numero di pagine lette del Corano
@@ -39,5 +40,17 @@ CREATE TABLE Tracker (
     asr BOOLEAN NOT NULL DEFAULT 0,         -- Stato della preghiera Asr
     maghrib BOOLEAN NOT NULL DEFAULT 0,     -- Stato della preghiera Maghrib
     isha BOOLEAN NOT NULL DEFAULT 0         -- Stato della preghiera Isha
-
 );
+
+-- Tabella Orgqnizzatori
+CREATE TABLE Organizzatori (
+    idUtente VARCHAR(255) PRIMARY KEY,                  -- ID unico dell'utente
+    nome     VARCHAR(100)        NOT NULL,              -- Nome dell'utente
+    cognome  VARCHAR(100)        NOT NULL,              -- Cognome dell'utente
+    username VARCHAR(100) UNIQUE NOT NULL,              -- Username unico
+    email    VARCHAR(255) UNIQUE NOT NULL,              -- Email unica
+    password VARCHAR(255)        NOT NULL,              -- Password dell'utente
+    stato    BOOLEAN             NOT NULL DEFAULT FALSE, -- Stato (es. attivo/inattivo)
+    titoloDiStudio BLOB NOT NULL                         -- Titolo di Studio
+);
+

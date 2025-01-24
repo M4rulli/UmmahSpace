@@ -33,7 +33,7 @@ public class RegistrazioneController {
         }
 
         // Registra l'organizzatore o il partecipante
-        if (bean.getSeiOrganizzatore()) {
+        if (session.isOrganizzatore()) {
             return registraOrganizzatore(bean, persistence); // Solo organizzatori
         } else {
             return registraPartecipante(bean, persistence); // Solo partecipanti
@@ -55,9 +55,10 @@ public class RegistrazioneController {
                 true
         );
 
-        // Salva l'ID, l'username e lo stato della persistenza nella sessione
+        // Salva l'ID, l'username, il nome dell'utente e lo stato della persistenza nella sessione
         session.setIdUtente(idUtente);
         session.setCurrentUsername(bean.getUsername());
+        session.setNome(bean.getNome());
 
         // Salva il partecipante nel DAO
         PartecipanteDAO.aggiungiPartecipante(partecipante, persistence);
@@ -77,9 +78,6 @@ public class RegistrazioneController {
         // Genera un ID univoco per il nuovo organizzatore
         String idUtente = UUID.randomUUID().toString();
 
-        // Crea una lista eventi vuota per il nuovo organizzatore
-        List<Evento> listaEventi = new ArrayList<>();
-
         Organizzatore organizzatore = new Organizzatore(
                 idUtente,  // ID univoco generato
                 bean.getNome(),
@@ -87,14 +85,14 @@ public class RegistrazioneController {
                 bean.getUsername(),
                 bean.getEmail(),
                 bean.getPassword(),
-                true,       // Indica che è un organizzatore
-                listaEventi // Lista eventi inizialmente vuota
+                true     // Indica che è un organizzatore
         );
 
-        // Salva l'ID, l'username e lo stato della persistenza nella sessione
+        // Salva l'ID, l'username, il nome dell'utente e lo stato della persistenza nella sessione
         session.setIdUtente(idUtente);
         session.setCurrentUsername(bean.getUsername());
-
+        session.setNome(bean.getNome());
+        
         // Salva l'organizzatore nel DAO
         OrganizzatoreDAO.aggiungiOrganizzatore(organizzatore, persistence);
 
@@ -103,7 +101,6 @@ public class RegistrazioneController {
         System.out.println("Lista eventi inizializzata per l'utente con ID: " + idUtente);
         return true;
     }
-
 
 
     public boolean validaRegistrazione(RegistrazioneBean bean) {
@@ -157,9 +154,7 @@ public class RegistrazioneController {
             RegistrazioneGUIController.mostraMessaggioErrore(errori.toString());
             return false;
         }
-
         // Nessun errore
-        System.out.println("Verifica di unicità completata.");
         return true;
     }
 

@@ -83,8 +83,7 @@ public class OrganizzatoreDAO {
                         rs.getString("username"), // Username
                         rs.getString("email"),    // Email
                         rs.getString("password"), // Password
-                        rs.getBoolean("stato"),   // Stato
-                        new ArrayList<>()         // Lista eventi inizialmente vuota
+                        rs.getBoolean("stato")   // Stato
                 );
             }
             System.out.println("Organizzatore non trovato nel database con " + campo + ": " + valore);

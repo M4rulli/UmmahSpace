@@ -35,6 +35,7 @@ public class GestisciProfiloPartecipanteController {
         boolean persistence = session.isPersistence();
         StringBuilder errori = new StringBuilder();
 
+
         // Verifica se il partecipante esiste
         Partecipante partecipanteEsistente = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), persistence);
         if (partecipanteEsistente == null) {

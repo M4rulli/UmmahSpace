@@ -6,7 +6,7 @@ public class Organizzatore extends Utente {
     private List<Evento> listaEventi;
 
     // Costruttore
-    public Organizzatore(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato, List<Evento> listaEventi) {
+    public Organizzatore(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato) {
         super(nome, cognome, username, email, password, idUtente, stato);
         this.listaEventi = listaEventi;
     }

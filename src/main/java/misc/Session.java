@@ -16,6 +16,7 @@ import engclasses.beans.GestioneTrackerBean;
 
 public class Session {
 
+    private String nome;
     private String currentUsername; // Username dell'utente attualmente connesso
     private boolean persistence; // Modalità di persistenza (buffer o database)
     private String idUtente;
@@ -26,6 +27,12 @@ public class Session {
     public Session(boolean persistence) {
         this.persistence = persistence;
     }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getNome() {return nome;}
 
     public boolean isPersistence() {
         return persistence;
@@ -66,7 +73,7 @@ public class Session {
     public boolean isOrganizzatore() {
         return isOrganizzatore;
     }
-    public void setOrganizzatore(boolean organizzatore) {
+    public void setIsOrganizzatore(boolean organizzatore) {
         isOrganizzatore = organizzatore;
     }
 }

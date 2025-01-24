@@ -80,7 +80,7 @@ public class AggiungiEventoGUIController {
 
         // Passa la Bean al metodo per aggiungere l'evento
         try {
-            boolean successo = gestioneEventoController.aggiungiEvento(nuovoEvento, session);
+            boolean successo = gestioneEventoController.aggiungiEvento(nuovoEvento, session.getIdUtente());
 
             if (successo) {
                 mostraMessaggioConferma("Evento aggiunto con successo!");

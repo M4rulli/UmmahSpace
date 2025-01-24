@@ -111,7 +111,6 @@ public class ViewFactory {
 
             Stage stage = new Stage();
             stage.setTitle("Eventi Giornalieri");
-            stage.setScene(new Scene(root, 400, 450));
             stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
@@ -133,7 +132,6 @@ public class ViewFactory {
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Eventi dell'Organizzatore");
-            stage.setScene(new Scene(root, 500, 600));
             stage.setResizable(false);
             stage.show();
         } catch (IOException e) {

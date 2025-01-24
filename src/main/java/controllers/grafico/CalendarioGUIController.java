@@ -109,7 +109,7 @@ public class CalendarioGUIController {
                 // Recupera gli eventi del giorno specifico
                 List<EventoBean> eventiDelGiorno = eventiDelMese.getOrDefault(day, Collections.emptyList());
 
-                if (!eventiDelGiorno.isEmpty()) {
+                if (!eventiDelGiorno.isEmpty() && !session.isOrganizzatore()) {
                     // Imposta il rettangolo su oro se ci sono eventi
                     rectangle.setFill(Color.GOLD);
                     attachEventClickAction(eventiDelGiorno, stackPane); // Aggiunge il click handler
@@ -128,10 +128,9 @@ public class CalendarioGUIController {
 
     // Listener alla Cella
     private void attachEventClickAction(List<EventoBean> eventi, StackPane calendarCell) {
-        boolean isOrganizer = session.isOrganizzatore();  // Recupera il flag se l'utente è un organizzatore
         if (!eventi.isEmpty()) {
             calendarCell.setOnMouseClicked(e -> {
-                if (isOrganizer) {
+                if (session.isOrganizzatore()) {
                     // Se è un organizzatore, mostra gli eventi dell'organizzatore
                     Model.getInstance().getViewFactory().showEventiOrganizzatore(session, eventi);
                 } else {

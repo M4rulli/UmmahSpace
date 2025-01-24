@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -55,22 +54,5 @@ public class Connect {
             throw new RuntimeException("Errore durante la connessione al database", e);
         }
         return this.conn;
-    }
-
-    /**
-     * Metodo per chiudere la connessione al database. Se la connessione è attiva,
-     * viene chiusa e la variabile `conn` viene impostata a null per permettere
-     * una futura reinizializzazione.
-     */
-
-    public synchronized void closeConnection() {
-        if (this.conn != null) {
-            try {
-                this.conn.close();
-                this.conn = null; // Prepara per una nuova connessione
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
