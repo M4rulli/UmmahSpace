@@ -78,28 +78,53 @@ public class ViewFactory {
     }
 
     public void loadTrackerView(Pane parentContainer, Session session) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrackerView.fxml"));
-            GestioneTrackerGUIController trackerController = new GestioneTrackerGUIController(session);
-            loader.setController(trackerController);
+        if (!session.isOrganizzatore()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrackerView.fxml"));
+                GestioneTrackerGUIController trackerController = new GestioneTrackerGUIController(session);
+                loader.setController(trackerController);
 
-            Parent trackerView = loader.load();
+                Parent trackerView = loader.load();
 
-            session.setGestioneTrackerGUIController(trackerController);
+                session.setGestioneTrackerGUIController(trackerController);
 
-            // Svuota il contenitore e aggiunge il contenuto del Tracker
-            parentContainer.getChildren().clear();
-            parentContainer.getChildren().add(trackerView);
+                // Svuota il contenitore e aggiunge il contenuto del Tracker
+                parentContainer.getChildren().clear();
+                parentContainer.getChildren().add(trackerView);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento di TrackerView.fxml", e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Errore durante il caricamento di TrackerView.fxml", e);
+            }
         }
+    }
+    public void loadListaEventiView(Pane parentContainer, Session session) {
+        if (session.isOrganizzatore()) {
+            try {
+                // Carica la vista per la lista degli eventi
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ListaEventiView.fxml"));
+                GestioneListaEventiGUIController listaEventiController = new GestioneListaEventiGUIController(session);
+                loader.setController(listaEventiController);
+
+                Parent listaEventiView = loader.load();
+
+                session.setGestioneListaEventiGUIController(listaEventiController);
+
+                // Svuota il contenitore e aggiunge la lista degli eventi
+                parentContainer.getChildren().clear();
+                parentContainer.getChildren().add(listaEventiView);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Errore durante il caricamento di ListaEventiView.fxml", e);
+            }
+        }
+
     }
 
     public void showSettings(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestisciProfiloView.fxml"));
-        loader.setController(new GestisciProfiloPartecipanteGUIController(session));
+        loader.setController(new GestisciProfiloGUIController(session));
         showStage(loader, "Gestione Profilo");
     }
 
@@ -138,5 +163,6 @@ public class ViewFactory {
             e.printStackTrace();
             throw new RuntimeException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
         }
+
     }
 }

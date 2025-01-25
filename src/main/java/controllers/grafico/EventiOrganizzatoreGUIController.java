@@ -57,29 +57,13 @@ public class EventiOrganizzatoreGUIController {
                 ? "-fx-text-fill: red; -fx-font-weight: bold;"
                 : "-fx-text-fill: green; -fx-font-weight: bold;");
 
-        Button editButton = new Button("Modifica Evento");
-        editButton.setStyle("-fx-background-color: #ffc107; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
-        editButton.setOnAction(e -> showModificaEventoView(evento));
-
-        Button deleteButton = new Button("Elimina Evento");
-        deleteButton.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
-        deleteButton.setOnAction(e -> showEliminaEventoView(evento));
-
         Button detailButton = new Button("Visualizza Dettagli");
         detailButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
         detailButton.setOnAction(e -> showEventDetails(evento));
 
-        card.getChildren().addAll(titleLabel, timeLabel, statusLabel, editButton, deleteButton, detailButton);
+        card.getChildren().addAll(titleLabel, timeLabel, statusLabel, detailButton);
         card.setSpacing(10);
         return card;
-    }
-
-    private void showModificaEventoView(EventoBean evento) {
-        showView("/path/to/ModificaEventoView.fxml", new ModificaEventoGUIController(evento, session), "Modifica Evento");
-    }
-
-    private void showEliminaEventoView(EventoBean evento) {
-        showView("/path/to/EliminaEventoView.fxml", new EliminaEventoGUIController(evento.getIdEvento(), session.getIdUtente(), session), "Elimina Evento");
     }
 
     private void showAggiungiEventoView() {

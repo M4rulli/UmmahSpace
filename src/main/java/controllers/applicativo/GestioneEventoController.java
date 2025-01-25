@@ -2,6 +2,8 @@ package controllers.applicativo;
 
 import engclasses.beans.EventoBean;
 import engclasses.dao.GestioneEventoDAO;
+import javafx.scene.control.Alert;
+import misc.Session;
 import model.Evento;
 
 import java.util.ArrayList;
@@ -9,16 +11,15 @@ import java.util.List;
 
 public class GestioneEventoController {
 
-    public GestioneEventoController() {}
+    private final Session session;
 
-    /**
-     * Ottiene tutti gli eventi associati a un organizzatore.
-     *
-     * @param idOrganizzatore ID dell'organizzatore.
-     * @return Lista di eventi associati all'organizzatore.
-     */
-    public List<EventoBean> getEventiOrganizzatore(String idOrganizzatore) {
-        List<Evento> eventi = GestioneEventoDAO.getEventiByOrganizzatore(idOrganizzatore);
+    public GestioneEventoController(Session session) {
+        this.session = session;
+    }
+
+    // Metodo per recuperare tutti gli eventi associati a un organizzatore
+    public List<EventoBean> getEventiOrganizzatore(String idUtente) {
+        List<Evento> eventi = GestioneEventoDAO.getEventiByOrganizzatore(idUtente);
         List<EventoBean> eventoBeans = new ArrayList<>();
 
         for (Evento evento : eventi) {
@@ -39,32 +40,33 @@ public class GestioneEventoController {
         return eventoBeans;
     }
 
-    /**
-     * Aggiunge un nuovo evento per un organizzatore.
-     *
-     * @param eventoBean Dettagli del nuovo evento.
-     * @param idOrganizzatore ID dell'organizzatore.
-     */
-    public boolean aggiungiEvento(EventoBean eventoBean, String idOrganizzatore) throws IllegalArgumentException {
+    // Metodo per aggiungere un nuovo evento per un organizzatore
+    public boolean aggiungiEvento(EventoBean eventoBean, String idUtente) {
+        StringBuilder errori = new StringBuilder();
 
-        // Controlla che i campi obbligatori siano presenti
+        // Validazione dei campi obbligatori
         if (eventoBean.getTitolo() == null || eventoBean.getTitolo().isEmpty()) {
-            throw new IllegalArgumentException("Il titolo dell'evento è obbligatorio.");
+            errori.append("Il titolo dell'evento è obbligatorio.\n");
         }
         if (eventoBean.getDescrizione() == null || eventoBean.getDescrizione().isEmpty()) {
-            throw new IllegalArgumentException("La descrizione dell'evento è obbligatoria.");
+            errori.append("La descrizione dell'evento è obbligatoria.\n");
         }
         if (eventoBean.getData() == null || eventoBean.getData().isEmpty()) {
-            throw new IllegalArgumentException("La data dell'evento è obbligatoria.");
+            errori.append("La data dell'evento è obbligatoria.\n");
         }
         if (eventoBean.getOrario() == null || eventoBean.getOrario().isEmpty()) {
-            throw new IllegalArgumentException("L'orario dell'evento è obbligatorio.");
+            errori.append("L'orario dell'evento è obbligatorio.\n");
         }
         if (eventoBean.getLimitePartecipanti() <= 0) {
-            throw new IllegalArgumentException("Il limite dei partecipanti deve essere maggiore di zero.");
+            errori.append("Il limite dei partecipanti deve essere maggiore di zero.\n");
         }
 
-        // Crea il nuovo oggetto Evento
+        if (errori.length() > 0) {
+            showAlert("Errore", errori.toString(), Alert.AlertType.WARNING);
+            return false;
+        }
+
+        // Creazione del nuovo evento
         Evento nuovoEvento = new Evento();
         nuovoEvento.setTitolo(eventoBean.getTitolo());
         nuovoEvento.setDescrizione(eventoBean.getDescrizione());
@@ -76,83 +78,98 @@ public class GestioneEventoController {
         nuovoEvento.setCognomeOrganizzatore(eventoBean.getCognomeOrganizzatore());
         nuovoEvento.setStato(true);
 
-        // Salva l'evento tramite il DAO
-        GestioneEventoDAO.aggiungiEvento(nuovoEvento, idOrganizzatore);
+        boolean aggiunto = GestioneEventoDAO.aggiungiEvento(nuovoEvento, idUtente);
+        if (aggiunto) {
+            showAlert("Successo", "Evento aggiunto con successo.", Alert.AlertType.INFORMATION);
+        } else {
+            showAlert("Errore", "Errore durante l'aggiunta dell'evento.", Alert.AlertType.ERROR);
+        }
 
-        System.out.println("Evento aggiunto con successo. Titolo: " + nuovoEvento.getTitolo() + ", ID Organizzatore: " + idOrganizzatore);
-        return true;
+        return aggiunto;
     }
 
-    /**
-     * Modifica un evento esistente.
-     *
-     * @param eventoBean Evento aggiornato.
-     */
-    public boolean modificaEvento(EventoBean eventoBean) throws IllegalArgumentException {
+    // Metodo per eliminare un evento
+    public boolean eliminaEvento(long idEvento, String idUtente) {
+        if (idEvento <= 0) {
+            showAlert("Errore", "ID evento non valido.", Alert.AlertType.ERROR);
+            return false;
+        }
 
-        // Controlla che i campi obbligatori siano presenti
+        boolean eliminato = GestioneEventoDAO.eliminaEvento(idEvento, idUtente);
+        if (eliminato) {
+            showAlert("Successo", "Evento eliminato con successo.", Alert.AlertType.INFORMATION);
+        } else {
+            showAlert("Errore", "Errore durante l'eliminazione dell'evento.", Alert.AlertType.ERROR);
+        }
+
+        return eliminato;
+    }
+
+    // Metodo per modificare un evento
+    public boolean modificaEvento(EventoBean eventoBean, String idUtente) {
+        StringBuilder errori = new StringBuilder();
+
+        // Validazione dei campi obbligatori
         if (eventoBean.getTitolo() == null || eventoBean.getTitolo().isEmpty()) {
-            throw new IllegalArgumentException("Il titolo dell'evento è obbligatorio.");
+            errori.append("Il titolo dell'evento è obbligatorio.\n");
         }
         if (eventoBean.getDescrizione() == null || eventoBean.getDescrizione().isEmpty()) {
-            throw new IllegalArgumentException("La descrizione dell'evento è obbligatoria.");
+            errori.append("La descrizione dell'evento è obbligatoria.\n");
         }
         if (eventoBean.getData() == null || eventoBean.getData().isEmpty()) {
-            throw new IllegalArgumentException("La data dell'evento è obbligatoria.");
+            errori.append("La data dell'evento è obbligatoria.\n");
         }
         if (eventoBean.getOrario() == null || eventoBean.getOrario().isEmpty()) {
-            throw new IllegalArgumentException("L'orario dell'evento è obbligatorio.");
+            errori.append("L'orario dell'evento è obbligatorio.\n");
         }
         if (eventoBean.getLimitePartecipanti() <= 0) {
-            throw new IllegalArgumentException("Il limite dei partecipanti deve essere maggiore di zero.");
-        }
-        if (eventoBean.getIscritti() < 0) {
-            throw new IllegalArgumentException("Il numero di iscritti non può essere negativo.");
+            errori.append("Il limite dei partecipanti deve essere maggiore di zero.\n");
         }
 
-        // Crea un oggetto Evento aggiornato
-        Evento eventoAggiornato = new Evento();
-        eventoAggiornato.setIdEvento(eventoBean.getIdEvento());
-        eventoAggiornato.setTitolo(eventoBean.getTitolo());
-        eventoAggiornato.setDescrizione(eventoBean.getDescrizione());
-        eventoAggiornato.setData(eventoBean.getData());
-        eventoAggiornato.setOrario(eventoBean.getOrario());
-        eventoAggiornato.setLimitePartecipanti(eventoBean.getLimitePartecipanti());
-        eventoAggiornato.setIscritti(eventoBean.getIscritti());
-        eventoAggiornato.setNomeOrganizzatore(eventoBean.getNomeOrganizzatore());
-        eventoAggiornato.setCognomeOrganizzatore(eventoBean.getCognomeOrganizzatore());
-        eventoAggiornato.setStato(eventoBean.isStato());
-
-        // Salva le modifiche tramite il DAO
-        GestioneEventoDAO.aggiornaEvento(eventoAggiornato);
-
-        System.out.println("Evento aggiornato con successo. Titolo: " + eventoAggiornato.getTitolo() + ", ID Evento: " + eventoAggiornato.getIdEvento());
-        return true;
-    }
-
-
-    /**
-     * Elimina un evento.
-     *
-     * @param idEvento ID dell'evento da eliminare.
-     */
-    public boolean eliminaEvento(long idEvento, String idOrganizzatore) throws IllegalArgumentException {
-
-        // Verifica che l'ID dell'evento sia valido
-        if (idEvento <= 0) {
-            throw new IllegalArgumentException("ID dell'evento non valido.");
+        if (errori.length() > 0) {
+            showAlert("Errore", errori.toString(), Alert.AlertType.WARNING);
+            return false;
         }
 
-        // Chiamata al DAO per eliminare l'evento
-        boolean successo = GestioneEventoDAO.eliminaEvento(idEvento, idOrganizzatore);
+        // Recupero dell'evento esistente
+        Evento eventoEsistente = GestioneEventoDAO.getEventoById(eventoBean.getIdEvento());
+        if (eventoEsistente == null) {
+            showAlert("Errore", "Evento non trovato o permessi insufficienti.", Alert.AlertType.ERROR);
+            return false;
+        }
 
-        if (successo) {
-            System.out.println("Evento eliminato con successo. ID Evento: " + idEvento);
+        // Aggiornamento dell'evento
+        eventoEsistente.setTitolo(eventoBean.getTitolo());
+        eventoEsistente.setDescrizione(eventoBean.getDescrizione());
+        eventoEsistente.setData(eventoBean.getData());
+        eventoEsistente.setOrario(eventoBean.getOrario());
+        eventoEsistente.setLimitePartecipanti(eventoBean.getLimitePartecipanti());
+        eventoEsistente.setNomeOrganizzatore(eventoBean.getNomeOrganizzatore());
+        eventoEsistente.setCognomeOrganizzatore(eventoBean.getCognomeOrganizzatore());
+
+        boolean aggiornato = GestioneEventoDAO.modificaEvento(
+                eventoEsistente.getIdEvento(),
+                eventoEsistente.getTitolo(),
+                eventoEsistente.getDescrizione(),
+                eventoEsistente.getData(),
+                eventoEsistente.getOrario()
+        );
+
+        if (aggiornato) {
+            showAlert("Successo", "Evento aggiornato con successo.", Alert.AlertType.INFORMATION);
         } else {
-            System.out.println("Errore nell'eliminazione dell'evento. ID Evento: " + idEvento);
+            showAlert("Errore", "Errore durante l'aggiornamento dell'evento.", Alert.AlertType.ERROR);
         }
 
-        return successo;
+        return aggiornato;
     }
 
+    // Metodo per mostrare un'alert
+    private void showAlert(String titolo, String messaggio, Alert.AlertType tipo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titolo);
+        alert.setHeaderText(null);
+        alert.setContentText(messaggio);
+        alert.showAndWait();
+    }
 }

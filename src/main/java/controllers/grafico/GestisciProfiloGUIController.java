@@ -1,16 +1,14 @@
 package controllers.grafico;
 
-import controllers.applicativo.GestisciProfiloPartecipanteController;
+import controllers.applicativo.GestisciProfiloController;
 import engclasses.beans.RegistrazioneBean;
-import engclasses.dao.PartecipanteDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import misc.Model;
 import misc.Session;
-import model.Partecipante;
 
-public class GestisciProfiloPartecipanteGUIController {
+public class GestisciProfiloGUIController {
 
     private final Session session;
 
@@ -41,11 +39,11 @@ public class GestisciProfiloPartecipanteGUIController {
     private String originalUsername;
     private String originalEmail;
 
-    private final GestisciProfiloPartecipanteController gestisciProfiloPartecipanteController;
+    private final GestisciProfiloController gestisciProfiloPartecipanteController;
 
-    public GestisciProfiloPartecipanteGUIController(Session session) {
+    public GestisciProfiloGUIController(Session session) {
         this.session = session;
-        this.gestisciProfiloPartecipanteController = new GestisciProfiloPartecipanteController(session);
+        this.gestisciProfiloPartecipanteController = new GestisciProfiloController(session);
     }
 
     @FXML
@@ -92,7 +90,7 @@ public class GestisciProfiloPartecipanteGUIController {
         updatedBean.setUsername(usernameField.getText());
         updatedBean.setEmail(emailField.getText());
 
-        GestisciProfiloPartecipanteController profileController = new GestisciProfiloPartecipanteController(session);
+        GestisciProfiloController profileController = new GestisciProfiloController(session);
 
         // Verifica se i campi password sono stati modificati
         String currentPassword = currentPasswordField.getText();
@@ -100,7 +98,7 @@ public class GestisciProfiloPartecipanteGUIController {
         String confirmPassword = confirmPasswordField.getText();
         String username = usernameField.getText();
 
-        boolean success = profileController.aggiornaProfiloPartecipante(updatedBean, currentPassword, newPassword, confirmPassword);
+        boolean success = profileController.aggiornaProfilo(updatedBean, currentPassword, newPassword, confirmPassword);
 
         if (success) {
             currentUsername = updatedBean.getUsername(); // Aggiorna il currentUsername

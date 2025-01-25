@@ -1,5 +1,6 @@
 package misc;
 
+import controllers.grafico.GestioneListaEventiGUIController;
 import controllers.grafico.GestioneTrackerGUIController;
 import engclasses.beans.GestioneTrackerBean;
 
@@ -22,6 +23,7 @@ public class Session {
     private String idUtente;
     private GestioneTrackerBean trackerBean; // Oggetto per gestire il tracker
     private GestioneTrackerGUIController gestioneTrackerGUIController;
+    private GestioneListaEventiGUIController gestioneListaEventiGUIController;
     private boolean isOrganizzatore;
 
     public Session(boolean persistence) {
@@ -69,6 +71,13 @@ public class Session {
 
     public void setGestioneTrackerGUIController(GestioneTrackerGUIController gestioneTrackerGUIController) {
         this.gestioneTrackerGUIController = gestioneTrackerGUIController;
+    }
+    public void setGestioneListaEventiGUIController(GestioneListaEventiGUIController gestioneListaEventiGUIController) {
+        this.gestioneListaEventiGUIController = gestioneListaEventiGUIController;
+    }
+
+    public GestioneListaEventiGUIController getGestioneListaEventiGUIController() {
+        return gestioneListaEventiGUIController;
     }
     public boolean isOrganizzatore() {
         return isOrganizzatore;

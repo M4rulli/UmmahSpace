@@ -65,6 +65,13 @@
                             <StackPane fx:id="trackerContainer" />
                         </content>
                     </Tab>
+                    <!-- Tab della lista eventi organizzatore -->
+                    <Tab text="I Miei Eventi">
+                        <content>
+                            <!-- Contenitore della lista eventi -->
+                            <StackPane fx:id="eventiContainer" />
+                        </content>
+                    </Tab>
                 </tabs>
             </TabPane>
         </VBox>

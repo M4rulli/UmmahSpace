@@ -3,130 +3,132 @@ package controllers.grafico;
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import misc.Model;
 import misc.Session;
 
 public class ModificaEventoGUIController {
 
+    private final Session session;
+    private final EventoBean eventoDaModificare;
+
     @FXML
     private TextField titoloField;
-
+    @FXML
+    private TextArea descrizioneArea;
+    @FXML
+    private TextField dataField;
     @FXML
     private TextField orarioField;
-
     @FXML
-    private TextArea descrizioneField;
-
+    private Button saveButton;
     @FXML
-    private TextField limitePartecipantiField;
-
+    private Button backButton;
     @FXML
-    private TextField iscrittiField;
+    private Button editButton;
 
-    @FXML
-    private TextField linkField;
+    private String originalTitolo;
+    private String originalDescrizione;
+    private String originalData;
+    private String originalOrario;
 
-    @FXML
-    private Button salvaButton;
+    private final GestioneEventoController gestioneEventoController;
 
-    @FXML
-    private Button annullaButton;
-
-    private final EventoBean evento;
-    private final Session session;
-
-    public ModificaEventoGUIController(EventoBean evento, Session session) {
-        this.evento = evento;
+    public ModificaEventoGUIController(Session session, EventoBean eventoDaModificare) {
         this.session = session;
+        this.eventoDaModificare = eventoDaModificare;
+        this.gestioneEventoController = new GestioneEventoController(session);
     }
 
     @FXML
     public void initialize() {
-        // Precompila i campi con i dati dell'evento
-        titoloField.setText(evento.getTitolo());
-        orarioField.setText(evento.getOrario());
-        descrizioneField.setText(evento.getDescrizione());
-        limitePartecipantiField.setText(String.valueOf(evento.getLimitePartecipanti()));
-        iscrittiField.setText(String.valueOf(evento.getIscritti()));
+        backButton.setOnAction(event -> { onBackButtonClicked(); });
+        saveButton.setOnAction(event -> { onSaveButtonClicked(); });
+        editButton.setOnAction(event -> { onEditButtonClicked(); });
 
-        // Configura i pulsanti
-        salvaButton.setOnAction(e -> salvaModifiche());
-        annullaButton.setOnAction(e -> chiudiFinestra());
+        // Carica i dati dell'evento da modificare
+        initializeEvent(eventoDaModificare.getTitolo(), eventoDaModificare.getDescrizione(),
+                eventoDaModificare.getData(), eventoDaModificare.getOrario());
     }
 
-    private void salvaModifiche() {
-        // Crea un'istanza della Bean per l'evento
-        EventoBean eventoModificato = new EventoBean();
-        try {
-            // Popola la Bean con i dati dai campi
-            eventoModificato.setIdEvento(evento.getIdEvento()); // Mantieni l'ID esistente
-            eventoModificato.setTitolo(titoloField.getText());
-            eventoModificato.setOrario(orarioField.getText());
-            eventoModificato.setDescrizione(descrizioneField.getText());
+    public void initializeEvent(String titolo, String descrizione, String data, String orario) {
+        this.originalTitolo = titolo;
+        this.originalDescrizione = descrizione;
+        this.originalData = data;
+        this.originalOrario = orario;
 
-            // Controlla che il limite di partecipanti sia maggiore di zero
-            int limitePartecipanti = Integer.parseInt(limitePartecipantiField.getText());
-            if (limitePartecipanti <= 0) {
-                mostraMessaggioErrore("Il limite di partecipanti deve essere maggiore di zero.");
-                return;
-            }
-            eventoModificato.setLimitePartecipanti(limitePartecipanti);
+        titoloField.setText(titolo);
+        descrizioneArea.setText(descrizione);
+        dataField.setText(data);
+        orarioField.setText(orario);
 
-            // Controlla che il numero di iscritti non superi il limite e non sia negativo
-            int iscritti = Integer.parseInt(iscrittiField.getText());
-            if (iscritti < 0) {
-                mostraMessaggioErrore("Il numero di partecipanti non può essere negativo.");
-                return;
-            }
-            if (iscritti > limitePartecipanti) {
-                mostraMessaggioErrore("Il numero di partecipanti non può superare il limite di partecipanti.");
-                return;
-            }
-            eventoModificato.setIscritti(iscritti);
+        disableEditing();
+    }
 
+    @FXML
+    private void onEditButtonClicked() {
+        enableEditing();
+    }
 
-            // Istanzia il controller applicativo
-            GestioneEventoController gestioneEventoController = new GestioneEventoController();
+    @FXML
+    private void onSaveButtonClicked() {
+        // Crea un bean con i dati aggiornati
+        EventoBean updatedEvento = new EventoBean();
+        updatedEvento.setTitolo(titoloField.getText());
+        updatedEvento.setDescrizione(descrizioneArea.getText());
+        updatedEvento.setData(dataField.getText());
+        updatedEvento.setOrario(orarioField.getText());
 
-            // Passa la Bean al metodo per modificare l'evento
-            boolean successo = gestioneEventoController.modificaEvento(eventoModificato);
+        // Chiama il controller applicativo per aggiornare l'evento
+        boolean success = gestioneEventoController.modificaEvento(updatedEvento, session.getIdUtente());
 
-            if (successo) {
-                mostraMessaggioConferma("Modifica effettuata con successo!");
-                chiudiFinestra();
-            } else {
-                mostraMessaggioErrore("Errore durante la modifica dell'evento.");
-            }
-        } catch (NumberFormatException e) {
-            mostraMessaggioErrore("Verifica che i campi numerici siano corretti.");
-        } catch (Exception e) {
-            mostraMessaggioErrore("Errore: " + e.getMessage());
+        if (success) {
+            // Aggiorna i dati dell'evento nella GUI
+            initializeEvent(updatedEvento.getTitolo(), updatedEvento.getDescrizione(),
+                    updatedEvento.getData(), updatedEvento.getOrario());
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Conferma");
+            alert.setHeaderText(null);
+            alert.setContentText("Evento modificato con successo!");
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Errore");
+            alert.setHeaderText(null);
+            alert.setContentText("Si è verificato un errore durante la modifica dell'evento.");
+            alert.showAndWait();
         }
     }
 
-    private void chiudiFinestra() {
-        // Ottieni la finestra corrente e chiudila
-        Stage stage = (Stage) salvaButton.getScene().getWindow();
-        stage.close();
+    @FXML
+    private void onBackButtonClicked() {
+        // Mostra la finestra principale senza salvare
+        Stage currentStage = (Stage) backButton.getScene().getWindow();
+        Model.getInstance().getViewFactory().closeStage(currentStage);
+        Model.getInstance().getViewFactory().showMainView(session);
     }
 
-    private void mostraMessaggioConferma(String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Conferma");
-        alert.setHeaderText(null);
-        alert.setContentText(messaggio);
-        alert.showAndWait();
+    private void disableEditing() {
+        titoloField.setEditable(false);
+        descrizioneArea.setEditable(false);
+        dataField.setEditable(false);
+        orarioField.setEditable(false);
+
+        saveButton.setDisable(true);
+        backButton.setDisable(false);
+        editButton.setDisable(false);
     }
 
-    private void mostraMessaggioErrore(String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore");
-        alert.setHeaderText(null);
-        alert.setContentText(messaggio);
-        alert.showAndWait();
+    private void enableEditing() {
+        titoloField.setEditable(true);
+        descrizioneArea.setEditable(true);
+        dataField.setEditable(true);
+        orarioField.setEditable(true);
+
+        saveButton.setDisable(false);
+        backButton.setDisable(false);
+        editButton.setDisable(true);
     }
 }

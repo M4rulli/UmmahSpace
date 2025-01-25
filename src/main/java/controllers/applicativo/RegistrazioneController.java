@@ -98,7 +98,6 @@ public class RegistrazioneController {
 
         // Log dell'operazione
         System.out.println("Nuovo organizzatore registrato con username: " + bean.getUsername());
-        System.out.println("Lista eventi inizializzata per l'utente con ID: " + idUtente);
         return true;
     }
 

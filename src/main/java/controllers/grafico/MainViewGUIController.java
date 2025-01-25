@@ -28,6 +28,8 @@ public class MainViewGUIController {
     private StackPane calendarioContainer; // Contenitore per il calendario
     @FXML
     private StackPane trackerContainer; // Contenitore per il tracker
+    @FXML
+    private StackPane eventiContainer; // Contenitore per il tracker
 
     public MainViewGUIController(Session session) {
         this.session = session;
@@ -43,6 +45,8 @@ public class MainViewGUIController {
         Model.getInstance().getViewFactory().loadCalendarioView(calendarioContainer, session);
         // Carica la sotto-vista del Tracker
         Model.getInstance().getViewFactory().loadTrackerView(trackerContainer, session);
+        // Carica la sotto-vista della lista eventi
+        Model.getInstance().getViewFactory().loadListaEventiView(eventiContainer, session);
         // Altri inizializzatori
         aggiornaData();
     }

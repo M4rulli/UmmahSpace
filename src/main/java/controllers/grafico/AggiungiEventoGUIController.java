@@ -76,7 +76,7 @@ public class AggiungiEventoGUIController {
         nuovoEvento.setLimitePartecipanti(limitePartecipanti);
 
         // Istanzia il controller applicativo
-        GestioneEventoController gestioneEventoController = new GestioneEventoController();
+        GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
 
         // Passa la Bean al metodo per aggiungere l'evento
         try {
