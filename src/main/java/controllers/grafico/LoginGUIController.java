@@ -23,6 +23,9 @@ public class LoginGUIController {
     @FXML
     private Hyperlink registrationLink;
 
+    @FXML
+    private CheckBox organizzatoreCheckbox;
+
     private final Session session;
 
     public LoginGUIController(Session session) {
@@ -39,6 +42,9 @@ public class LoginGUIController {
 
         // Assegna l'azione al bottone di login
         loginButton.setOnAction(event -> onLoginClicked());
+
+        // Listener per la checkbox
+        listenOrganizzatoreCheckBox();
     }
 
     @FXML
@@ -66,14 +72,27 @@ public class LoginGUIController {
         loginBean.setPassword(password);
 
         // Invia i dati al controller applicativo
-        LoginController loginController = new LoginController();
+        LoginController loginController = new LoginController(session);
         GestioneTrackerBean trackerBean = loginController.effettuaLogin(loginBean, session.isPersistence());
 
         if (trackerBean != null) {
-            // Aggiorna la sessione
+            // Caso: login come partecipante
             session.setCurrentUsername(username);
-            session.setIdUtente(trackerBean.getIdUtente());
+            session.setIdUtente(loginController.getUtenteId());
             session.setTracker(trackerBean); // Salva il tracker nella sessione
+            session.setNome(loginController.getNome());
+
+            // Mostra messaggio di successo e passa alla MainView
+            System.out.println("Login effettuato con successo!");
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
+            Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
+
+        } else if (session.isOrganizzatore()) {
+            // Caso: login come organizzatore
+            session.setCurrentUsername(username);
+            session.setIdUtente(loginController.getUtenteId());
+            session.setNome(loginController.getNome());
 
             // Mostra messaggio di successo e passa alla MainView
             System.out.println("Login effettuato con successo!");
@@ -91,6 +110,13 @@ public class LoginGUIController {
         alert.setTitle(title);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void listenOrganizzatoreCheckBox() {
+        organizzatoreCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            session.setIsOrganizzatore(newValue); // Aggiorna lo stato nella sessione
+            System.out.println("Stato Organizzatore aggiornato: " + newValue);
+        });
     }
 
 }

@@ -1,23 +1,22 @@
 package model;
 
-import java.util.List;
 
 public class Organizzatore extends Utente {
-    private List<Evento> listaEventi;
+
+    private String titoloDiStudio;
 
     // Costruttore
-    public Organizzatore(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato) {
+    public Organizzatore(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato, String titoloDiStudio) {
         super(nome, cognome, username, email, password, idUtente, stato);
-        this.listaEventi = listaEventi;
+        this.titoloDiStudio = titoloDiStudio;
     }
 
-    // Getter e Setter
-    public List<Evento> getListaEventi() {
-
-        return listaEventi;
+    public String getTitoloDiStudio() {
+        return titoloDiStudio;
     }
 
-    public void setListaEventi(List<Evento> listaEventi) {
-        this.listaEventi = listaEventi;
+    public void setTitoloDiStudio(String titoloDiStudio) {
+        this.titoloDiStudio = titoloDiStudio;
     }
+
 }

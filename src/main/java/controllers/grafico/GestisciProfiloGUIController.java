@@ -39,11 +39,11 @@ public class GestisciProfiloGUIController {
     private String originalUsername;
     private String originalEmail;
 
-    private final GestisciProfiloController gestisciProfiloPartecipanteController;
+    private final GestisciProfiloController gestisciProfiloController;
 
     public GestisciProfiloGUIController(Session session) {
         this.session = session;
-        this.gestisciProfiloPartecipanteController = new GestisciProfiloController(session);
+        this.gestisciProfiloController = new GestisciProfiloController(session);
     }
 
     @FXML
@@ -52,9 +52,8 @@ public class GestisciProfiloGUIController {
         saveButton.setOnAction(event -> {onSaveButtonClicked();});
         editButton.setOnAction(event -> {onEditButtonClicked();});
 
-        boolean persistence = session.isPersistence();
         // Recupera i dati dell'utente
-        RegistrazioneBean bean = gestisciProfiloPartecipanteController.inizializzaProfilo(session.getIdUtente());
+        RegistrazioneBean bean = gestisciProfiloController.inizializzaProfilo(session.getIdUtente());
         initializeProfile(
                 bean.getNome(),
                 bean.getCognome(),
@@ -96,7 +95,6 @@ public class GestisciProfiloGUIController {
         String currentPassword = currentPasswordField.getText();
         String newPassword = newPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
-        String username = usernameField.getText();
 
         boolean success = profileController.aggiornaProfilo(updatedBean, currentPassword, newPassword, confirmPassword);
 

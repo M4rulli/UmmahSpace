@@ -1,7 +1,12 @@
 package misc;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.awt.*;
+import java.io.File;
+import java.io.InputStream;
 
 public class App extends Application {
 

@@ -47,8 +47,7 @@ public class GestioneEventoDAO {
         }
     }
 
-
-            // Aggiorna un evento esistente nel buffer.
+    // Aggiorna un evento esistente nel buffer.
     public static void aggiornaEvento(Evento eventoAggiornato) {
         for (int i = 0; i < eventiBuffer.size(); i++) {
             Evento evento = eventiBuffer.get(i);
@@ -82,19 +81,6 @@ public class GestioneEventoDAO {
         return null; // Ritorna null se non viene trovato l'evento
     }
 
-    // Genera un ID unico per un nuovo evento.
-    private static long generaIdEvento() {
-        if (eventiBuffer.isEmpty()) {
-            return 1;
-        }
-        long maxId = 0;
-        for (Evento evento : eventiBuffer) {
-            if (evento.getIdEvento() > maxId) {
-                maxId = evento.getIdEvento();
-            }
-        }
-        return maxId + 1;
-    }
 
     // Metodo per ottenere tutti gli eventi dell'organizzatore dal buffer
     public static List<Evento> getEventiPerOrganizzatore(String idUtente) {
@@ -106,6 +92,7 @@ public class GestioneEventoDAO {
         }
         return eventiPerOrganizzatore;
     }
+
     public static boolean modificaEvento(long idEvento, String nuovoTitolo, String nuovaDescrizione, String nuovaData, String nuovoOrario) {
         for (int i = 0; i < eventiBuffer.size(); i++) {
             Evento evento = eventiBuffer.get(i);

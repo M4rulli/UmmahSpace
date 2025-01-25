@@ -86,7 +86,6 @@ public class PartecipanteDAO {
                         rs.getBoolean("stato")    // Stato
                 );
             }
-            System.out.println("Partecipante non trovato nel database con " + campo + ": " + valore);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -115,7 +114,6 @@ public class PartecipanteDAO {
                     if (rs.next()) {
                         partecipanteAggiornato.setPassword(rs.getString("password"));
                     } else {
-                        System.out.println("Errore: Partecipante non trovato con ID: " + partecipanteAggiornato.getIdUtente());
                         return false; // Interrompi l'aggiornamento se il partecipante non è trovato
                     }
                 }
@@ -147,7 +145,6 @@ public class PartecipanteDAO {
         String username = partecipanteAggiornato.getIdUtente();
 
         if (!bufferPartecipanti.containsKey(username)) {
-            System.out.println("Errore: Partecipante non trovato nel buffer.");
             return false;
         }
 

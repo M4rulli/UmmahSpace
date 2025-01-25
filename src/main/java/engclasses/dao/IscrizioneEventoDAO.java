@@ -21,7 +21,7 @@ public class IscrizioneEventoDAO {
         eventiBuffer.add(new Evento("Evento 5", "Descrizione 5", "2025-01-03", "09:00", 20, 20, "www.evento5.com", "Ciao", "Darwin", true, 5, ""));
     }
 
-        // Metodo per ottenere tutti gli eventi nel buffer
+    // Metodo per ottenere tutti gli eventi nel buffer
     public static List<Evento> getEventiPerMeseAnno(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
         for (Evento evento : eventiBuffer) {

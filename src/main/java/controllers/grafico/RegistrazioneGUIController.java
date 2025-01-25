@@ -2,7 +2,6 @@ package controllers.grafico;
 
 import controllers.applicativo.RegistrazioneController;
 import engclasses.beans.RegistrazioneBean;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -32,6 +31,10 @@ public class RegistrazioneGUIController {
     private ToggleSwitch persistenceSwitch;
     @FXML
     private Hyperlink loginLink;
+    @FXML
+    private TextField titoloDiStudioField;
+    @FXML
+    private Label titoloDiStudioLabel;
 
     private final Session session;
     private boolean persistence = false;
@@ -48,6 +51,15 @@ public class RegistrazioneGUIController {
         persistenceSwitch.setOnMouseClicked(event -> togglePersistence());
         persistenceSwitch.setSelected(persistence);
         organizzatoreCheckBox.setOnAction(event -> listenOrganizzatoreCheckBox());
+        // Listener per il CheckBox
+        organizzatoreCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            boolean isSelected = newValue;
+            // Aggiorna la visibilità e la gestione della Label e del TextField
+            titoloDiStudioLabel.setVisible(isSelected);
+            titoloDiStudioLabel.setManaged(isSelected);
+            titoloDiStudioField.setVisible(isSelected);
+            titoloDiStudioField.setManaged(isSelected);
+        });
     }
 
     @FXML
@@ -62,6 +74,7 @@ public class RegistrazioneGUIController {
         String confirmPassword = confermaPasswordField.getText();
         String email = emailField.getText();
         boolean isOrganizzatore = organizzatoreCheckBox.isSelected();
+        String titoloDiStudio = titoloDiStudioField.getText();
 
         // Crea il bean con i dati di input
         RegistrazioneBean registrazioneBean = new RegistrazioneBean();
@@ -72,6 +85,11 @@ public class RegistrazioneGUIController {
         registrazioneBean.setConfirmPassword(confirmPassword);
         registrazioneBean.setEmail(email);
         registrazioneBean.setSeiOrganizzatore(isOrganizzatore);
+        if (session.isOrganizzatore()) {
+            registrazioneBean.setTitoloDiStudio(titoloDiStudio.isEmpty() ? null : titoloDiStudio);
+        } else {
+            registrazioneBean.setTitoloDiStudio(null);
+        }
 
         // Chiamata al Controller Applicativo per la registrazione
         RegistrazioneController registrazioneController = new RegistrazioneController(session);

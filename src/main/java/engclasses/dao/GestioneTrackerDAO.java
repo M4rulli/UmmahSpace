@@ -92,7 +92,6 @@ public class GestioneTrackerDAO {
             stmt.setBoolean(13, tracker.getPreghiera("Isha"));
 
             stmt.executeUpdate();
-            System.out.println("Tracker aggiornato nel database per l'utente con ID: " + tracker.getIdUtente());
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Errore durante il salvataggio/aggiornamento del tracker nel database.");

@@ -1,5 +1,4 @@
 package model;
-import java.util.UUID;
 
 public abstract class Utente {
     protected String nome;

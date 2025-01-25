@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ public class OrganizzatoreDAO {
 
     // Buffer per memorizzare temporaneamente gli organizzatori
     private static final Map<String, Organizzatore> bufferOrganizzatori = new HashMap<>();
+
 
     // Costruttore
     public OrganizzatoreDAO() {}
@@ -36,7 +36,7 @@ public class OrganizzatoreDAO {
 
     // Salva un organizzatore nel database
     private static void salvaInDb(Organizzatore organizzatore) {
-        String query = "INSERT INTO Organizzatori (idUtente, nome, cognome, username, email, password, stato) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Organizzatori (idUtente, nome, cognome, username, email, password, stato, titoloDiStudio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -47,6 +47,7 @@ public class OrganizzatoreDAO {
             stmt.setString(5, organizzatore.getEmail());
             stmt.setString(6, organizzatore.getPassword());
             stmt.setBoolean(7, organizzatore.isStato());
+            stmt.setString(8, organizzatore.getTitoloDiStudio());
 
             stmt.executeUpdate();
             System.out.println("Organizzatore salvato nel database: " + organizzatore.getIdUtente());
@@ -64,33 +65,32 @@ public class OrganizzatoreDAO {
         }
     }
 
-    // Recupera un organizzatore dal database in base al campo specificato
-    private static Organizzatore recuperaDaDb(String campo, String valore) {
+    // Recupera un organizzatore dal database
+    private static Organizzatore recuperaDaDb(String campo, String idUtente) {
         String query = "SELECT * FROM Organizzatori WHERE " + campo + " = ?";
         try (Connection conn = Connect.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query,
-                     ResultSet.TYPE_SCROLL_INSENSITIVE,
-                     ResultSet.CONCUR_READ_ONLY)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, valore);
-            ResultSet rs = stmt.executeQuery();
+            stmt.setString(1, idUtente);
 
-            if (rs.first()) {
-                return new Organizzatore(
-                        rs.getString("idUtente"),  // ID Utente
-                        rs.getString("nome"),     // Nome
-                        rs.getString("cognome"),  // Cognome
-                        rs.getString("username"), // Username
-                        rs.getString("email"),    // Email
-                        rs.getString("password"), // Password
-                        rs.getBoolean("stato")   // Stato
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Organizzatore(
+                            rs.getString("idUtente"),
+                            rs.getString("nome"),
+                            rs.getString("cognome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getBoolean("stato"),
+                            rs.getString("titoloDiStudio")
+                    );
+                }
             }
-            System.out.println("Organizzatore non trovato nel database con " + campo + ": " + valore);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return null; // Nessun organizzatore trovato
     }
 
     // Aggiorna un organizzatore

@@ -21,7 +21,7 @@
         </VBox>
 
         <!-- Organizzatore -->
-        <CheckBox fx:id="organizerCheckBox" text="Sei un organizzatore?" style="-fx-font-size: 14px; -fx-text-fill: #666;" />
+        <CheckBox fx:id="organizzatoreCheckbox" text="Sei un organizzatore?" style="-fx-font-size: 14px; -fx-text-fill: #666;" />
     </VBox>
 
     <!-- Bottoni -->

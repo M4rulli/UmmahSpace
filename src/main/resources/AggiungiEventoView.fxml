@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TextArea?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.grafico.AggiungiEventoGUIController" spacing="10" style="-fx-padding: 20;">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" style="-fx-padding: 20;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="controllers.grafico.AggiungiEventoGUIController">
+    <!-- Titolo -->
+    <Label text="Aggiungi un nuovo evento" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <!-- Campo Titolo -->
     <TextField fx:id="titoloField" promptText="Titolo Evento" style="-fx-font-size: 14px;" />
-    <TextArea fx:id="descrizioneField" promptText="Descrizione Evento" wrapText="true" style="-fx-font-size: 14px; -fx-pref-height: 100px;" />
+
+    <!-- Campo Descrizione -->
+    <TextArea fx:id="descrizioneField" promptText="Descrizione Evento" style="-fx-font-size: 14px; -fx-pref-height: 100px;" wrapText="true" />
+
+    <!-- Campo Orario -->
     <TextField fx:id="orarioField" promptText="Orario Evento (es. 10:00)" style="-fx-font-size: 14px;" />
+
+    <!-- Campo Numero Partecipanti -->
     <TextField fx:id="numeroPartecipantiField" promptText="Numero Partecipanti" style="-fx-font-size: 14px;" />
 
-    <Button fx:id="salvaButton" text="Salva" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" />
-    <Button fx:id="annullaButton" text="Annulla" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" />
+    <!-- Bottoni -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="annullaButton" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" text="Annulla" />
+        <Button fx:id="salvaButton" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" text="Salva" />
+    </HBox>
 </VBox>

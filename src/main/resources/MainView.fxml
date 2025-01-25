@@ -2,8 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import org.controlsfx.control.*?>
+
 
 <StackPane style="-fx-background-color: #f4f4f4; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <children>
@@ -44,8 +43,8 @@
                 </children>
             </HBox>
 
-            <!-- TabPane per alternare tra Calendario e Tracker Spirituale -->
-            <TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+            <!-- TabPane Principale -->
+            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
                 <tabs>
 
                 <!-- Tab del Calendario -->
@@ -59,7 +58,7 @@
                     </Tab>
 
                     <!-- Tab del Tracker -->
-                    <Tab text="Tracker Spirituale">
+                    <Tab fx:id="trackerTab" text="Tracker Spirituale">
                         <content>
                             <!-- Contenitore del Tracker -->
                             <StackPane fx:id="trackerContainer" />

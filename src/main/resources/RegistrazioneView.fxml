@@ -49,6 +49,13 @@
                         <Label style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Conferma Password:" />
                         <PasswordField fx:id="confermaPasswordField" prefWidth="300" promptText="Conferma la tua password" />
                     </VBox>
+
+                    <!-- Titolo di Studio -->
+                    <VBox alignment="CENTER_LEFT" spacing="5">
+                        <Label fx:id="titoloDiStudioLabel" style="-fx-font-size: 14px; -fx-text-fill: #333;" text="Titolo di Studio:" visible="false" managed="false" />
+                        <TextField fx:id="titoloDiStudioField" prefWidth="300" promptText="Inserisci un titolo di studio valido" visible="false" managed="false" />
+                    </VBox>
+
                 </children>
             </VBox>
          <HBox alignment="CENTER" prefHeight="0.0" prefWidth="336.0">

@@ -5,11 +5,13 @@ import engclasses.beans.EventoBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * La classe ViewFactory è responsabile della gestione e creazione delle viste
@@ -83,11 +85,7 @@ public class ViewFactory {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrackerView.fxml"));
                 GestioneTrackerGUIController trackerController = new GestioneTrackerGUIController(session);
                 loader.setController(trackerController);
-
                 Parent trackerView = loader.load();
-
-                session.setGestioneTrackerGUIController(trackerController);
-
                 // Svuota il contenitore e aggiunge il contenuto del Tracker
                 parentContainer.getChildren().clear();
                 parentContainer.getChildren().add(trackerView);
@@ -98,6 +96,7 @@ public class ViewFactory {
             }
         }
     }
+
     public void loadListaEventiView(Pane parentContainer, Session session) {
         if (session.isOrganizzatore()) {
             try {
@@ -105,11 +104,7 @@ public class ViewFactory {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ListaEventiView.fxml"));
                 GestioneListaEventiGUIController listaEventiController = new GestioneListaEventiGUIController(session);
                 loader.setController(listaEventiController);
-
                 Parent listaEventiView = loader.load();
-
-                session.setGestioneListaEventiGUIController(listaEventiController);
-
                 // Svuota il contenitore e aggiunge la lista degli eventi
                 parentContainer.getChildren().clear();
                 parentContainer.getChildren().add(listaEventiView);
@@ -133,10 +128,11 @@ public class ViewFactory {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
             loader.setController(new EventiGiornalieriGUIController(session));
             Parent root = loader.load();
-
             Stage stage = new Stage();
             stage.setTitle("Eventi Giornalieri");
             stage.setResizable(false);
+            Scene scene = new Scene(root, 600, 400);
+            stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

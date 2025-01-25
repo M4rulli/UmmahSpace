@@ -12,6 +12,7 @@ import misc.Session;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -76,12 +77,7 @@ public class GestioneTrackerGUIController {
         dateLabel2.setText(DateUtil.getSynchronizedDate());
         // Rinfresca la vista del Tracker
         GestioneTrackerBean trackerBean = session.getTracker();
-        if (trackerBean == null) {
-            // Se il tracker è nullo, aggiorna la UI con valori vuoti o predefiniti
-            aggiornaUIConTracker(new GestioneTrackerBean()); // Passa una Bean vuota
-        } else {
-            aggiornaUIConTracker(trackerBean);
-        }
+        aggiornaUIConTracker(Objects.requireNonNullElseGet(trackerBean, GestioneTrackerBean::new));
     }
 
     @FXML

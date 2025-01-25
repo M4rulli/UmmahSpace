@@ -10,6 +10,7 @@ public class RegistrazioneBean {
     private String currentPassword;
     private String newPassword;
     private String confirmPassword;
+    private String titoloDiStudio;
 
     public RegistrazioneBean() {}
 
@@ -85,6 +86,14 @@ public class RegistrazioneBean {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getTitoloDiStudio() {
+        return titoloDiStudio;
+    }
+
+    public void setTitoloDiStudio(String titoloDiStudio) {
+        this.titoloDiStudio = titoloDiStudio;
     }
 
 }

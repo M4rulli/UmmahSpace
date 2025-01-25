@@ -40,28 +40,33 @@ public class GestioneListaEventiGUIController {
         for (EventoBean evento : eventi) {
             // Crea una sezione card-like per ogni evento
             VBox card = new VBox(10);
-            card.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dddddd; "
-                    + "-fx-border-radius: 10; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+            card.setStyle("-fx-spacing: 15; -fx-padding: 10; -fx-background-color: rgba(255, 255, 255, 0.9); "
+                    + "-fx-border-radius: 15; -fx-background-radius: 15; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.05, 0, 2);");
 
             // Crea un HBox per visualizzare titolo, data, orario e bottoni
             HBox eventDetails = new HBox(20); // 20 è la distanza tra gli elementi
             eventDetails.setStyle("-fx-padding: 10; -fx-alignment: center-left;");
 
-            // Aggiungi il titolo
+            // Aggiungi il titolo con larghezza fissa
             Label titleLabel = new Label(evento.getTitolo());
-            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;");
+            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333; ");
+            titleLabel.setPrefWidth(200); // Larghezza fissa
 
-            // Aggiungi la data
-            Label dateLabel = new Label(evento.getData());
+            // Aggiungi la data con larghezza fissa
+            Label dateLabel = new Label("Data: " + evento.getData());
             dateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+            dateLabel.setPrefWidth(150); // Larghezza fissa
 
-            // Aggiungi l'orario
-            Label timeLabel = new Label(evento.getOrario());
+            // Aggiungi l'orario con larghezza fissa
+            Label timeLabel = new Label("Orario: " + evento.getOrario());
             timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+            timeLabel.setPrefWidth(100); // Larghezza fissa
 
             // Crea il bottone "Modifica"
             Button modificaButton = new Button("Modifica");
-            modificaButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10;");
+            modificaButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10; ");
+
             modificaButton.setOnAction(e -> onModificaEvento(evento));
 
             // Crea il bottone "Elimina"
@@ -82,9 +87,10 @@ public class GestioneListaEventiGUIController {
             eventContainer.getChildren().add(card);
         }
 
-        // Aggiunge uno stile globale al contenitore
-        eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10;");
+        // Aggiunge uno stile globale al contenitore principale
+        eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10; ");
     }
+
 
     // Metodo per gestire l'eliminazione dell'evento
     @FXML

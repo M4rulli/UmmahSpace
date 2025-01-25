@@ -37,18 +37,19 @@ public class EventiGiornalieriGUIController {
         List<EventoBean> eventi = applicativoController.getTuttiGliEventiDelMese(currentMonth, currentYear);
 
         // Popola la GUI con gli eventi
+        assert eventi != null;
         for (EventoBean evento : eventi) {
 
             // Crea una sezione card-like per ogni evento
             VBox card = new VBox(10);
-            card.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dddddd; "
-                    + "-fx-border-radius: 10; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+            card.setStyle("-fx-background-color: transparent; -fx-border-color: #dddddd; "
+                    + "-fx-border-radius: 10; -fx-padding: 15; ");
 
             Label titleLabel = new Label(evento.getTitolo());
-            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;");
+            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333; ");
 
             Label timeLabel = new Label("Orario: " + evento.getOrario());
-            timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+            timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; ");
 
             Label organizerLabel = new Label("Organizzatore: " + evento.getNomeOrganizzatore() + " " + evento.getCognomeOrganizzatore());
             organizerLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #888;");
@@ -70,9 +71,8 @@ public class EventiGiornalieriGUIController {
             // Aggiunge la sezione card alla lista
             eventContainer.getChildren().add(card);
         }
-
         // Aggiunge uno stile globale al contenitore
-        eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10;");
+        eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10; -fx-background-color: transparent;");
     }
 
     private void showEventDetails(EventoBean evento, Session session) {

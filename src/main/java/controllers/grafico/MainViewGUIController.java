@@ -30,6 +30,10 @@ public class MainViewGUIController {
     private StackPane trackerContainer; // Contenitore per il tracker
     @FXML
     private StackPane eventiContainer; // Contenitore per il tracker
+    @FXML
+    private Tab trackerTab;
+    @FXML
+    private TabPane tabPane;
 
     public MainViewGUIController(Session session) {
         this.session = session;
@@ -37,7 +41,6 @@ public class MainViewGUIController {
 
     @FXML
     private void initialize() {
-
         setWelcomeMessage();
         // Configura l'handler
         profileButton.setOnAction(event -> onProfileButtonClicked());
@@ -49,9 +52,12 @@ public class MainViewGUIController {
         Model.getInstance().getViewFactory().loadListaEventiView(eventiContainer, session);
         // Altri inizializzatori
         aggiornaData();
+        if (session.isOrganizzatore()) {
+            // Rimuovi il tab "Tracker Spirituale" per gli organizzatori
+            tabPane.getTabs().remove(trackerTab);
+        }
     }
 
-    // Da rivedere!!!
     public void setWelcomeMessage() {
         welcomeLabel.setText("Benvenuto, " + session.getNome() + "!");
     }

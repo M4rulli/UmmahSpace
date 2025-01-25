@@ -31,8 +31,11 @@ public class EventiOrganizzatoreGUIController {
     @FXML
     public void initialize() {
         // Popola la GUI con gli eventi dell'organizzatore
+
         for (EventoBean evento : eventiOrganizzatore) {
             VBox card = createEventCard(evento);
+            card.setStyle("-fx-background-color: transparent; -fx-border-color: #dddddd; "
+                    + "-fx-border-radius: 10; -fx-padding: 15;");
             eventContainer.getChildren().add(card);
         }
 
@@ -45,17 +48,19 @@ public class EventiOrganizzatoreGUIController {
 
     private VBox createEventCard(EventoBean evento) {
         VBox card = new VBox(10);
-        card.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dddddd; "
-                + "-fx-border-radius: 10; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+        card.setStyle("-fx-background-color: transparent; -fx-border-color: #dddddd; "
+                + "-fx-border-radius: 10; -fx-padding: 15;");
 
         Label titleLabel = new Label(evento.getTitolo());
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;");
+
         Label timeLabel = new Label("Orario: " + evento.getOrario());
         timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+
         Label statusLabel = new Label(evento.isChiuso() ? "Chiuso" : "Aperto");
         statusLabel.setStyle(evento.isChiuso()
-                ? "-fx-text-fill: red; -fx-font-weight: bold;"
-                : "-fx-text-fill: green; -fx-font-weight: bold;");
+                ? "-fx-text-fill: red; -fx-font-weight: bold;" // Rosso se chiuso
+                : "-fx-text-fill: green; -fx-font-weight: bold;"); // Verde se aperto
 
         Button detailButton = new Button("Visualizza Dettagli");
         detailButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
@@ -63,6 +68,7 @@ public class EventiOrganizzatoreGUIController {
 
         card.getChildren().addAll(titleLabel, timeLabel, statusLabel, detailButton);
         card.setSpacing(10);
+
         return card;
     }
 
