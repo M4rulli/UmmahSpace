@@ -3,10 +3,12 @@ package engclasses.dao;
 import model.Evento;
 import model.IscrizionePartecipante;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import engclasses.beans.EventoBean;
 
 public class IscrizioneEventoDAO {
     private static final List<Evento> eventiBuffer = new ArrayList<>();

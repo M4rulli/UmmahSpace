@@ -17,21 +17,11 @@ public class IscrizioneEventoController {
     public IscrizioneEventoController() {}
 
     public Map<Integer, List<EventoBean>> getEventiDelMese(int month, int year) {
-        new IscrizioneEventoDAO();
-        // Recupera gli eventi dal DAO
         List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(month, year);
-
-        // Mappa per organizzare gli eventi per giorno
         Map<Integer, List<EventoBean>> eventiDelMese = new HashMap<>();
-
-        // Itera sugli eventi
         for (Evento evento : eventi) {
-
-            // Estrae il giorno del mese dalla data
             LocalDate dataEvento = LocalDate.parse(evento.getData());
             int giorno = dataEvento.getDayOfMonth();
-
-            // Crea una nuova Bean
             EventoBean bean = new EventoBean();
             bean.setIdEvento(evento.getIdEvento());
             bean.setTitolo(evento.getTitolo());
@@ -43,35 +33,36 @@ public class IscrizioneEventoController {
             bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
             bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
             bean.setStato(evento.getStato());
-
-            // Aggiunge la Bean alla lista del giorno corrispondente
             eventiDelMese.putIfAbsent(giorno, new ArrayList<>());
             eventiDelMese.get(giorno).add(bean);
         }
         return eventiDelMese;
     }
 
-    public List<EventoBean> getTuttiGliEventiDelMese(int month, int year) {
-        // Recupera gli eventi dal DAO
-        List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(month, year);
+    public List<EventoBean> getEventiPerGiorno(int giorno, int mese, int anno) {
+        // Ottieni tutti gli eventi del mese e anno specificati
+        List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(mese, anno);
 
-        // Crea una lista di EventoBean
-        List<EventoBean> eventiList = new ArrayList<>();
+        // Filtra gli eventi per il giorno specifico
+        List<EventoBean> eventiDelGiorno = new ArrayList<>();
         for (Evento evento : eventi) {
-            EventoBean bean = new EventoBean();
-            bean.setIdEvento(evento.getIdEvento());
-            bean.setTitolo(evento.getTitolo());
-            bean.setDescrizione(evento.getDescrizione());
-            bean.setData(evento.getData());
-            bean.setOrario(evento.getOrario());
-            bean.setLimitePartecipanti(evento.getLimitePartecipanti());
-            bean.setIscritti(evento.getIscritti());
-            bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
-            bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
-            bean.setStato(evento.getStato());
-            eventiList.add(bean);
+            LocalDate dataEvento = LocalDate.parse(evento.getData());
+            if (dataEvento.getDayOfMonth() == giorno && dataEvento.getMonthValue() == mese && dataEvento.getYear() == anno) {
+                EventoBean bean = new EventoBean();
+                bean.setIdEvento(evento.getIdEvento());
+                bean.setTitolo(evento.getTitolo());
+                bean.setDescrizione(evento.getDescrizione());
+                bean.setData(evento.getData());
+                bean.setOrario(evento.getOrario());
+                bean.setLimitePartecipanti(evento.getLimitePartecipanti());
+                bean.setIscritti(evento.getIscritti());
+                bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
+                bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
+                bean.setStato(evento.getStato());
+                eventiDelGiorno.add(bean);
+            }
         }
-        return eventiList;
+        return eventiDelGiorno;
     }
 
     public boolean iscriviPartecipante(PartecipanteBean partecipanteBean) throws IllegalArgumentException {

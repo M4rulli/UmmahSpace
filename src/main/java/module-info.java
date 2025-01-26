@@ -4,6 +4,9 @@ module com.project.ummahspace {
     requires org.controlsfx.controls;
     requires java.sql;
     requires java.desktop;
+    requires eu.hansolo.toolbox;
+    requires java.net.http;
+    requires org.json;
 
     exports misc; // Esporta il pacchetto principale per l'applicazione
     exports controllers.grafico;

@@ -30,9 +30,9 @@ public class AggiungiEventoGUIController {
     @FXML
     private Button annullaButton;
 
-    private Session session;
+    private final Session session;
 
-    public void setSession(Session session) {
+    public AggiungiEventoGUIController(Session session) {
         this.session = session;
     }
 

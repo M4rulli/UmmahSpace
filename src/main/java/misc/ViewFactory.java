@@ -5,13 +5,11 @@ import engclasses.beans.EventoBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * La classe ViewFactory è responsabile della gestione e creazione delle viste
@@ -123,11 +121,13 @@ public class ViewFactory {
         showStage(loader, "Gestione Profilo");
     }
 
-    public void showEventiGiornalieri(Session session) {
+    public void showEventiGiornalieri(Session session, List<EventoBean> eventiDelGiorno) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
-            loader.setController(new EventiGiornalieriGUIController(session));
+            loader.setController(new EventiGiornalieriGUIController(session, eventiDelGiorno));
             Parent root = loader.load();
+
+            // Configura la scena
             Stage stage = new Stage();
             stage.setTitle("Eventi Giornalieri");
             stage.setResizable(false);
@@ -146,14 +146,16 @@ public class ViewFactory {
         showStage(loader, "Dettagli Evento");
     }
 
-    public void showEventiOrganizzatore(Session session, List<EventoBean> eventiOrganizzatore) {
+    public void showAggiungiEvento(Session session) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiOrganizzatoreView.fxml"));
-            loader.setController(new EventiOrganizzatoreGUIController(eventiOrganizzatore, session)); // Passa la ViewFactory
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AggiungiEventoView.fxml"));
+            loader.setController(new AggiungiEventoGUIController(session)); // Passa la ViewFactory
             Parent root = loader.load();
             Stage stage = new Stage();
-            stage.setTitle("Eventi dell'Organizzatore");
+            stage.setTitle("Aggiungi un evento");
             stage.setResizable(false);
+            Scene scene = new Scene(root, 500, 450);
+            stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

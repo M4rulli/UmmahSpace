@@ -45,6 +45,13 @@
             <version>11.6.0</version>
         </dependency>
 
+        <!-- Json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
         <!-- Ikonli for JavaFX -->
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>

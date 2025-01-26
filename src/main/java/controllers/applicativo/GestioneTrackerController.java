@@ -6,9 +6,13 @@ import misc.GestioneTrackerBeanFactory;
 import misc.Session;
 import model.Tracker;
 
+import javax.security.auth.Subject;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Observer;
 
-public class GestioneTrackerController {
+public class GestioneTrackerController  {
+
 
     private final Session session;
     private static final List<String> PREGHIERE = List.of("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha");

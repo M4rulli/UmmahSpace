@@ -106,38 +106,41 @@ public class CalendarioGUIController {
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeWidth(1.0);
 
-                // Recupera gli eventi del giorno specifico
-                List<EventoBean> eventiDelGiorno = eventiDelMese.getOrDefault(day, Collections.emptyList());
+                    // Recupera gli eventi del giorno specifico
+                    List<EventoBean> eventiDelGiorno = eventiDelMese.getOrDefault(day, Collections.emptyList());
 
-                if (!eventiDelGiorno.isEmpty() && !session.isOrganizzatore()) {
-                    // Imposta il rettangolo su oro se ci sono eventi
-                    rectangle.setFill(Color.GOLD);
-                    attachEventClickAction(eventiDelGiorno, stackPane); // Aggiunge il click handler
-                } else {
-                    rectangle.setFill(Color.TRANSPARENT);
+
+                    // Distinzione grafica tra giorni con eventi e senza eventi
+                    if (!eventiDelGiorno.isEmpty() && !session.isOrganizzatore()) {
+                    rectangle.setFill(Color.GOLD); // Partecipante: evidenzia giorni con eventi
+                    } else {
+                    rectangle.setFill(Color.TRANSPARENT); // Nessun evento o Organizzatore
+                    }
+
+                    // Registra il click handler (sempre, indipendentemente dal contenuto di eventi)
+                    attachEventClickAction(day,currentMonth.getMonthValue(), currentMonth.getYear(), stackPane);
+
+                    Label dayLabel = new Label(String.valueOf(day));
+                    stackPane.getChildren().addAll(rectangle, dayLabel);
+
+                    calendarGrid.add(stackPane, col, row);
+                    day++;
                 }
-
-                Label dayLabel = new Label(String.valueOf(day));
-                stackPane.getChildren().addAll(rectangle, dayLabel);
-
-                calendarGrid.add(stackPane, col, row);
-                day++;
             }
-        }
     }
+    private void attachEventClickAction(int giorno, int mese, int anno, StackPane calendarCell) {
+        calendarCell.setOnMouseClicked(e -> {
+            // Ottieni gli eventi filtrati direttamente dal controller applicativo
+            IscrizioneEventoController applicativoController = new IscrizioneEventoController();
+            List<EventoBean> eventiDelGiorno = applicativoController.getEventiPerGiorno(giorno, mese, anno);
 
-    // Listener alla Cella
-    private void attachEventClickAction(List<EventoBean> eventi, StackPane calendarCell) {
-        if (!eventi.isEmpty()) {
-            calendarCell.setOnMouseClicked(e -> {
-                if (session.isOrganizzatore()) {
-                    // Se è un organizzatore, mostra gli eventi dell'organizzatore
-                    Model.getInstance().getViewFactory().showEventiOrganizzatore(session, eventi);
-                } else {
-                    // Se è un partecipante, mostra la lista degli eventi disponibili
-                    Model.getInstance().getViewFactory().showEventiGiornalieri(session);
-                }
-            });
-        }
+            if (session.isOrganizzatore()) {
+                // Mostra la finestra per aggiungere gli eventi
+                Model.getInstance().getViewFactory().showAggiungiEvento(session);
+            } else {
+                // Mostra la finestra per i partecipanti con gli eventi disponibili
+                Model.getInstance().getViewFactory().showEventiGiornalieri(session, eventiDelGiorno);
+            }
+        });
     }
 }
