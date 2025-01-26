@@ -107,7 +107,7 @@ public class GestisciProfiloGUIController {
                     updatedBean.getEmail()
             );
 
-            // Logga i nuovi dati alla console
+
             System.out.println("Profilo aggiornato: ");
             System.out.println("Nome: " + updatedBean.getNome());
             System.out.println("Cognome: " + updatedBean.getCognome());

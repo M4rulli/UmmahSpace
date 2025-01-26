@@ -34,7 +34,7 @@ public class GestioneListaEventiGUIController {
         GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
 
         // Recupera tutti gli eventi associati all'organizzatore corrente
-        List<EventoBean> eventi = gestioneEventoController.getEventiOrganizzatore(session.getIdUtente());
+        List<EventoBean> eventi = gestioneEventoController.getEventiOrganizzatore(session.getIdUtente(), session);
 
         // Popola la GUI con gli eventi
         for (EventoBean evento : eventi) {
@@ -67,7 +67,7 @@ public class GestioneListaEventiGUIController {
             Button modificaButton = new Button("Modifica");
             modificaButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10; ");
 
-            modificaButton.setOnAction(e -> onModificaEvento(evento));
+            modificaButton.setOnAction(e -> onModificaEvento(session, evento));
 
             // Crea il bottone "Elimina"
             Button eliminaButton = new Button("Elimina");
@@ -131,6 +131,8 @@ public class GestioneListaEventiGUIController {
     }
 
     // Metodo per gestire la modifica dell'evento
-    private void onModificaEvento(EventoBean evento) {
+    private void onModificaEvento(Session session, EventoBean evento) {
+            Model.getInstance().getViewFactory().showModificaEvento(session, evento);
     }
+
 }

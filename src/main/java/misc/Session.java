@@ -25,6 +25,7 @@ public class Session {
     private GestioneTrackerGUIController gestioneTrackerGUIController;
     private GestioneListaEventiGUIController gestioneListaEventiGUIController;
     private boolean isOrganizzatore;
+    private long idEvento;
 
     public Session(boolean persistence) {
         this.persistence = persistence;
@@ -75,6 +76,13 @@ public class Session {
     public void setGestioneListaEventiGUIController(GestioneListaEventiGUIController gestioneListaEventiGUIController) {
         this.gestioneListaEventiGUIController = gestioneListaEventiGUIController;
     }
+    public long getIdEvento() {
+        return idEvento;
+    }
+    public void setIdEvento(long idEvento) {
+        this.idEvento = idEvento;
+    }
+
 
     public GestioneListaEventiGUIController getGestioneListaEventiGUIController() {
         return gestioneListaEventiGUIController;

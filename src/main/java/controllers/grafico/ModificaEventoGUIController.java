@@ -11,7 +11,6 @@ import misc.Session;
 public class ModificaEventoGUIController {
 
     private final Session session;
-    private final EventoBean eventoDaModificare;
 
     @FXML
     private TextField titoloField;
@@ -22,11 +21,11 @@ public class ModificaEventoGUIController {
     @FXML
     private TextField orarioField;
     @FXML
+    private Button editButton;
+    @FXML
     private Button saveButton;
     @FXML
     private Button backButton;
-    @FXML
-    private Button editButton;
 
     private String originalTitolo;
     private String originalDescrizione;
@@ -35,21 +34,25 @@ public class ModificaEventoGUIController {
 
     private final GestioneEventoController gestioneEventoController;
 
-    public ModificaEventoGUIController(Session session, EventoBean eventoDaModificare) {
+    public ModificaEventoGUIController(Session session) {
         this.session = session;
-        this.eventoDaModificare = eventoDaModificare;
         this.gestioneEventoController = new GestioneEventoController(session);
     }
 
     @FXML
     public void initialize() {
-        backButton.setOnAction(event -> { onBackButtonClicked(); });
-        saveButton.setOnAction(event -> { onSaveButtonClicked(); });
-        editButton.setOnAction(event -> { onEditButtonClicked(); });
+        backButton.setOnAction(event -> onBackButtonClicked());
+        saveButton.setOnAction(event -> onSaveButtonClicked());
+        editButton.setOnAction(event -> onEditButtonClicked());
 
-        // Carica i dati dell'evento da modificare
-        initializeEvent(eventoDaModificare.getTitolo(), eventoDaModificare.getDescrizione(),
-                eventoDaModificare.getData(), eventoDaModificare.getOrario());
+        // Recupera i dati dell'evento
+        EventoBean evento = gestioneEventoController.inizializzaEvento(session.getIdEvento());
+        initializeEvent(
+                evento.getTitolo(),
+                evento.getDescrizione(),
+                evento.getData(),
+                evento.getOrario()
+        );
     }
 
     public void initializeEvent(String titolo, String descrizione, String data, String orario) {
@@ -80,13 +83,21 @@ public class ModificaEventoGUIController {
         updatedEvento.setData(dataField.getText());
         updatedEvento.setOrario(orarioField.getText());
 
-        // Chiama il controller applicativo per aggiornare l'evento
-        boolean success = gestioneEventoController.modificaEvento(updatedEvento, session.getIdUtente());
+        boolean success = gestioneEventoController.aggiornaEvento(updatedEvento, session.getIdEvento());
 
         if (success) {
-            // Aggiorna i dati dell'evento nella GUI
-            initializeEvent(updatedEvento.getTitolo(), updatedEvento.getDescrizione(),
-                    updatedEvento.getData(), updatedEvento.getOrario());
+            initializeEvent(
+                    updatedEvento.getTitolo(),
+                    updatedEvento.getDescrizione(),
+                    updatedEvento.getData(),
+                    updatedEvento.getOrario()
+            );
+
+            System.out.println("Evento aggiornato: ");
+            System.out.println("Titolo: " + updatedEvento.getTitolo());
+            System.out.println("Descrizione: " + updatedEvento.getDescrizione());
+            System.out.println("Data: " + updatedEvento.getData());
+            System.out.println("Orario: " + updatedEvento.getOrario());
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Conferma");
@@ -100,14 +111,33 @@ public class ModificaEventoGUIController {
             alert.setContentText("Si è verificato un errore durante la modifica dell'evento.");
             alert.showAndWait();
         }
+        closeWindow();
     }
 
     @FXML
     private void onBackButtonClicked() {
-        // Mostra la finestra principale senza salvare
-        Stage currentStage = (Stage) backButton.getScene().getWindow();
-        Model.getInstance().getViewFactory().closeStage(currentStage);
-        Model.getInstance().getViewFactory().showMainView(session);
+        if (saveButton.isDisable()) {
+            Stage currentStage = (Stage) backButton.getScene().getWindow();
+            Model.getInstance().getViewFactory().closeStage(currentStage);
+            Model.getInstance().getViewFactory().showMainView(session);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Modifiche non salvate");
+            alert.setHeaderText("Le modifiche sono ancora abilitate.");
+            alert.setContentText("Vuoi davvero tornare indietro senza salvare le modifiche?");
+
+            ButtonType buttonYes = new ButtonType("Sì", ButtonBar.ButtonData.YES);
+            ButtonType buttonNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+            alert.getButtonTypes().setAll(buttonYes, buttonNo);
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == buttonYes) {
+                    Stage stage = (Stage) backButton.getScene().getWindow();
+                    Model.getInstance().getViewFactory().closeStage(stage);
+                    Model.getInstance().getViewFactory().showMainView(session);
+                }
+            });
+        }
     }
 
     private void disableEditing() {
@@ -130,5 +160,10 @@ public class ModificaEventoGUIController {
         saveButton.setDisable(false);
         backButton.setDisable(false);
         editButton.setDisable(true);
+    }
+    private void closeWindow() {
+        // Ottieni la finestra corrente e chiudila
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        stage.close();
     }
 }

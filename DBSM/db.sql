@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS Eventi (
     orario TIME NOT NULL,
     limitePartecipanti INT NOT NULL,
     iscritti INT DEFAULT 0,
-    stato BOOLEAN NOT NULL DEFAULT TRUE
+    stato BOOLEAN NOT NULL DEFAULT TRUE,
+    idOrganizzatore TEXT NOT NULL
 );
 
 -- Tabella Tracker

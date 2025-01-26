@@ -5,11 +5,14 @@ import engclasses.beans.EventoBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+
+import static controllers.grafico.LoginGUIController.showAlert;
 
 /**
  * La classe ViewFactory è responsabile della gestione e creazione delle viste
@@ -163,4 +166,20 @@ public class ViewFactory {
         }
 
     }
+    public void showModificaEvento(Session session, EventoBean evento) {
+        StringBuilder errori = new StringBuilder();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModificaEventoView.fxml"));
+        loader.setController(new ModificaEventoGUIController(session));
+        try {
+            showStage(loader, "Modifica Evento");
+        } catch (Exception e) {
+            errori.append("Errore durante il caricamento della vista: ").append(e.getMessage()).append("\n");
+        }
+        if (errori.length() > 0) {
+            showAlert("Errore", errori.toString(), Alert.AlertType.WARNING);
+        }
+    }
+
+
+
 }

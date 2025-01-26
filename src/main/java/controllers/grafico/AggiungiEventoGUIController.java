@@ -44,53 +44,36 @@ public class AggiungiEventoGUIController {
 
     private void saveNewEvent() {
         // Ottieni i dati dai campi
-        String titolo = titoloField.getText();
-        String descrizione = descrizioneField.getText();
-        String orario = orarioField.getText();
-        String limitePartecipantiText = limitePartecipantiField.getText();
+        String titolo = titoloField.getText().trim();
+        String descrizione = descrizioneField.getText().trim();
+        String orario = orarioField.getText().trim();
+        String limitePartecipantiText = limitePartecipantiField.getText().trim();
+        // Crea la bean con i dati di input
+        EventoBean evento = new EventoBean();
+        evento.setTitolo(titolo);
+        evento.setDescrizione(descrizione);
+        evento.setOrario(orario);
+        evento.setLimitePartecipanti(Integer.parseInt(limitePartecipantiText));
 
-        // Verifica che i dati siano validi
-        if (titolo.isEmpty() || descrizione.isEmpty() || orario.isEmpty() || limitePartecipantiText.isEmpty()) {
-            mostraMessaggioErrore("Tutti i campi devono essere compilati.");
-            return;
-        }
 
-        // Prova a convertire il numero di partecipanti in un intero
-        int limitePartecipanti = 0;
-        try {
-            limitePartecipanti = Integer.parseInt(limitePartecipantiText);
-            if (limitePartecipanti <= 0) {
-                mostraMessaggioErrore("Il numero di partecipanti deve essere maggiore di zero.");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            mostraMessaggioErrore("Il numero di partecipanti non è valido.");
-            return;
-        }
-
-        // Crea un oggetto EventoBean e imposta i valori
-        EventoBean nuovoEvento = new EventoBean();
-        nuovoEvento.setTitolo(titolo);
-        nuovoEvento.setDescrizione(descrizione);
-        nuovoEvento.setOrario(orario);
-        nuovoEvento.setLimitePartecipanti(limitePartecipanti);
-
-        // Istanzia il controller applicativo
+        // Chiamata al Controller applicativo
         GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
+        boolean sucess = gestioneEventoController.aggiungiEvento(evento, session.getIdUtente());
 
-        // Passa la Bean al metodo per aggiungere l'evento
-        try {
-            boolean successo = gestioneEventoController.aggiungiEvento(nuovoEvento, session.getIdUtente());
+        if (sucess) {
+            mostraMessaggioConferma("Evento aggiunto con successo!");
 
-            if (successo) {
-                mostraMessaggioConferma("Evento aggiunto con successo!");
-                closeWindow();
-            } else {
-                mostraMessaggioErrore("Errore durante l'aggiunta dell'evento.");
-            }
-        } catch (Exception e) {
-            mostraMessaggioErrore("Errore: " + e.getMessage());
+            // Logga i nuovi dati alla console
+            System.out.println("Profilo aggiornato: ");
+            System.out.println("Titolo: "+ evento.getTitolo());
+            System.out.println("Descrizione: " + evento.getDescrizione());
+            System.out.println("Orario: " + evento.getOrario());
+            System.out.println("LimitePartecipanti: " + evento.getLimitePartecipanti());
+        } else {
+            mostraMessaggioErrore("Errore durante l'aggiunta dell'evento.");
         }
+        closeWindow();
+
     }
 
     private void closeWindow() {

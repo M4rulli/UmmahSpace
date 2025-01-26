@@ -17,7 +17,7 @@
     <TextField fx:id="orarioField" promptText="Orario Evento (es. 10:00)" style="-fx-font-size: 14px;" />
 
     <!-- Campo Numero Partecipanti -->
-    <TextField fx:id="numeroPartecipantiField" promptText="Numero Partecipanti" style="-fx-font-size: 14px;" />
+    <TextField fx:id="limitePartecipantiField" promptText="Numero Partecipanti" style="-fx-font-size: 14px;" />
 
     <!-- Bottoni -->
     <HBox spacing="10" alignment="CENTER_RIGHT">
