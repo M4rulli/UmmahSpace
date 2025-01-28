@@ -46,7 +46,7 @@ CREATE TABLE Tracker (
 
 -- Tabella Organizzatori
 CREATE TABLE Organizzatori (
-    idUtente VARCHAR(255) PRIMARY KEY,                  -- ID unico dell'utente
+    idUtente VARCHAR(255) PRIMARY KEY,                  -- ID unico dell'utenet
     nome     VARCHAR(100)        NOT NULL,              -- Nome dell'utente
     cognome  VARCHAR(100)        NOT NULL,              -- Cognome dell'utente
     username VARCHAR(100) UNIQUE NOT NULL,              -- Username unico
