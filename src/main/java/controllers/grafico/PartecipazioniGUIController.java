@@ -4,6 +4,7 @@ import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
 import engclasses.beans.PartecipazioneBean;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -80,6 +81,20 @@ public class PartecipazioniGUIController {
         Label participantsLabel = new Label("Partecipanti: " + partecipazione.getIscritti() + "/" + partecipazione.getLimitePartecipanti());
         participantsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
 
+        Label linkLabel = new Label();
+
+        // Controllo se il link esiste
+        if (partecipazione.getLink() == null || partecipazione.getLink().trim().isEmpty()) {
+            linkLabel.setText("Nessun link disponibile per questo evento");
+            linkLabel.setStyle("-fx-text-fill: grey; -fx-font-style: italic;");
+        } else {
+            linkLabel.setText(partecipazione.getLink());
+            linkLabel.setStyle("-fx-text-fill: blue; -fx-underline: true;");
+
+            // Cambia il cursore quando ci si passa sopra
+            linkLabel.setCursor(Cursor.HAND);
+        }
+
         // Stato dell'evento (Aperto o Chiuso)
         Label statusLabel = new Label(partecipazione.isChiuso() ? "Chiuso" : "Aperto");
         statusLabel.setStyle(partecipazione.isChiuso()
@@ -92,7 +107,7 @@ public class PartecipazioniGUIController {
         detailButton.setOnAction(e -> onCancellaIscrizioneButton(partecipazione));
 
         // Aggiungi gli elementi alla card
-        card.getChildren().addAll(titleLabel, timeLabel, dateLabel, organizerLabel, participantsLabel, statusLabel, detailButton);
+        card.getChildren().addAll(titleLabel, timeLabel, dateLabel, organizerLabel, participantsLabel, statusLabel, linkLabel, detailButton);
         card.setSpacing(10);
 
         return card;

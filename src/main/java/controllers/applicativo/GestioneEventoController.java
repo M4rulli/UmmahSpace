@@ -55,11 +55,14 @@ public class GestioneEventoController {
         // Valida i dati forniti nella bean
         String erroriData = validaEvento(eventoBean);
 
+        // Valida il link
+        String erroriLink = validaLink(eventoBean);
+
         // Valida la fascia oraria
         String erroreFasciaOraria = validaFasciaOraria(eventoBean.getOrario(), eventoBean.getData(), session.getIdUtente(), eventoBean.getIdEvento());
 
         // Combina gli errori
-        String errori = erroriData + erroreFasciaOraria;
+        String errori = erroriData + erroreFasciaOraria + erroriLink;
 
         // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi
         if (!errori.isEmpty()) {
@@ -155,7 +158,7 @@ public class GestioneEventoController {
         String erroreFasciaOraria = validaFasciaOraria(updatedBean.getOrario(), updatedBean.getData(), session.getIdUtente(), idEvento);
 
         // Combina gli errori
-        String errori = erroriEvento + erroriData + erroreFasciaOraria;
+        String errori = erroriEvento + erroriData + erroreFasciaOraria + erroriLink;
 
         // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi l'aggiornamento
         if (!errori.isEmpty()) {
@@ -318,6 +321,7 @@ public class GestioneEventoController {
         }
         return errori.toString();
     }
+
     public String validaLink(EventoBean updatedBean) {
         StringBuilder errori = new StringBuilder();
 
@@ -334,7 +338,7 @@ public class GestioneEventoController {
         String URL_REGEX = "^(https?://)?" + // Schema HTTP o HTTPS (facoltativo)
                 "([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}" + // Nome dominio
                 "(:\\d{1,5})?" + // Porta (opzionale)
-                "(\\/\\S*)?$"; // Path o query string (opzionale)
+                "(/\\S*)?$"; // Path o query string (opzionale)
 
         // Verifica il formato del link
         if (!nuovoLink.matches(URL_REGEX)) {

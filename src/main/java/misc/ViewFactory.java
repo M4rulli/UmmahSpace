@@ -166,7 +166,7 @@ public class ViewFactory {
             Stage stage = new Stage();
             stage.setTitle("Aggiungi un evento");
             stage.setResizable(false);
-            Scene scene = new Scene(root, 500, 450);
+            Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {

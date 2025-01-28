@@ -19,7 +19,6 @@ import java.util.List;
 public class Session {
 
     private String nome;
-    private String currentUsername; // Username dell'utente attualmente connesso
     private boolean persistence; // Modalità di persistenza (buffer o database)
     private String idUtente;
     private GestioneTrackerBean trackerBean; // Oggetto per gestire il tracker
@@ -48,7 +47,7 @@ public class Session {
     }
 
     public void setCurrentUsername(String newUsername) {
-        this.currentUsername = newUsername;
+        // Username dell'utente attualmente connesso
     }
 
     public void setIdUtente(String idUtente) {
@@ -57,10 +56,6 @@ public class Session {
 
     public String getIdUtente() {
         return idUtente;
-    }
-
-    public String getCurrentUsername() {
-        return this.currentUsername;
     }
 
     public void setTracker(GestioneTrackerBean trackerBean) {

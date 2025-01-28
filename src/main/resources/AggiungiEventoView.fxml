@@ -41,6 +41,7 @@
 
     <!-- Campo Numero Partecipanti -->
     <TextField fx:id="limitePartecipantiField" promptText="Numero Partecipanti" style="-fx-font-size: 14px;" />
+   <VBox prefHeight="8.0" prefWidth="568.0" />
 
     <!-- Bottoni -->
     <StackPane>

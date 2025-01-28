@@ -3,6 +3,7 @@ package controllers.grafico;
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -62,8 +63,18 @@ public class EventiGiornalieriGUIController {
         Label participantsLabel = new Label("Iscritti: " + evento.getIscritti() + "/" + evento.getLimitePartecipanti());
         participantsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
 
-        Label linkLabel = new Label("Link: " + evento.getLink());
-        linkLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+        Label linkLabel = new Label();
+
+        // Controllo se il link esiste
+        if (evento.getLink() == null || evento.getLink().trim().isEmpty()) {
+            linkLabel.setText("Nessun link disponibile per questo evento");
+            linkLabel.setStyle("-fx-text-fill: grey; -fx-font-style: italic;");
+        } else {
+            linkLabel.setText(evento.getLink());
+            linkLabel.setStyle("-fx-text-fill: blue; -fx-underline: true;");
+            // Cambia il cursore quando ci si passa sopra
+            linkLabel.setCursor(Cursor.HAND);
+        }
 
         Label statusLabel = new Label(evento.isChiuso() ? "Chiuso" : "Aperto");
         statusLabel.setStyle(evento.isChiuso()
@@ -75,7 +86,7 @@ public class EventiGiornalieriGUIController {
         registerButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
         registerButton.setOnAction(e -> onRegistratiButton(evento));
 
-        card.getChildren().addAll(titleLabel, timeLabel, organizerLabel, participantsLabel, statusLabel, registerButton);
+        card.getChildren().addAll(titleLabel, timeLabel, organizerLabel, participantsLabel, linkLabel, statusLabel, registerButton);
         card.setSpacing(10);
 
         return card;

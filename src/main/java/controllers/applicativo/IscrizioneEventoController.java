@@ -71,6 +71,7 @@ public class IscrizioneEventoController {
                 bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
                 bean.setStato(evento.getStato());
                 eventiDelGiorno.add(bean);
+
             }
         }
         return eventiDelGiorno;

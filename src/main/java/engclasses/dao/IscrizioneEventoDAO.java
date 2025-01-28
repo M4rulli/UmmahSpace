@@ -2,13 +2,9 @@ package engclasses.dao;
 
 import misc.Connect;
 import model.Evento;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Partecipazione;
-
 
 public class IscrizioneEventoDAO {
     private static final List<Evento> eventiBuffer = new ArrayList<>();
@@ -95,7 +91,7 @@ public class IscrizioneEventoDAO {
         }
     }
 
-    private static boolean aggiornaNumeroIscrittiNelDb(long idEvento, int incremento) {
+    private static void aggiornaNumeroIscrittiNelDb(long idEvento, int incremento) {
         String query = "UPDATE Eventi SET iscritti = iscritti + ? WHERE idEvento = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -103,8 +99,7 @@ public class IscrizioneEventoDAO {
             stmt.setInt(1, incremento); // Incremento (può essere positivo o negativo)
             stmt.setLong(2, idEvento); // ID dell'evento
 
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0; // True se l'aggiornamento è riuscito
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Errore durante l'aggiornamento del numero di iscritti nel database.", e);

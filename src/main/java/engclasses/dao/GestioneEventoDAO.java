@@ -61,9 +61,9 @@ public class GestioneEventoDAO {
     private static List<Evento> getEventiDalBuffer(String idUtente) {
         List<Evento> eventiPerOrganizzatore = new ArrayList<>();
         for (Evento evento : eventiBuffer) {
-            //if (Objects.equals(evento.getIdOrganizzatore(), idUtente)) {
+            if (Objects.equals(evento.getIdOrganizzatore(), idUtente)) {
                 eventiPerOrganizzatore.add(evento);
-            //}
+            }
         }
         return eventiPerOrganizzatore;
     }
@@ -103,12 +103,12 @@ public class GestioneEventoDAO {
     private static boolean eliminaEventoDalBuffer(long idEvento, String idUtente) {
         for (int i = 0; i < eventiBuffer.size(); i++) {
             Evento evento = eventiBuffer.get(i);
-            //if (evento.getIdEvento() == idEvento && Objects.equals(evento.getIdOrganizzatore(), idUtente)) {
+            if (evento.getIdEvento() == idEvento && Objects.equals(evento.getIdOrganizzatore(), idUtente)) {
                 eventiBuffer.remove(i);
-                return true; // Ritorna true se l'evento è stato eliminato
-            //}
+                return true;
+            }
         }
-        return false; // Ritorna false se l'evento non è stato trovato o non è stato eliminato
+        return false;
     }
 
     // Recupera un evento dal buffer tramite ID
@@ -175,7 +175,7 @@ public class GestioneEventoDAO {
     // Salva un evento nel database
     private static boolean salvaEventoInDb(Evento evento) {
         String query = "INSERT INTO Eventi (idEvento, idUtente, titolo, descrizione, data, orario, link, nomeOrganizzatore, cognomeOrganizzatore, limitePartecipanti, iscritti, stato) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
