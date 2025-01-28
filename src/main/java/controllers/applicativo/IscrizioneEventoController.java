@@ -21,6 +21,7 @@ import static misc.MessageUtils.mostraMessaggioErrore;
 public class IscrizioneEventoController {
 
     private final Session session;
+    private static final String ERRORE = "Errore";
 
     public IscrizioneEventoController(Session session) {
         this.session = session;
@@ -82,27 +83,27 @@ public class IscrizioneEventoController {
 
             // Verifica se il partecipante è già iscritto a questo specifico evento
             if (PartecipazioneDAO.isPartecipanteIscritto(session.getIdUtente(), idEvento, session.isPersistence())) {
-                mostraMessaggioErrore("Errore","Sei già iscritto a questo evento.");
+                mostraMessaggioErrore(ERRORE,"Sei già iscritto a questo evento.");
                 return false;
             }
 
             // Recupera i dati del partecipante dal DAO
             Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), session.isPersistence());
             if (partecipante == null) {
-                mostraMessaggioErrore("Errore", "Partecipante non trovato per l'ID: " + session.getIdUtente());
+                mostraMessaggioErrore(ERRORE, "Partecipante non trovato per l'ID: " + session.getIdUtente());
                 return false;
             }
 
             // Recupera i dati dell'evento dal DAO
             Evento evento = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
             if (evento == null) {
-                mostraMessaggioErrore("Errore", "Evento non trovato per l'ID: " + idEvento);
+                mostraMessaggioErrore(ERRORE, "Evento non trovato per l'ID: " + idEvento);
                 return false;
             }
 
             // Verifica il limite di partecipanti
             if (!evento.getStato() || evento.getIscritti() >= Integer.parseInt(evento.getLimitePartecipanti())) {
-                mostraMessaggioErrore("Errore", "L'evento ha raggiunto il limite di partecipanti o è chiuso.");
+                mostraMessaggioErrore(ERRORE, "L'evento ha raggiunto il limite di partecipanti o è chiuso.");
                 return false;
             }
 

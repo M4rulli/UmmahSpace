@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static misc.MessageUtils.mostraMessaggioErrore;
+
 public class GestioneTrackerGUIController {
 
     private final Session session;
@@ -35,11 +37,35 @@ public class GestioneTrackerGUIController {
     @FXML
     private Button addReadingButton;
     @FXML
-    private Circle fajrCircle, dhuhrCircle, asrCircle, maghribCircle, ishaCircle;
+    private Circle fajrCircle;
     @FXML
-    private Button fajrButton, dhuhrButton, asrButton, maghribButton, ishaButton;
+    private Circle dhuhrCircle;
     @FXML
-    private Label fajrCheck, dhuhrCheck, asrCheck, maghribCheck, ishaCheck;
+    private Circle asrCircle;
+    @FXML
+    private Circle maghribCircle;
+    @FXML
+    private Circle ishaCircle;
+    @FXML
+    private Button fajrButton;
+    @FXML
+    private Button dhuhrButton;
+    @FXML
+    private Button asrButton;
+    @FXML
+    private Button maghribButton;
+    @FXML
+    private Button ishaButton;
+    @FXML
+    private Label fajrCheck;
+    @FXML
+    private Label dhuhrCheck;
+    @FXML
+    private Label asrCheck;
+    @FXML
+    private Label maghribCheck;
+    @FXML
+    private Label ishaCheck;
     @FXML
     private CheckBox sunnahCheckBox;
     @FXML
@@ -54,6 +80,8 @@ public class GestioneTrackerGUIController {
     private ToggleSwitch fastingSwitch;
     @FXML
     private TextArea fastingNotes;
+
+    private static final String ERRORE = "Errore";
 
     public GestioneTrackerGUIController(Session session) {
         this.session = session;
@@ -93,11 +121,7 @@ public class GestioneTrackerGUIController {
                 int pages = Integer.parseInt(pagesStr);
 
                 if (pages <= 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Il numero di pagine deve essere maggiore di zero.");
-                    alert.showAndWait();
+                    mostraMessaggioErrore(ERRORE,"Il numero di pagine deve essere maggiore di zero.");
                     return;
                 }
 
@@ -107,29 +131,16 @@ public class GestioneTrackerGUIController {
 
                 // Passa la Bean al Controller Applicativo e ottiene una bean aggiornata
                 GestioneTrackerController trackerController = new GestioneTrackerController(session);
-                try {
-                    GestioneTrackerBean updatedBean = trackerController.aggiungiLettura(trackerBean);
+                GestioneTrackerBean updatedBean = trackerController.aggiungiLettura(trackerBean);
 
-                    // Salva la bean aggiornata nella sessione
-                    session.setTracker(updatedBean);
+                // Salva la bean aggiornata nella sessione
+                session.setTracker(updatedBean);
 
-                    // Aggiorna la UI
-                    aggiornaBarra();
-
-                } catch (IllegalArgumentException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore");
-                    alert.setHeaderText(null);
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
-                }
+                // Aggiorna la UI
+                aggiornaBarra();
 
             } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Errore");
-                alert.setHeaderText(null);
-                alert.setContentText("Inserisci un numero valido.");
-                alert.showAndWait();
+                mostraMessaggioErrore(ERRORE, "Inserisci un numero valido.");
             }
         });
     }
@@ -145,24 +156,15 @@ public class GestioneTrackerGUIController {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(goalStr -> {
+
             try {
                 int goal = Integer.parseInt(goalStr);
-
                 if (goal <= 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore");
-                    alert.setHeaderText(null);
-                    alert.setContentText("L'obiettivo deve essere maggiore di zero.");
-                    alert.showAndWait();
+                    mostraMessaggioErrore(ERRORE, "L'obiettivo deve essere maggiore di zero.");
                     return;
                 }
-
                 if (goal > 604) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore");
-                    alert.setHeaderText(null);
-                    alert.setContentText("L'obiettivo non può essere più grande di 604 pagine");
-                    alert.showAndWait();
+                    mostraMessaggioErrore(ERRORE,"L'obiettivo non può essere più grande di 604 pagine");
                     return;
                 }
 
@@ -172,29 +174,16 @@ public class GestioneTrackerGUIController {
 
                 // Passa la Bean al Controller Applicativo e ottiene una bean aggiornata
                 GestioneTrackerController trackerController = new GestioneTrackerController(session);
-                try {
-                    GestioneTrackerBean updatedBean = trackerController.setObiettivoGiornaliero(trackerBean);
+                GestioneTrackerBean updatedBean = trackerController.setObiettivoGiornaliero(trackerBean);
 
-                    // Salva la bean aggiornata nella sessione
-                    session.setTracker(updatedBean);
+                // Salva la bean aggiornata nella sessione
+                session.setTracker(updatedBean);
 
-                    // Aggiorna la UI
-                    aggiornaBarra();
-
-                } catch (IllegalArgumentException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore");
-                    alert.setHeaderText(null);
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
-                }
-
-            } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Errore");
-                alert.setHeaderText(null);
-                alert.setContentText("Inserisci un numero valido.");
-                alert.showAndWait();
+                // Aggiorna la UI
+                aggiornaBarra();
+            }
+                catch (NumberFormatException e) {
+                mostraMessaggioErrore(ERRORE, "Inserisci un numero valido.");
             }
         });
     }
@@ -302,11 +291,7 @@ public class GestioneTrackerGUIController {
             session.setTracker(updatedBean);
 
         } catch (IllegalArgumentException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Errore");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            mostraMessaggioErrore("Errore", null);
         }
     }
 

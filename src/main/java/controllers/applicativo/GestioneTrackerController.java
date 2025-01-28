@@ -5,17 +5,16 @@ import engclasses.dao.GestioneTrackerDAO;
 import misc.GestioneTrackerBeanFactory;
 import misc.Session;
 import model.Tracker;
-
-import javax.security.auth.Subject;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 public class GestioneTrackerController  {
 
 
     private final Session session;
+
+
     private static final List<String> PREGHIERE = List.of("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha");
+    private static final String TRACKER_NOT_FOUND_MESSAGE = "Tracker non trovato per l'utente.";
 
     public GestioneTrackerController(Session session) {
         this.session = session;
@@ -28,7 +27,7 @@ public class GestioneTrackerController  {
         // Recupera il Tracker associato all'utente
         Tracker tracker = GestioneTrackerDAO.getTracker(session.getIdUtente(), session.isPersistence());
         if (tracker == null) {
-            throw new IllegalArgumentException("Tracker non trovato per l'utente.");
+            throw new IllegalArgumentException(TRACKER_NOT_FOUND_MESSAGE);
         }
 
         // Recupera l'obiettivo giornaliero
@@ -66,7 +65,7 @@ public class GestioneTrackerController  {
         // Recupera il Tracker dalla DAO
         Tracker tracker = GestioneTrackerDAO.getTracker(session.getIdUtente(), persistence);
         if (tracker == null) {
-            throw new IllegalArgumentException("Tracker non trovato per l'utente.");
+            throw new IllegalArgumentException(TRACKER_NOT_FOUND_MESSAGE);
         }
 
         // Calcola il progresso
@@ -91,15 +90,13 @@ public class GestioneTrackerController  {
         // Recupera il tracker associato all'utente
         Tracker tracker = GestioneTrackerDAO.getTracker(session.getIdUtente(), session.isPersistence());
         if (tracker == null) {
-            throw new IllegalArgumentException("Tracker non trovato per l'utente.");
+            throw new IllegalArgumentException(TRACKER_NOT_FOUND_MESSAGE);
         }
 
         // Aggiorna lo stato delle preghiere
-        tracker.setPreghiera("Fajr", trackerBean.getPreghiera("Fajr"));
-        tracker.setPreghiera("Dhuhr", trackerBean.getPreghiera("Dhuhr"));
-        tracker.setPreghiera("Asr", trackerBean.getPreghiera("Asr"));
-        tracker.setPreghiera("Maghrib", trackerBean.getPreghiera("Maghrib"));
-        tracker.setPreghiera("Isha", trackerBean.getPreghiera("Isha"));
+        for (String preghiera : PREGHIERE) {
+            tracker.setPreghiera(preghiera, trackerBean.getPreghiera(preghiera));
+        }
 
         // Salva i dati aggiornati nella DAO
         GestioneTrackerDAO.saveOrUpdateTracker(tracker, session.isPersistence());

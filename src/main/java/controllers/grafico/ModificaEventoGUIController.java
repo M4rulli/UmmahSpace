@@ -112,14 +112,6 @@ public class ModificaEventoGUIController {
                     updatedEvento.getLimitePartecipanti()
             );
 
-            System.out.println("Evento aggiornato: ");
-            System.out.println("Titolo: " + updatedEvento.getTitolo());
-            System.out.println("Descrizione: " + updatedEvento.getDescrizione());
-            System.out.println("Data: " + updatedEvento.getData());
-            System.out.println("Orario: " + updatedEvento.getOrario());
-            System.out.println("Link: " + updatedEvento.getLink());
-            System.out.println("Limite: " + updatedEvento.getLimitePartecipanti());
-
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Conferma");
             alert.setHeaderText(null);

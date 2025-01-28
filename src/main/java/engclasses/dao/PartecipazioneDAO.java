@@ -26,8 +26,7 @@ public class PartecipazioneDAO {
 
     public static void aggiungiPartecipazioneBuffer(Partecipazione partecipazione) {
         partecipazioniBuffer.add(partecipazione);
-        System.out.println("Partecipazione salvata con successo nel buffer!");
-    }
+        }
 
     public static void aggiungiPartecipazioneDb(Partecipazione partecipazione) {
         String query = "INSERT INTO Partecipazioni (idUtente, idEvento, nome, cognome, username, email, dataIscrizione) " +
@@ -44,8 +43,7 @@ public class PartecipazioneDAO {
             stmt.setString(7, partecipazione.getDataIscrizione());
 
             stmt.executeUpdate();
-            System.out.println("Partecipazione salvata nel database: " + partecipazione);
-        } catch (SQLException e) {
+            } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Errore durante il salvataggio della partecipazione nel database.", e);
         }

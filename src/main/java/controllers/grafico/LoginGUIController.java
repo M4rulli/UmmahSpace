@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import misc.Session;
 import misc.Model;
 
+import static misc.MessageUtils.mostraMessaggioConferma;
+
 public class LoginGUIController {
 
     @FXML
@@ -27,6 +29,8 @@ public class LoginGUIController {
     private CheckBox organizzatoreCheckbox;
 
     private final Session session;
+    private static final GestioneTrackerBean ORGANIZZATORE_PLACEHOLDER = new GestioneTrackerBean();
+
 
     public LoginGUIController(Session session) {
         this.session = session;
@@ -34,9 +38,6 @@ public class LoginGUIController {
 
     @FXML
     private void initialize() {
-        // Log per indicare la zona corrente
-        System.out.println("Zona Login. Persistenza attiva: " + session.isPersistence());
-
         // Assegna l'azione al link di registrazione
         registrationLink.setOnAction(event -> onHyperLinkRegistrationClicked());
 
@@ -75,35 +76,32 @@ public class LoginGUIController {
         LoginController loginController = new LoginController(session);
         GestioneTrackerBean trackerBean = loginController.effettuaLogin(loginBean, session.isPersistence());
 
-        if (trackerBean != null) {
+        if (trackerBean != null && trackerBean != ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come partecipante
             session.setCurrentUsername(username);
             session.setTracker(trackerBean); // Salva il tracker nella sessione;
 
             // Mostra messaggio di successo e passa alla MainView
-            System.out.println("Login effettuato con successo!");
+            mostraMessaggioConferma("Successo", "Login effettuato con successo!");
             Stage stage = (Stage) loginButton.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
             Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
 
-        } else if (session.isOrganizzatore()) {
+        } else if (trackerBean == ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come organizzatore
             session.setCurrentUsername(username);
 
             // Mostra messaggio di successo e passa alla MainView
-            System.out.println("Login effettuato con successo!");
+            mostraMessaggioConferma("Successo", "Login effettuato con successo!");
             Stage stage = (Stage) loginButton.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
             Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
-        } else {
-            System.out.println("Login non effettuato.");
         }
     }
 
     private void listenOrganizzatoreCheckBox() {
         organizzatoreCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             session.setIsOrganizzatore(newValue); // Aggiorna lo stato nella sessione
-            System.out.println("Stato Organizzatore aggiornato: " + newValue);
         });
     }
 

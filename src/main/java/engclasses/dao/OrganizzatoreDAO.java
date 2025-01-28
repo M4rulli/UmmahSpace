@@ -9,11 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class OrganizzatoreDAO {
 
     // Buffer per memorizzare temporaneamente gli organizzatori
     private static final Map<String, Organizzatore> bufferOrganizzatori = new HashMap<>();
+    private static final Set<String> CAMPI_VALIDI = Set.of("username", "idUtente", "email");
 
 
     // Costruttore
@@ -31,8 +33,7 @@ public class OrganizzatoreDAO {
     // Salva un organizzatore nel buffer temporaneo
     private static void salvaInBuffer(Organizzatore organizzatore) {
         bufferOrganizzatori.put(organizzatore.getIdUtente(), organizzatore);
-        System.out.println("Organizzatore salvato nel buffer: " + organizzatore.getIdUtente());
-    }
+        }
 
     // Salva un organizzatore nel database
     private static void salvaInDb(Organizzatore organizzatore) {
@@ -50,8 +51,7 @@ public class OrganizzatoreDAO {
             stmt.setString(8, organizzatore.getTitoloDiStudio());
 
             stmt.executeUpdate();
-            System.out.println("Organizzatore salvato nel database: " + organizzatore.getIdUtente());
-        } catch (SQLException e) {
+            } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -67,6 +67,10 @@ public class OrganizzatoreDAO {
 
     // Recupera un organizzatore dal database
     private static Organizzatore recuperaDaDb(String campo, String idUtente) {
+        // Controlla se il campo è valido
+        if (!CAMPI_VALIDI.contains(campo)) {
+            throw new IllegalArgumentException("Campo non valido: " + campo);
+        }
         String query = "SELECT * FROM Organizzatori WHERE " + campo + " = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -118,12 +122,10 @@ public class OrganizzatoreDAO {
             if (rowsUpdated > 0) {
                 return true;
             } else {
-                System.out.println("Errore: Nessuna riga aggiornata. Verifica l'ID Utente.");
-            }
+                }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Errore durante l'aggiornamento dell'organizzatore nel database.");
         return false;
     }
 
@@ -131,12 +133,10 @@ public class OrganizzatoreDAO {
         String idUtente = organizzatoreAggiornato.getIdUtente();
 
         if (!bufferOrganizzatori.containsKey(idUtente)) {
-            System.out.println("Errore: Organizzatore non trovato nel buffer.");
             return false;
         }
 
         bufferOrganizzatori.put(idUtente, organizzatoreAggiornato);
-        System.out.println("Organizzatore aggiornato nel buffer: " + idUtente);
         return true;
     }
 }

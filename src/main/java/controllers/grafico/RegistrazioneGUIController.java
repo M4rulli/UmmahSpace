@@ -130,11 +130,6 @@ public class RegistrazioneGUIController {
     private void togglePersistence() {
         persistence = persistenceSwitch.isSelected(); // Cambia il valore della persistenza
         session.setPersistence(persistence); // Salva il nuovo valore della persistenza nella sessione
-        if (persistence) {
-            System.out.println("Il salvataggio ora avviene nel database.");
-        } else {
-            System.out.println("Il salvataggio ora avviene nel buffer.");
-        }
     }
 
     private void listenOrganizzatoreCheckBox() {

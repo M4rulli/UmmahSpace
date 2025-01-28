@@ -9,11 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class PartecipanteDAO {
 
     // Buffer per memorizzare temporaneamente i partecipanti
     private static final Map<String, Partecipante> bufferPartecipanti = new HashMap<>();
+    private static final Set<String> CAMPI_VALIDI = Set.of("username", "idUtente", "email");
 
 
     // Aggiunge un partecipante, scegliendo tra buffer o database in base al flag 'persistence'
@@ -62,6 +64,10 @@ public class PartecipanteDAO {
 
     // Recupera un partecipante dal database in base al campo specificato
     private static Partecipante recuperaDaDb(String campo, String valore) {
+        // Controlla se il campo è valido
+        if (!CAMPI_VALIDI.contains(campo)) {
+            throw new IllegalArgumentException("Campo non valido: " + campo);
+        }
         String query = "SELECT * FROM Partecipanti WHERE " + campo + " = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query,
@@ -130,12 +136,10 @@ public class PartecipanteDAO {
             if (rowsUpdated > 0) {
                 return true;
             } else {
-                System.out.println("Errore: Nessuna riga aggiornata. Verifica l'ID Utente.");
-            }
+                }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Errore durante l'aggiornamento del partecipante nel database.");
         return false;
     }
 
@@ -147,7 +151,6 @@ public class PartecipanteDAO {
         }
 
         bufferPartecipanti.put(username, partecipanteAggiornato);
-        System.out.println("Partecipante aggiornato nel buffer: " + username);
         return true;
     }
 }

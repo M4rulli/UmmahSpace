@@ -19,6 +19,7 @@ import static misc.MessageUtils.mostraMessaggioErrore;
 public class GestioneEventoController {
 
     private final Session session;
+    private static final String MESSAGGIO_ERRORE = "Errore";
 
     public GestioneEventoController(Session session) {
         this.session = session;
@@ -66,7 +67,7 @@ public class GestioneEventoController {
 
         // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi
         if (!errori.isEmpty()) {
-            mostraMessaggioErrore("Errore", errori);
+            mostraMessaggioErrore(MESSAGGIO_ERRORE, errori);
             return false;
         }
 
@@ -97,7 +98,7 @@ public class GestioneEventoController {
     // Metodo per eliminare un evento
     public boolean eliminaEvento(long idEvento, String idUtente) {
         if (idEvento <= 0) {
-            mostraMessaggioErrore("Errore", "ID evento non valido.");
+            mostraMessaggioErrore(MESSAGGIO_ERRORE, "ID evento non valido.");
             return false;
         }
         return GestioneEventoDAO.eliminaEvento(idEvento, idUtente, session.isPersistence());
@@ -162,7 +163,7 @@ public class GestioneEventoController {
 
         // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi l'aggiornamento
         if (!errori.isEmpty()) {
-            mostraMessaggioErrore("Errore", errori);
+            mostraMessaggioErrore(MESSAGGIO_ERRORE, errori);
             return false;
         }
 
@@ -206,53 +207,73 @@ public class GestioneEventoController {
 
 
     private String validaEvento(EventoBean eventoBean) {
-        StringBuilder errori = new StringBuilder();
+        List<String> errori = new ArrayList<>();
 
-        // Validazione dei campi obbligatori
-        if (eventoBean.getTitolo() == null || eventoBean.getTitolo().isEmpty()) {
-            errori.append("Il titolo dell'evento è obbligatorio.\n");
-        }
-        if (eventoBean.getDescrizione() == null || eventoBean.getDescrizione().isEmpty()) {
-            errori.append("La descrizione dell'evento è obbligatoria.\n");
-        } else if (eventoBean.getDescrizione().length() > 500) {
-            errori.append("La descrizione non può essere più lunga di 500 caratteri.\n");
-        }
+        // Validazione campi obbligatori
+        validaCampo(eventoBean.getTitolo(), "Il titolo dell'evento", errori);
+        validaCampo(eventoBean.getDescrizione(), "La descrizione dell'evento", errori);
+        validaCampo(eventoBean.getOrario(), "L'orario dell'evento", errori);
 
-        // Validazione dell'orario
-        if (eventoBean.getOrario() == null || eventoBean.getOrario().replace(" - ", "").isEmpty()) {
-            errori.append("L'orario dell'evento è obbligatorio.\n");
-        } else {
-            // Controlla se il formato è valido: "HH:mm - HH:mm"
-            if (!eventoBean.getOrario().matches("^([01]\\d|2[0-3]):([0-5]\\d) - ([01]\\d|2[0-3]):([0-5]\\d)$")) {
-                errori.append("L'orario deve essere nel formato 'HH:mm - HH:mm' (es. 09:00 - 17:00).\n");
+        // Validazione descrizione (lunghezza massima)
+        validaLunghezza(eventoBean.getDescrizione(), "La descrizione", 500, errori);
+
+        // Validazione orario
+        validaFormatoOrario(eventoBean.getOrario(), errori);
+
+        // Validazione limite partecipanti
+        validaLimitePartecipanti(eventoBean, errori);
+
+        // Restituisce gli errori concatenati
+        return String.join("\n", errori);
+    }
+
+    // Metodo generico per validare campi obbligatori
+    private void validaCampo(String valore, String nomeCampo, List<String> errori) {
+        if (valore == null || valore.trim().isEmpty()) {
+            errori.add(nomeCampo + " è obbligatorio.");
+        }
+    }
+
+    // Metodo per validare la lunghezza di un campo
+    private void validaLunghezza(String valore, String nomeCampo, int maxLunghezza, List<String> errori) {
+        if (valore != null && valore.length() > maxLunghezza) {
+            errori.add(nomeCampo + " non può essere più lungo di " + maxLunghezza + " caratteri.");
+        }
+    }
+
+    // Metodo per validare il formato dell'orario
+    private void validaFormatoOrario(String orario, List<String> errori) {
+        if (orario != null && !orario.trim().isEmpty()) {
+            String regex = "^([01]\\d|2[0-3]):([0-5]\\d) - ([01]\\d|2[0-3]):([0-5]\\d)$";
+            if (!orario.matches(regex)) {
+                errori.add("L'orario deve essere nel formato 'HH:mm - HH:mm' (es. 09:00 - 17:00).");
             } else {
-                // Valida che l'orario di inizio sia precedente all'orario di fine
-                String[] orari = eventoBean.getOrario().split(" - ");
-                String orarioInizio = orari[0];
-                String orarioFine = orari[1];
-                if (orarioInizio.compareTo(orarioFine) >= 0) {
-                    errori.append("L'orario di inizio deve essere precedente all'orario di fine.\n");
+                // Validazione che l'orario di inizio sia prima dell'orario di fine
+                String[] orari = orario.split(" - ");
+                if (orari[0].compareTo(orari[1]) >= 0) {
+                    errori.add("L'orario di inizio deve essere precedente all'orario di fine.");
                 }
             }
         }
+    }
 
-        // Validazione del limite partecipanti
-        if (eventoBean.getLimitePartecipanti().trim().isEmpty()) {
-            errori.append("Il limite dei partecipanti è obbligatorio.\n");
-        } else {
-            try {
-                int limitePartecipanti = Integer.parseInt(eventoBean.getLimitePartecipanti().trim());
-                if (limitePartecipanti <= 0) {
-                    errori.append("Il limite dei partecipanti deve essere maggiore di zero.\n");
-                } else {
-                    eventoBean.setLimitePartecipanti(String.valueOf(limitePartecipanti));
-                }
-            } catch (NumberFormatException e) {
-                errori.append("Il limite dei partecipanti deve essere un numero valido.\n");
-            }
+    // Metodo per validare il limite dei partecipanti
+    private void validaLimitePartecipanti(EventoBean eventoBean, List<String> errori) {
+        String limite = eventoBean.getLimitePartecipanti();
+        if (limite == null || limite.trim().isEmpty()) {
+            errori.add("Il limite dei partecipanti è obbligatorio.");
+            return;
         }
-
-        return errori.toString();
+        try {
+            int numero = Integer.parseInt(limite.trim());
+            if (numero <= 0) {
+                errori.add("Il limite dei partecipanti deve essere maggiore di zero.");
+            } else {
+                eventoBean.setLimitePartecipanti(String.valueOf(numero));
+            }
+        } catch (NumberFormatException e) {
+            errori.add("Il limite dei partecipanti deve essere un numero valido.");
+        }
     }
 
     public String validaData(EventoBean updatedBean) {
@@ -335,13 +356,13 @@ public class GestioneEventoController {
         }
 
         // Regex per validare il formato base di un URL
-        String URL_REGEX = "^(https?://)?" + // Schema HTTP o HTTPS (facoltativo)
-                "([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}" + // Nome dominio
-                "(:\\d{1,5})?" + // Porta (opzionale)
-                "(/\\S*)?$"; // Path o query string (opzionale)
+        String urlRegex = "^(https?:\\/\\/)?"
+                + "([a-zA-Z0-9\\-\\.]+\\.)+[a-zA-Z]{2,}"  // Nome dominio
+                + "(:\\d{1,5})?"                          // Porta (opzionale)
+                + "(\\/\\S*)?$";                          // Path o query string (opzionale)
 
         // Verifica il formato del link
-        if (!nuovoLink.matches(URL_REGEX)) {
+        if (!nuovoLink.matches(urlRegex)) {
             errori.append("Il link deve essere valido, es. 'https://example.com'.\n");
         }
         return errori.toString();

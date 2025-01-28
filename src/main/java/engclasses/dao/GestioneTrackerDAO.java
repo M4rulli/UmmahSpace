@@ -62,7 +62,6 @@ public class GestioneTrackerDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Tracker non trovato nel database per l'utente con ID: " + idUtente);
         return null;
     }
 
@@ -90,15 +89,13 @@ public class GestioneTrackerDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Errore durante il salvataggio/aggiornamento del tracker nel database.");
-        }
+            }
     }
 
     private static Tracker getTrackerFromBuffer(String idUtente) {
         Tracker tracker = trackerBuffer.get(idUtente);
         if (tracker == null) {
-            System.out.println("Tracker non trovato nel buffer per l'utente con ID: " + idUtente);
-        }
+            }
         return tracker;
     }
 

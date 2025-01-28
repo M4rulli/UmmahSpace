@@ -111,16 +111,9 @@ public class GestisciProfiloGUIController {
             );
 
 
-            System.out.println("Profilo aggiornato: ");
-            System.out.println("Nome: " + updatedBean.getNome());
-            System.out.println("Cognome: " + updatedBean.getCognome());
-            System.out.println("Username: " + updatedBean.getUsername());
-            System.out.println("Email: " + updatedBean.getEmail());
-
             mostraMessaggioConferma("Conferma", "Modifiche salvate con successo!");
         } else {
-            System.out.println("Errore durante l'aggiornamento dei dati.");
-        }
+            }
     }
 
     @FXML

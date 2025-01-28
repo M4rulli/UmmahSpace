@@ -237,12 +237,10 @@ public class GestioneEventoDAO {
             if (rowsDeleted > 0) {
                 return true;
             } else {
-                System.out.println("Errore: Nessuna riga aggiornata. Verifica l'ID Evento.");
-            }
+                }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Errore durante l'eliminazione dell'evento nel database.");
         return false;
     }
     
