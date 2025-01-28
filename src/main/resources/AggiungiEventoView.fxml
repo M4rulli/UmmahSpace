@@ -2,26 +2,48 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox spacing="10" style="-fx-padding: 20;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" >
+<VBox spacing="10" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <!-- Titolo -->
-    <Label text="Aggiungi un nuovo evento" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="555.0"
+           text="Aggiungi un nuovo evento">
+        <font>
+            <Font name="Helvetica Bold" size="18.0" />
+        </font>
+    </Label>
+
+    <Label style="-fx-font-size: 14px;" text="Titolo:" />
 
     <!-- Campo Titolo -->
     <TextField fx:id="titoloField" promptText="Titolo Evento" style="-fx-font-size: 14px;" />
 
+    <Label style="-fx-font-size: 14px;" text="Descrizione:" />
+
     <!-- Campo Descrizione -->
     <TextArea fx:id="descrizioneField" promptText="Descrizione Evento" style="-fx-font-size: 14px; -fx-pref-height: 100px;" wrapText="true" />
 
+    <Label style="-fx-font-size: 14px;" text="Orario di inizio:" />
+
     <!-- Campo Orario -->
-    <TextField fx:id="orarioField" promptText="Orario Evento (es. 10:00)" style="-fx-font-size: 14px;" />
+    <TextField fx:id="orarioField1" promptText="Orario Inizio Evento (es. 10:00)" style="-fx-font-size: 14px;" />
+
+    <Label style="-fx-font-size: 14px;" text="Orario di fine:" />
+
+    <!-- Campo Orario -->
+    <TextField fx:id="orarioField2" promptText="Orario Fine Evento (es. 11:00)" style="-fx-font-size: 14px;" />
+
+    <Label style="-fx-font-size: 14px;" text="Limite Partecipanti:" />
 
     <!-- Campo Numero Partecipanti -->
     <TextField fx:id="limitePartecipantiField" promptText="Numero Partecipanti" style="-fx-font-size: 14px;" />
 
     <!-- Bottoni -->
-    <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button fx:id="annullaButton" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" text="Annulla" />
-        <Button fx:id="salvaButton" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" text="Salva" />
-    </HBox>
+    <StackPane>
+        <HBox alignment="CENTER" spacing="10">
+            <Button fx:id="salvaButton" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" text="Aggiungi Evento" />
+            <Button fx:id="annullaButton" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;" text="Annulla" />
+        </HBox>
+    </StackPane>
+
 </VBox>

@@ -1,27 +1,42 @@
 package controllers.grafico;
 
-import engclasses.beans.GestioneTrackerBean;
-import engclasses.dao.PartecipanteDAO;
+import controllers.applicativo.OrarioPreghiereController;
+import engclasses.beans.EventoBean;
+import engclasses.pattern.AlAdhanAdapter;
+import engclasses.pattern.GeolocalizzazioneIPAdapter;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import misc.Model;
 import misc.Session;
-import model.Partecipante;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+
+import static misc.MessageUtils.mostraMessaggioConfermaConScelta;
 
 public class MainViewGUIController {
 
     private final Session session;
+    private final LocalDateTime currentDateTime;
 
     @FXML
     private Label welcomeLabel;
     @FXML
+    private Label subMessageLabel;
+    @FXML
     private Button profileButton;
+    @FXML
+    private Button logoutButton;
     @FXML
     private Label dateLabel;
     @FXML
@@ -34,33 +49,82 @@ public class MainViewGUIController {
     private Tab trackerTab;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private Tab eventiTab;
+    @FXML
+    private Label preghieraPassataLabel;
+    @FXML
+    private Label preghieraFuturaLabel;
+    @FXML
+    private VBox box1;
+    @FXML
+    private VBox box2;
+    @FXML
+    private VBox box3;
+
 
     public MainViewGUIController(Session session) {
         this.session = session;
+        this.currentDateTime = LocalDateTime.now();
     }
 
     @FXML
     private void initialize() {
+        HBox.setHgrow(box1, Priority.ALWAYS);
+        HBox.setHgrow(box2, Priority.ALWAYS);
+        HBox.setHgrow(box3, Priority.ALWAYS);
+        // Imposta le preghiere
+        inizializzaOrariPreghiere();
+        // Imposta il messaggio di benvenuto
         setWelcomeMessage();
-        // Configura l'handler
+        // Configura l'handler per il bottone del profilo e del logout
         profileButton.setOnAction(event -> onProfileButtonClicked());
+        logoutButton.setOnAction(event -> onLogoutButtonClicked());
         // Carica la sotto-vista del Calendario
         Model.getInstance().getViewFactory().loadCalendarioView(calendarioContainer, session);
         // Carica la sotto-vista del Tracker
         Model.getInstance().getViewFactory().loadTrackerView(trackerContainer, session);
-        // Carica la sotto-vista della lista eventi
-        Model.getInstance().getViewFactory().loadListaEventiView(eventiContainer, session);
-        // Altri inizializzatori
+        // Inizializza la data corrente
         aggiornaData();
+        // Rimuovi il tab "Tracker Spirituale" per gli organizzatori
         if (session.isOrganizzatore()) {
-            // Rimuovi il tab "Tracker Spirituale" per gli organizzatori
             tabPane.getTabs().remove(trackerTab);
+        }
+        // Aggiungi il listener per la tab "I Miei Eventi"
+        if (eventiTab != null) {
+            eventiTab.setOnSelectionChanged(event -> {
+                if (eventiTab.isSelected()) {
+                    Model.getInstance().getViewFactory().loadListaEventiView(eventiContainer, session);
+                }
+            });
         }
     }
 
     public void setWelcomeMessage() {
+        // Imposta il messaggio principale
         welcomeLabel.setText("Benvenuto, " + session.getNome() + "!");
+
+        // Array dei messaggi motivazionali
+        String[] MESSAGES = {
+                "As-Salamu Alaikum, ricorda: il tempo ben speso è una benedizione.",
+                "Ogni evento pianificato è un'opportunità per fare del bene!",
+                "Che Allah benedica la tua giornata e i tuoi sforzi.",
+                "Pianifica oggi per creare un domani migliore.",
+                "Allah ama chi usa saggiamente il proprio tempo. Organizzati al meglio!",
+                "Ogni piccolo passo è un passo verso il successo.",
+                "Clicca sulle celle del calendario per scoprire nuove opportunità.",
+                "Il tempo è prezioso. Pianifica con saggezza e lascia il resto ad Allah."
+        };
+
+        // Genera un messaggio casuale
+        Random random = new Random();
+        String randomMessage = MESSAGES[random.nextInt(MESSAGES.length)];
+        subMessageLabel.setText(randomMessage);
+
+        // Combina il messaggio casuale con quello principale
+        subMessageLabel.setText(randomMessage);
     }
+
 
     @FXML
     public void onProfileButtonClicked() {
@@ -78,6 +142,17 @@ public class MainViewGUIController {
         }
     }
 
+    // Metodo per gestire il click sul pulsante
+    private void onLogoutButtonClicked() {
+        boolean conferma = mostraMessaggioConfermaConScelta("Conferma Logout", "Sei sicuro di voler effettuare il logout?");
+        if (conferma) {
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            Model.getInstance().getViewFactory().closeStage(stage);
+            Session newSession = new Session(true); // Istanzia una nuova sessione
+            Model.getInstance().getViewFactory().showLogin(newSession);
+        }
+    }
+
     public void aggiornaData() {
         // Ottieni la data corrente
         LocalDate dataCorrente = LocalDate.now();
@@ -88,6 +163,35 @@ public class MainViewGUIController {
 
         // Aggiorna la Label con la data formattata
         dateLabel.setText(dataFormattata);
+    }
+
+    @FXML
+    public void inizializzaOrariPreghiere() {
+        // Instanzia il controller applicativo
+        OrarioPreghiereController orarioPreghiereController = new OrarioPreghiereController(new GeolocalizzazioneIPAdapter(), new AlAdhanAdapter());
+
+        // Ottieni preghiera passata e futura
+        Map.Entry<String, LocalTime> preghieraPassata = orarioPreghiereController.getPreghieraPassata();
+        Map.Entry<String, LocalTime> preghieraFutura = orarioPreghiereController.getPreghieraFutura();
+
+        // Aggiorna i label
+        aggiornaPreghiere(preghieraPassata, preghieraFutura);
+    }
+
+    private void aggiornaPreghiere(Map.Entry<String, LocalTime> preghieraPassata, Map.Entry<String, LocalTime> preghieraFutura) {
+        // Aggiorna la preghiera passata
+        if (preghieraPassata != null) {
+            preghieraPassataLabel.setText(preghieraPassata.getKey() + " - " + preghieraPassata.getValue().toString());
+        } else {
+            preghieraPassataLabel.setText("Nessuna preghiera precedente");
+        }
+
+        // Aggiorna la preghiera futura
+        if (preghieraFutura != null) {
+            preghieraFuturaLabel.setText(preghieraFutura.getKey() + " - " + preghieraFutura.getValue().toString());
+        } else {
+            preghieraFuturaLabel.setText("Nessuna preghiera successiva");
+        }
     }
 
 }

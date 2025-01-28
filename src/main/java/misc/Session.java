@@ -1,8 +1,9 @@
 package misc;
 
-import controllers.grafico.GestioneListaEventiGUIController;
-import controllers.grafico.GestioneTrackerGUIController;
+import engclasses.beans.EventoBean;
 import engclasses.beans.GestioneTrackerBean;
+
+import java.util.List;
 
 /**
  * La classe Session rappresenta lo stato corrente di una sessione utente
@@ -22,10 +23,9 @@ public class Session {
     private boolean persistence; // Modalità di persistenza (buffer o database)
     private String idUtente;
     private GestioneTrackerBean trackerBean; // Oggetto per gestire il tracker
-    private GestioneTrackerGUIController gestioneTrackerGUIController;
-    private GestioneListaEventiGUIController gestioneListaEventiGUIController;
     private boolean isOrganizzatore;
     private long idEvento;
+    private List<EventoBean> eventiDelGiorno;
 
     public Session(boolean persistence) {
         this.persistence = persistence;
@@ -58,39 +58,38 @@ public class Session {
     }
 
     public String getCurrentUsername() {
-        return this.currentUsername; // Assumendo che currentUsername sia una proprietà già definita
+        return this.currentUsername;
     }
+
     public void setTracker(GestioneTrackerBean trackerBean) {
         this.trackerBean = trackerBean;
     }
+
     public GestioneTrackerBean getTracker() {
         return trackerBean;
     }
-    public GestioneTrackerGUIController getGestioneTrackerGUIController() {
-        return gestioneTrackerGUIController;
-    }
 
-    public void setGestioneTrackerGUIController(GestioneTrackerGUIController gestioneTrackerGUIController) {
-        this.gestioneTrackerGUIController = gestioneTrackerGUIController;
-    }
-    public void setGestioneListaEventiGUIController(GestioneListaEventiGUIController gestioneListaEventiGUIController) {
-        this.gestioneListaEventiGUIController = gestioneListaEventiGUIController;
-    }
     public long getIdEvento() {
         return idEvento;
     }
+
     public void setIdEvento(long idEvento) {
         this.idEvento = idEvento;
     }
 
-
-    public GestioneListaEventiGUIController getGestioneListaEventiGUIController() {
-        return gestioneListaEventiGUIController;
-    }
     public boolean isOrganizzatore() {
         return isOrganizzatore;
     }
+
     public void setIsOrganizzatore(boolean organizzatore) {
         isOrganizzatore = organizzatore;
+    }
+
+    public List<EventoBean> getEventiDelGiorno() {
+        return eventiDelGiorno;
+    }
+
+    public void setEventiDelGiorno(List<EventoBean> eventiDelGiorno) {
+        this.eventiDelGiorno = eventiDelGiorno;
     }
 }

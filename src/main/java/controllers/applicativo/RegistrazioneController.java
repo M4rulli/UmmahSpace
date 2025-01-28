@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static misc.MessageUtils.mostraMessaggioAttenzione;
+import static misc.MessageUtils.mostraMessaggioErrore;
+
 public class RegistrazioneController {
 
     private final Session session;
@@ -162,7 +165,7 @@ public class RegistrazioneController {
 
         // Se ci sono errori, mostra una finestra di dialogo e ritorna false
         if (!errori.isEmpty()) {
-            RegistrazioneGUIController.mostraMessaggioErrore(errori.toString());
+            mostraMessaggioAttenzione("Risolvi i seguenti errori:", errori.toString());
             return false;
         }
 

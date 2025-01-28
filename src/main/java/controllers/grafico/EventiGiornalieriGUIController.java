@@ -3,17 +3,17 @@ package controllers.grafico;
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import misc.Model;
+import javafx.stage.Stage;
 import misc.Session;
-
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+
+import static misc.MessageUtils.*;
 
 public class EventiGiornalieriGUIController {
 
@@ -21,15 +21,15 @@ public class EventiGiornalieriGUIController {
     private VBox eventContainer;
 
     private final Session session;
-    private final List<EventoBean> eventi;
 
-    public EventiGiornalieriGUIController(Session session, List<EventoBean> eventi) {
+    public EventiGiornalieriGUIController(Session session) {
         this.session = session;
-        this.eventi = eventi;
     }
 
     @FXML
     public void initialize() {
+        List<EventoBean> eventi = session.getEventiDelGiorno();
+
         // Popola la GUI con gli eventi
         for (EventoBean evento : eventi) {
             VBox card = creaCardEvento(evento);
@@ -43,6 +43,9 @@ public class EventiGiornalieriGUIController {
         card.setStyle("-fx-background-color: transparent; -fx-border-color: #dddddd; "
                 + "-fx-border-radius: 10; -fx-padding: 15; ");
 
+        // Associa il bean all'oggetto grafico
+        card.setUserData(evento);
+
         Label titleLabel = new Label(evento.getTitolo());
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333; ");
 
@@ -52,22 +55,49 @@ public class EventiGiornalieriGUIController {
         Label organizerLabel = new Label("Organizzatore: " + evento.getNomeOrganizzatore() + " " + evento.getCognomeOrganizzatore());
         organizerLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #888;");
 
+        Label participantsLabel = new Label("Iscritti: " + evento.getIscritti() + "/" + evento.getLimitePartecipanti());
+        participantsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+
         Label statusLabel = new Label(evento.isChiuso() ? "Chiuso" : "Aperto");
         statusLabel.setStyle(evento.isChiuso()
                 ? "-fx-text-fill: red; -fx-font-weight: bold;"
                 : "-fx-text-fill: green; -fx-font-weight: bold;");
 
-        Button detailButton = new Button("Visualizza Dettagli");
-        detailButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
-        detailButton.setOnAction(e -> showEventDetails(evento, session));
+        Button registerButton = new Button("Registrati all'evento");
+        registerButton.setDisable(evento.isChiuso());
+        registerButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
+        registerButton.setOnAction(e -> onRegistratiButton(evento));
 
-        card.getChildren().addAll(titleLabel, timeLabel, organizerLabel, statusLabel, detailButton);
+        card.getChildren().addAll(titleLabel, timeLabel, organizerLabel, participantsLabel, statusLabel, registerButton);
         card.setSpacing(10);
 
         return card;
     }
 
-    private void showEventDetails(EventoBean evento, Session session) {
-        Model.getInstance().getViewFactory().showEventDetailsView(evento, session);  // Passa la bean dell'evento
+    // Metodo per il pulsante di registrazione
+    private void onRegistratiButton(EventoBean evento) {
+        IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController(session);
+        // Recupera l'ID dell'evento dal bean
+        long idEvento = evento.getIdEvento();
+
+        // Mostra una finestra di conferma
+        boolean conferma = mostraMessaggioConfermaConScelta("Conferma Iscrizione", "Vuoi davvero iscriverti a questo evento?");
+
+        if (conferma) {
+            // Chiamata al Controller Applicativo se l'utente conferma
+            try {
+                boolean successo = iscrizioneEventoController.iscriviPartecipante(idEvento);
+
+                if (successo) {
+                    mostraMessaggioConferma("Conferma", "Iscrizione completata con successo!");
+
+                    // Chiudi la scena corrente
+                    Stage stage = (Stage) eventContainer.getScene().getWindow();
+                    stage.close();
+                }
+            } catch (Exception e) {
+                mostraMessaggioErrore("Errore", "Errore: " + e.getMessage());
+            }
+        }
     }
 }

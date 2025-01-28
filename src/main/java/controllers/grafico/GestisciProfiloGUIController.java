@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 import misc.Model;
 import misc.Session;
 
+import static misc.MessageUtils.mostraMessaggioConferma;
+import static misc.MessageUtils.mostraMessaggioConfermaConScelta;
+
 public class GestisciProfiloGUIController {
 
     private final Session session;
@@ -114,11 +117,7 @@ public class GestisciProfiloGUIController {
             System.out.println("Username: " + updatedBean.getUsername());
             System.out.println("Email: " + updatedBean.getEmail());
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Conferma");
-            alert.setHeaderText(null);
-            alert.setContentText("Modifiche salvate con successo!");
-            alert.showAndWait();
+            mostraMessaggioConferma("Conferma", "Modifiche salvate con successo!");
         } else {
             System.out.println("Errore durante l'aggiornamento dei dati.");
         }
@@ -134,23 +133,12 @@ public class GestisciProfiloGUIController {
             Model.getInstance().getViewFactory().showMainView(session);
 
         } else { // Modifiche abilitate, mostra un avviso
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Modifiche non salvate");
-            alert.setHeaderText("Le modifiche sono ancora abilitate.");
-            alert.setContentText("Vuoi davvero tornare indietro senza salvare le modifiche?");
-
-            ButtonType buttonYes = new ButtonType("Sì", ButtonBar.ButtonData.YES);
-            ButtonType buttonNo = new ButtonType("No", ButtonBar.ButtonData.NO);
-            alert.getButtonTypes().setAll(buttonYes, buttonNo);
-
-            // Gestisci la risposta dell'utente
-            alert.showAndWait().ifPresent(response -> {
-                if (response == buttonYes) {
-                    Stage stage = (Stage) backButton.getScene().getWindow();
-                    Model.getInstance().getViewFactory().closeStage(stage);
-                    Model.getInstance().getViewFactory().showMainView(session);
-                }
-            });
+            boolean conferma = mostraMessaggioConfermaConScelta("Modifiche non salvate","Le modifiche sono ancora abilitate. Vuoi davvero tornare indietro senza salvare le modifiche?");
+            if (conferma) {
+                Stage stage = (Stage) backButton.getScene().getWindow();
+                Model.getInstance().getViewFactory().closeStage(stage);
+                Model.getInstance().getViewFactory().showMainView(session);
+            }
         }
     }
 

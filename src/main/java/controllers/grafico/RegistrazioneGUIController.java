@@ -125,14 +125,6 @@ public class RegistrazioneGUIController {
         stage.close();
     }
 
-    // Metodo per mostrare la finestra di dialogo con gli errori
-    public static void mostraMessaggioErrore(String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Errore");
-        alert.setHeaderText("Risolvi i seguenti problemi:");
-        alert.setContentText(messaggio);
-        alert.showAndWait();
-    }
 
     // Metodo per gestire il cambio di stato dello switch
     private void togglePersistence() {

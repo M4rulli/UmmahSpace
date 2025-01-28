@@ -7,6 +7,9 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import misc.Model;
 import misc.Session;
+import javafx.scene.control.Button;
+
+import static misc.MessageUtils.*;
 
 public class ModificaEventoGUIController {
 
@@ -19,18 +22,19 @@ public class ModificaEventoGUIController {
     @FXML
     private TextField dataField;
     @FXML
-    private TextField orarioField;
+    private TextField orarioInizioField;
+    @FXML
+    private TextField orarioFineField;
+    @FXML
+    private TextField limitePartecipantiField;
     @FXML
     private Button editButton;
     @FXML
     private Button saveButton;
     @FXML
     private Button backButton;
-
-    private String originalTitolo;
-    private String originalDescrizione;
-    private String originalData;
-    private String originalOrario;
+    @FXML
+    private Button chiudiEventoButton;
 
     private final GestioneEventoController gestioneEventoController;
 
@@ -44,27 +48,31 @@ public class ModificaEventoGUIController {
         backButton.setOnAction(event -> onBackButtonClicked());
         saveButton.setOnAction(event -> onSaveButtonClicked());
         editButton.setOnAction(event -> onEditButtonClicked());
+        chiudiEventoButton.setOnAction(event -> onChiudiEventoClicked());
 
         // Recupera i dati dell'evento
-        EventoBean evento = gestioneEventoController.inizializzaEvento(session.getIdEvento());
+        EventoBean evento = gestioneEventoController.inizializzaEvento();
         initializeEvent(
                 evento.getTitolo(),
                 evento.getDescrizione(),
                 evento.getData(),
-                evento.getOrario()
+                evento.getOrario(),
+                evento.getLimitePartecipanti()
         );
     }
 
-    public void initializeEvent(String titolo, String descrizione, String data, String orario) {
-        this.originalTitolo = titolo;
-        this.originalDescrizione = descrizione;
-        this.originalData = data;
-        this.originalOrario = orario;
+    public void initializeEvent(String titolo, String descrizione, String data, String orario, String limitePartecipanti) {
+
+        String[] orariDivisi = orario.split(" - ");
+        String orarioInizio = orariDivisi[0];
+        String orarioFine = orariDivisi[1];
 
         titoloField.setText(titolo);
         descrizioneArea.setText(descrizione);
         dataField.setText(data);
-        orarioField.setText(orario);
+        orarioInizioField.setText(orarioInizio);
+        orarioFineField.setText(orarioFine);
+        limitePartecipantiField.setText(limitePartecipanti);
 
         disableEditing();
     }
@@ -81,7 +89,11 @@ public class ModificaEventoGUIController {
         updatedEvento.setTitolo(titoloField.getText());
         updatedEvento.setDescrizione(descrizioneArea.getText());
         updatedEvento.setData(dataField.getText());
-        updatedEvento.setOrario(orarioField.getText());
+        String orarioInizio = orarioInizioField.getText().trim();
+        String orarioFine = orarioFineField.getText().trim();
+        String orarioCombinato = orarioInizio + " - " + orarioFine;
+        updatedEvento.setOrario(orarioCombinato);
+        updatedEvento.setLimitePartecipanti(limitePartecipantiField.getText().trim());
 
         boolean success = gestioneEventoController.aggiornaEvento(updatedEvento, session.getIdEvento());
 
@@ -90,7 +102,8 @@ public class ModificaEventoGUIController {
                     updatedEvento.getTitolo(),
                     updatedEvento.getDescrizione(),
                     updatedEvento.getData(),
-                    updatedEvento.getOrario()
+                    updatedEvento.getOrario(),
+                    updatedEvento.getLimitePartecipanti()
             );
 
             System.out.println("Evento aggiornato: ");
@@ -98,45 +111,29 @@ public class ModificaEventoGUIController {
             System.out.println("Descrizione: " + updatedEvento.getDescrizione());
             System.out.println("Data: " + updatedEvento.getData());
             System.out.println("Orario: " + updatedEvento.getOrario());
+            System.out.println("Limite: " + updatedEvento.getLimitePartecipanti());
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Conferma");
             alert.setHeaderText(null);
             alert.setContentText("Evento modificato con successo!");
             alert.showAndWait();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Errore");
-            alert.setHeaderText(null);
-            alert.setContentText("Si è verificato un errore durante la modifica dell'evento.");
-            alert.showAndWait();
         }
-        closeWindow();
     }
 
     @FXML
     private void onBackButtonClicked() {
+        Stage currentStage = (Stage) backButton.getScene().getWindow();
         if (saveButton.isDisable()) {
-            Stage currentStage = (Stage) backButton.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(currentStage);
             Model.getInstance().getViewFactory().showMainView(session);
         } else {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Modifiche non salvate");
-            alert.setHeaderText("Le modifiche sono ancora abilitate.");
-            alert.setContentText("Vuoi davvero tornare indietro senza salvare le modifiche?");
-
-            ButtonType buttonYes = new ButtonType("Sì", ButtonBar.ButtonData.YES);
-            ButtonType buttonNo = new ButtonType("No", ButtonBar.ButtonData.NO);
-            alert.getButtonTypes().setAll(buttonYes, buttonNo);
-
-            alert.showAndWait().ifPresent(response -> {
-                if (response == buttonYes) {
+            boolean conferma = mostraMessaggioConfermaConScelta("Modifiche non salvate","Le modifiche sono ancora abilitate. Vuoi davvero tornare indietro senza salvare le modifiche?");
+                if (conferma) {
                     Stage stage = (Stage) backButton.getScene().getWindow();
                     Model.getInstance().getViewFactory().closeStage(stage);
                     Model.getInstance().getViewFactory().showMainView(session);
                 }
-            });
         }
     }
 
@@ -144,7 +141,9 @@ public class ModificaEventoGUIController {
         titoloField.setEditable(false);
         descrizioneArea.setEditable(false);
         dataField.setEditable(false);
-        orarioField.setEditable(false);
+        orarioFineField.setEditable(false);
+        orarioInizioField.setEditable(false);
+        limitePartecipantiField.setEditable(false);
 
         saveButton.setDisable(true);
         backButton.setDisable(false);
@@ -155,15 +154,35 @@ public class ModificaEventoGUIController {
         titoloField.setEditable(true);
         descrizioneArea.setEditable(true);
         dataField.setEditable(true);
-        orarioField.setEditable(true);
+        orarioFineField.setEditable(true);
+        orarioInizioField.setEditable(true);
+        limitePartecipantiField.setEditable(true);
 
         saveButton.setDisable(false);
         backButton.setDisable(false);
         editButton.setDisable(true);
     }
-    private void closeWindow() {
-        // Ottieni la finestra corrente e chiudila
-        Stage stage = (Stage) backButton.getScene().getWindow();
-        stage.close();
+
+    public void onChiudiEventoClicked() {
+        boolean conferma = mostraMessaggioConfermaConScelta(
+                "Conferma Chiusura",
+                "Vuoi davvero chiudere questo evento? L'operazione è irreversibile."
+        );
+        if (conferma) {
+            try {
+                // Usa il metodo applicativo per chiudere l'evento
+                GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
+                gestioneEventoController.chiudiEvento();
+
+                mostraMessaggioConferma("Evento Chiuso", "L'evento è stato chiuso con successo.");
+
+                // Chiudi la finestra
+                Stage stage = (Stage) titoloField.getScene().getWindow();
+                Model.getInstance().getViewFactory().showMainView(session);
+                stage.close();
+            } catch (Exception e) {
+                mostraMessaggioErrore("Errore","Errore durante la chiusura dell'evento: " + e.getMessage());
+            }
+        }
     }
 }

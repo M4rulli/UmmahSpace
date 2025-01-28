@@ -1,10 +1,14 @@
 package controllers.applicativo;
 
 import engclasses.beans.EventoBean;
-import engclasses.beans.PartecipanteBean;
+import engclasses.dao.GestioneEventoDAO;
 import engclasses.dao.IscrizioneEventoDAO;
+import engclasses.dao.PartecipanteDAO;
+import engclasses.dao.PartecipazioneDAO;
+import misc.Session;
 import model.Evento;
-import model.IscrizionePartecipante;
+import model.Partecipante;
+import model.Partecipazione;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,12 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static misc.MessageUtils.mostraMessaggioErrore;
+
 public class IscrizioneEventoController {
 
-    public IscrizioneEventoController() {}
+    private final Session session;
+
+    public IscrizioneEventoController(Session session) {
+        this.session = session;
+    }
 
     public Map<Integer, List<EventoBean>> getEventiDelMese(int month, int year) {
-        List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(month, year);
+        List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(month, year, session.isPersistence());
         Map<Integer, List<EventoBean>> eventiDelMese = new HashMap<>();
         for (Evento evento : eventi) {
             LocalDate dataEvento = LocalDate.parse(evento.getData());
@@ -41,8 +51,7 @@ public class IscrizioneEventoController {
 
     public List<EventoBean> getEventiPerGiorno(int giorno, int mese, int anno) {
         // Ottieni tutti gli eventi del mese e anno specificati
-        List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(mese, anno);
-
+        List<Evento> eventi = IscrizioneEventoDAO.getEventiPerMeseAnno(mese, anno, session.isPersistence());
         // Filtra gli eventi per il giorno specifico
         List<EventoBean> eventiDelGiorno = new ArrayList<>();
         for (Evento evento : eventi) {
@@ -65,39 +74,110 @@ public class IscrizioneEventoController {
         return eventiDelGiorno;
     }
 
-    public boolean iscriviPartecipante(PartecipanteBean partecipanteBean) throws IllegalArgumentException {
+    public boolean iscriviPartecipante(long idEvento) {
+        try {
 
-        // Recupera i dati dell'evento tramite l'ID (utilizzando il DAO)
-        Evento evento = IscrizioneEventoDAO.getEventoById(partecipanteBean.getIdEvento());
+            // Verifica se il partecipante è già iscritto a questo specifico evento
+            if (PartecipazioneDAO.isPartecipanteIscritto(session.getIdUtente(), idEvento, session.isPersistence())) {
+                mostraMessaggioErrore("Errore","Sei già iscritto a questo evento.");
+                return false;
+            }
 
-        if (evento == null) {
-            throw new IllegalArgumentException("Evento non trovato per l'ID: " + partecipanteBean.getIdEvento());
+            // Recupera i dati del partecipante dal DAO
+            Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), session.isPersistence());
+            if (partecipante == null) {
+                mostraMessaggioErrore("Errore", "Partecipante non trovato per l'ID: " + session.getIdUtente());
+                return false;
+            }
+
+            // Recupera i dati dell'evento dal DAO
+            Evento evento = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
+            if (evento == null) {
+                mostraMessaggioErrore("Errore", "Evento non trovato per l'ID: " + idEvento);
+                return false;
+            }
+
+            // Verifica il limite di partecipanti
+            if (!evento.getStato() || evento.getIscritti() >= Integer.parseInt(evento.getLimitePartecipanti())) {
+                mostraMessaggioErrore("Errore", "L'evento ha raggiunto il limite di partecipanti o è chiuso.");
+                return false;
+            }
+
+            // Incrementa il numero di iscritti
+            IscrizioneEventoDAO.aggiornaNumeroIscritti(idEvento, 1, session.isPersistence());
+
+            // Crea l'oggetto Partecipazione
+            Partecipazione partecipazione = new Partecipazione(
+                    partecipante.getIdUtente(),
+                    idEvento,
+                    partecipante.getNome(),
+                    partecipante.getCognome(),
+                    partecipante.getUsername(),
+                    partecipante.getEmail(),
+                    LocalDate.now().toString()
+            );
+
+            // Salva la partecipazione
+            PartecipazioneDAO.salvaPartecipazione(partecipazione, session.isPersistence());
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante l'iscrizione del partecipante.", e);
         }
+    }
 
-        // Controlla lo stato dell'evento e il numero di iscritti
-        if (!evento.getStato()) {
-            throw new IllegalArgumentException("L'evento è chiuso.");
+    public boolean cancellaIscrizione(EventoBean eventoBean) {
+        try {
+            // Recupera l'ID dell'evento e dell'utente
+            long idEvento = eventoBean.getIdEvento();
+            String idUtente = session.getIdUtente();
+
+            // Rimuove la partecipazione dal database o buffer
+            boolean rimozioneEffettuata = PartecipazioneDAO.rimuoviPartecipazione(idEvento, idUtente, session.isPersistence());
+
+            if (!rimozioneEffettuata) {
+                return false; // Errore nella rimozione
+            }
+
+            // Aggiorna il numero di iscritti (-1)
+            IscrizioneEventoDAO.aggiornaNumeroIscritti(idEvento, -1, session.isPersistence());
+
+            return true; // Operazione riuscita
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Gestione errore
         }
-        if (evento.getIscritti() >= evento.getLimitePartecipanti()) {
-            throw new IllegalArgumentException("L'evento ha raggiunto il limite di partecipanti.");
+    }
+
+
+    public List<EventoBean> getDettagliPartecipazioneUtente(String idUtente) {
+        // Recupera tutte le partecipazioni dell'utente
+        List<Partecipazione> partecipazioni = PartecipazioneDAO.recuperaPartecipazioni(idUtente, session.isPersistence());
+
+        // Lista per contenere i dettagli degli eventi
+        List<EventoBean> eventiIscritti = new ArrayList<>();
+
+        // Recupera i dettagli di ogni evento associato alle partecipazioni
+        for (Partecipazione partecipazione : partecipazioni) {
+            Evento evento = GestioneEventoDAO.getEventoById(partecipazione.getIdEvento(), session.isPersistence());
+            if (evento != null) {
+                EventoBean eventoBean = new EventoBean();
+                eventoBean.setIdEvento(evento.getIdEvento());
+                eventoBean.setTitolo(evento.getTitolo());
+                eventoBean.setDescrizione(evento.getDescrizione());
+                eventoBean.setData(evento.getData());
+                eventoBean.setOrario(evento.getOrario());
+                eventoBean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
+                eventoBean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
+                eventoBean.setLimitePartecipanti(evento.getLimitePartecipanti());
+                eventoBean.setIscritti(evento.getIscritti());
+                eventoBean.setStato(evento.getStato());
+
+                // Aggiungi alla lista
+                eventiIscritti.add(eventoBean);
+            }
         }
-
-        // Aggiorna l'evento nella DAO
-        IscrizioneEventoDAO.aggiornaEvento(evento);
-
-        // Converti la PartecipanteBean nel modello IscrizionePartecipante
-        IscrizionePartecipante iscrizione = new IscrizionePartecipante(
-                partecipanteBean.getIdUtente(),
-                partecipanteBean.getEmail(),
-                partecipanteBean.getIdEvento(),
-                partecipanteBean.getDataIscrizione()
-        );
-
-        // Salva l'iscrizione nella DAO
-        IscrizioneEventoDAO.aggiungiPartecipanteAdEvento(iscrizione);
-
-        System.out.println("Partecipante con ID " + partecipanteBean.getIdUtente() +
-                " iscritto all'evento con ID " + partecipanteBean.getIdEvento());
-        return true;
+        return eventiIscritti;
     }
 }

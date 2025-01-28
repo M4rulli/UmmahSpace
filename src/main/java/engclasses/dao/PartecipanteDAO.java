@@ -15,8 +15,6 @@ public class PartecipanteDAO {
     // Buffer per memorizzare temporaneamente i partecipanti
     private static final Map<String, Partecipante> bufferPartecipanti = new HashMap<>();
 
-    // Costruttore
-    public PartecipanteDAO() {}
 
     // Aggiunge un partecipante, scegliendo tra buffer o database in base al flag 'persistence'
     public static void aggiungiPartecipante(Partecipante partecipante, boolean persistence) {

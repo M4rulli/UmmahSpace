@@ -31,6 +31,7 @@ public class CalendarioGUIController {
     private GridPane calendarGrid;
 
     private YearMonth currentMonth;
+    private LocalDate selectedDate;
 
     // Nomi dei mesi e giorni
     private static final String[] MESI = {
@@ -66,7 +67,7 @@ public class CalendarioGUIController {
 
     void updateCalendar() {
 
-        IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController();
+        IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController(session);
 
         // Aggiorna il titolo con il mese e l'anno
         monthYearLabel.setText(MESI[currentMonth.getMonthValue() - 1] + " " + currentMonth.getYear());
@@ -90,6 +91,12 @@ public class CalendarioGUIController {
                 currentMonth.getMonthValue(), currentMonth.getYear()
         );
 
+        // Giorno attuale
+        LocalDate today = LocalDate.now();
+        int currentDay = today.getDayOfMonth();
+        int currentMonthValue = today.getMonthValue();
+        int currentYear = today.getYear();
+
         // Popola la griglia con rettangoli per i giorni
         int day = 1;
         for (int row = 1; row <= 6; row++) { // Riga 1 per i giorni
@@ -106,21 +113,39 @@ public class CalendarioGUIController {
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeWidth(1.0);
 
-                    // Recupera gli eventi del giorno specifico
-                    List<EventoBean> eventiDelGiorno = eventiDelMese.getOrDefault(day, Collections.emptyList());
+                // Recupera gli eventi del giorno specifico
+                List<EventoBean> eventiDelGiorno = eventiDelMese.getOrDefault(day, Collections.emptyList());
+
+                // Calcola se il giorno è cliccabile (>= giorno attuale per organizzatore)
+                boolean isClickableDay = (session.isOrganizzatore() && (
+                        currentYear < currentMonth.getYear() ||
+                                (currentYear == currentMonth.getYear() && currentMonthValue < currentMonth.getMonthValue()) ||
+                                (currentYear == currentMonth.getYear() && currentMonthValue == currentMonth.getMonthValue() && day >= currentDay))
+                ) || (!session.isOrganizzatore() && !eventiDelGiorno.isEmpty());
 
 
-                    // Distinzione grafica tra giorni con eventi e senza eventi
-                    if (!eventiDelGiorno.isEmpty() && !session.isOrganizzatore()) {
-                    rectangle.setFill(Color.GOLD); // Partecipante: evidenzia giorni con eventi
+                if (session.isOrganizzatore()) {
+                    if (isClickableDay) {
+                        // Giorni cliccabili: grigi
+                        rectangle.setFill(Color.LIGHTGRAY);
                     } else {
-                    rectangle.setFill(Color.TRANSPARENT); // Nessun evento o Organizzatore
+                        // Giorni non cliccabili: trasparenti
+                        rectangle.setFill(Color.TRANSPARENT);
                     }
+                } else if (!eventiDelGiorno.isEmpty()) {
+                    // Partecipante: evidenzia giorni con eventi
+                    rectangle.setFill(Color.GOLD);
+                } else {
+                    // Partecipante: nessun evento
+                    rectangle.setFill(Color.TRANSPARENT);
+                }
 
-                    // Registra il click handler (sempre, indipendentemente dal contenuto di eventi)
-                    attachEventClickAction(day,currentMonth.getMonthValue(), currentMonth.getYear(), stackPane);
+                // Rende cliccabili solo i giorni validi
+                if (isClickableDay) {
+                    attachEventClickAction(day, currentMonth.getMonthValue(), currentMonth.getYear(), stackPane);
+                }
 
-                    Label dayLabel = new Label(String.valueOf(day));
+                Label dayLabel = new Label(String.valueOf(day));
                     stackPane.getChildren().addAll(rectangle, dayLabel);
 
                     calendarGrid.add(stackPane, col, row);
@@ -128,18 +153,27 @@ public class CalendarioGUIController {
                 }
             }
     }
+
+
     private void attachEventClickAction(int giorno, int mese, int anno, StackPane calendarCell) {
         calendarCell.setOnMouseClicked(e -> {
+
+            // Memorizza la data selezionata
+            String selectedDate = String.format("%04d-%02d-%02d", anno, mese, giorno);
+
             // Ottieni gli eventi filtrati direttamente dal controller applicativo
-            IscrizioneEventoController applicativoController = new IscrizioneEventoController();
+            IscrizioneEventoController applicativoController = new IscrizioneEventoController(session);
             List<EventoBean> eventiDelGiorno = applicativoController.getEventiPerGiorno(giorno, mese, anno);
+
+            // Salva la lista nella sessione
+            session.setEventiDelGiorno(eventiDelGiorno);
 
             if (session.isOrganizzatore()) {
                 // Mostra la finestra per aggiungere gli eventi
-                Model.getInstance().getViewFactory().showAggiungiEvento(session);
+                Model.getInstance().getViewFactory().showAggiungiEvento(session, selectedDate);
             } else {
                 // Mostra la finestra per i partecipanti con gli eventi disponibili
-                Model.getInstance().getViewFactory().showEventiGiornalieri(session, eventiDelGiorno);
+                Model.getInstance().getViewFactory().showEventiGiornalieri(session);
             }
         });
     }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="rootVBox" alignment="CENTER" spacing="15" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <!-- Titolo del report -->
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Report Evento" />
+
+        <!-- Dettagli evento -->
+        <VBox alignment="CENTER_LEFT" spacing="5">
+            <Label fx:id="eventTitleLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Titolo Evento: " />
+            <Label fx:id="eventDateLabel" style="-fx-font-size: 14px;" text="Data Evento: " />
+            <Label fx:id="reportTimestampLabel" style="-fx-font-size: 14px;" text="Generato il: " />
+        </VBox>
+
+        <!-- Tabella dei partecipanti -->
+        <TableView fx:id="participantsTable" prefHeight="300" prefWidth="600">
+            <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="150" text="Nome" />
+                <TableColumn fx:id="surnameColumn" prefWidth="133.0" text="Cognome" />
+                <TableColumn fx:id="emailColumn" minWidth="0.0" prefWidth="133.0" text="Email" />
+                <TableColumn fx:id="registrationDateColumn" prefWidth="183.0" text="Data Iscrizione" />
+            </columns>
+        </TableView>
+
+        <!-- Titolo sopra il grafico -->
+        <VBox alignment="CENTER_LEFT" spacing="5">
+             <Label fx:id="chartTitle" alignment="TOP_LEFT" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Distribuzione delle Iscrizioni nel Tempo:" textAlignment="CENTER" />
+        </VBox>
+
+        <!-- Grafico -->
+        <LineChart fx:id="registrationLineChart" prefHeight="300" prefWidth="600">
+            <xAxis>
+                <CategoryAxis label="Data Iscrizione" fx:id="xAxis" />
+            </xAxis>
+            <yAxis>
+                <NumberAxis fx:id="yAxis" label="Numero di Iscritti" />
+            </yAxis>
+         <VBox.margin>
+            <Insets right="45.0" />
+         </VBox.margin>
+        </LineChart>
+
+        <!-- Pulsanti -->
+        <HBox alignment="CENTER" spacing="10">
+            <Button fx:id="backButton" style="-fx-background-color: gray; -fx-text-fill: white;" text="Indietro" />
+            <Button fx:id="printButton" style="-fx-background-color: green; -fx-text-fill: white;" text="Stampa" />
+        </HBox>
+    </children>
+</VBox>

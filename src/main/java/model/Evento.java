@@ -7,7 +7,7 @@ public class Evento {
     private String descrizione;
     private String data;
     private String orario;
-    private int limitePartecipanti;
+    private String limitePartecipanti;
     private int iscritti;
     private String link;
     private String nomeOrganizzatore;
@@ -16,12 +16,9 @@ public class Evento {
     private long idEvento;
     private String idOrganizzatore;
 
-    // Costruttore vuoto (necessario per alcuni framework e inizializzazioni manuali)
-    public Evento() {
-    }
 
     // Costruttore con tutti i campi
-    public Evento(String titolo, String descrizione, String data, String orario, int limitePartecipanti, int iscritti,
+    public Evento(String titolo, String descrizione, String data, String orario, String limitePartecipanti, int iscritti,
                   String link, String nomeOrganizzatore, String cognomeOrganizzatore, boolean stato, long idEvento, String IdOrganizzatore) {
         this.titolo = titolo;
         this.descrizione = descrizione;
@@ -35,6 +32,9 @@ public class Evento {
         this.stato = stato;
         this.idEvento = idEvento;
         this.idOrganizzatore = IdOrganizzatore;
+    }
+
+    public Evento() {
     }
 
     // Getter e Setter
@@ -70,13 +70,12 @@ public class Evento {
         this.orario = orario;
     }
 
-    public int getLimitePartecipanti() {
+    public String getLimitePartecipanti() {
         return limitePartecipanti;
     }
 
-    public void setLimitePartecipanti(int limitePartecipanti) {
-        this.limitePartecipanti = limitePartecipanti;
-    }
+    public void setLimitePartecipanti(String limitePartecipanti) {
+        this.limitePartecipanti = limitePartecipanti; }
 
     public int getIscritti() {
         return iscritti;

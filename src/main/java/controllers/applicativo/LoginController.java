@@ -4,6 +4,7 @@ import controllers.grafico.GestioneTrackerGUIController;
 import controllers.grafico.LoginGUIController;
 import engclasses.beans.GestioneTrackerBean;
 import engclasses.beans.LoginBean;
+import engclasses.dao.GestioneEventoDAO;
 import engclasses.dao.GestioneTrackerDAO;
 import engclasses.dao.OrganizzatoreDAO;
 import engclasses.dao.PartecipanteDAO;
@@ -15,6 +16,10 @@ import model.Organizzatore;
 import model.Partecipante;
 import model.Tracker;
 import model.Utente;
+
+import java.util.List;
+
+import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class LoginController {
 
@@ -38,7 +43,7 @@ public class LoginController {
         }
         if (!errori.isEmpty()) {
             // Mostra gli errori accumulati
-            LoginGUIController.showAlert("Errore di Login", errori.toString(), Alert.AlertType.ERROR);
+            mostraMessaggioErrore("Errore di Login", errori.toString());
             return null;
         }
 
@@ -46,16 +51,17 @@ public class LoginController {
         if (session.isOrganizzatore()) {
             Organizzatore organizzatore = OrganizzatoreDAO.selezionaOrganizzatore("username", loginBean.getUsername(), persistence);
             if (organizzatore != null && organizzatore.getPassword().equals(loginBean.getPassword())) {
-                this.utenteId = organizzatore.getIdUtente();
-                this.nome = organizzatore.getNome();
+                session.setIdUtente(organizzatore.getIdUtente());
+                session.setNome(organizzatore.getNome());
                 return null; // Gli organizzatori non hanno tracker
             }
+
         } else {
             // Altrimenti è un partecipante
             Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("username", loginBean.getUsername(), persistence);
             if (partecipante != null && partecipante.getPassword().equals(loginBean.getPassword())) {
-                this.utenteId = partecipante.getIdUtente();
-                this.nome = partecipante.getNome();
+                session.setIdUtente(partecipante.getIdUtente());
+                session.setNome(partecipante.getNome());
                 // Recupera il tracker per il partecipante
                 Tracker tracker = GestioneTrackerDAO.getTracker(partecipante.getIdUtente(), persistence);
                 if (tracker != null) {
@@ -67,15 +73,7 @@ public class LoginController {
         }
 
         // Se l'utente non è trovato o le credenziali non sono valide
-        LoginGUIController.showAlert("Errore di Login", "Credenziali non valide: controlla username e password.", Alert.AlertType.ERROR);
+        mostraMessaggioErrore("Errore di Login", "Credenziali non valide: controlla username e password.");
         return null;
-    }
-
-    public String getUtenteId() {
-        return utenteId;
-    }
-
-    public String getNome() {
-        return nome;
     }
 }

@@ -1,30 +1,41 @@
 package engclasses.dao;
 
+import misc.Connect;
 import model.Evento;
-import model.IscrizionePartecipante;
 
-import java.time.LocalDate;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import engclasses.beans.EventoBean;
+
+import model.Partecipazione;
+
 
 public class IscrizioneEventoDAO {
     private static final List<Evento> eventiBuffer = new ArrayList<>();
-    private static final Map<Long, List<String>> partecipantiBuffer = new HashMap<>();
+
 
     // Popola inizialmente il buffer con eventi hard-coded
     static {
-        eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", 50, 10, "www.evento1.com", "Mario", "Rossi", true, 1, ""));
-        eventiBuffer.add(new Evento("Evento 2", "Descrizione 2", "2025-01-02", "15:00", 30, 5, "www.evento2.com", "Luca", "Bianchi", true, 2, ""));
-        eventiBuffer.add(new Evento("Evento 3", "Descrizione 3", "2025-01-03", "09:00", 20, 15, "www.evento3.com", "Anna", "Verdi", true, 3, ""));
-        eventiBuffer.add(new Evento("Evento 4", "Descrizione 4", "2025-01-03", "09:00", 20, 20, "www.evento4.com", "Romolo", "Remo", true, 4, ""));
-        eventiBuffer.add(new Evento("Evento 5", "Descrizione 5", "2025-01-03", "09:00", 20, 20, "www.evento5.com", "Ciao", "Darwin", true, 5, ""));
+        eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", "50", 10, "www.evento1.com", "Mario", "Rossi", true, 1, ""));
+        eventiBuffer.add(new Evento("Evento 2", "Descrizione 2", "2025-01-02", "15:00", "30", 5, "www.evento2.com", "Luca", "Bianchi", true, 2, ""));
+        eventiBuffer.add(new Evento("Evento 3", "Descrizione 3", "2025-01-03", "09:00", "20", 15, "www.evento3.com", "Anna", "Verdi", true, 3, ""));
+        eventiBuffer.add(new Evento("Evento 4", "Descrizione 4", "2025-01-03", "09:00", "20", 20, "www.evento4.com", "Romolo", "Remo", true, 4, ""));
+        eventiBuffer.add(new Evento("Evento 5", "Descrizione 5", "2025-01-03", "09:00", "20", 20, "www.evento5.com", "Ciao", "Darwin", true, 5, ""));
+    }
+
+    // Metodo per ottenere tutti gli eventi (buffer o database)
+    public static List<Evento> getEventiPerMeseAnno(int mese, int anno, boolean persistence) {
+        if (persistence) {
+            // Recupera dal database
+            return getEventiPerMeseAnnoDb(mese, anno);
+        } else {
+            // Recupera dal buffer
+            return getEventiPerMeseAnnoBuffer(mese, anno);
+        }
     }
 
     // Metodo per ottenere tutti gli eventi nel buffer
-    public static List<Evento> getEventiPerMeseAnno(int mese, int anno) {
+    public static List<Evento> getEventiPerMeseAnnoBuffer(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
         for (Evento evento : eventiBuffer) {
             String[] dataSplit = evento.getData().split("-");
@@ -38,40 +49,77 @@ public class IscrizioneEventoDAO {
         return eventiPerMeseAnno;
     }
 
-    public static void aggiungiPartecipanteAdEvento(IscrizionePartecipante iscrizionePartecipante) {
-        long idEvento = iscrizionePartecipante.getIdEvento();
-        String idUtente = iscrizionePartecipante.getIdUtente();
+    // Metodo per ottenere tutti gli eventi per un mese e anno dal database
+    public static List<Evento> getEventiPerMeseAnnoDb(int mese, int anno) {
+        List<Evento> eventiPerMeseAnno = new ArrayList<>();
+        String query = "SELECT * FROM Eventi WHERE MONTH(data) = ? AND YEAR(data) = ?";
 
-        partecipantiBuffer.putIfAbsent(idEvento, new ArrayList<>());
-        List<String> partecipanti = partecipantiBuffer.get(idEvento);
+        try (Connection conn = Connect.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        if (partecipanti.contains(idUtente)) {
-            throw new IllegalArgumentException("Sei già iscritto a questo evento.");
-        }
-        partecipanti.add(idUtente);
-    }
+            // Imposta i parametri della query
+            stmt.setInt(1, mese);
+            stmt.setInt(2, anno);
 
-    // Metodo per ottenere un evento dal buffer tramite il suo ID
-    public static Evento getEventoById(long idEvento) {
-        for (Evento evento : eventiBuffer) {
-            if (evento.getIdEvento() == idEvento) {
-                return evento;
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Evento evento = new Evento();
+                    evento.setIdEvento(rs.getLong("idEvento"));
+                    evento.setIdOrganizzatore(rs.getString("idUtente"));
+                    evento.setTitolo(rs.getString("titolo"));
+                    evento.setDescrizione(rs.getString("descrizione"));
+                    evento.setData(rs.getString("data"));
+                    evento.setOrario(rs.getString("orario"));
+                    evento.setLimitePartecipanti(rs.getString("limitePartecipanti"));
+                    evento.setIscritti(rs.getInt("iscritti"));
+                    evento.setStato(rs.getBoolean("stato"));
+
+                    eventiPerMeseAnno.add(evento);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return null; // Ritorna null se non viene trovato l'evento
+        return eventiPerMeseAnno;
     }
 
-    public static void aggiornaEvento(Evento eventoAggiornato) {
-        for (int i = 0; i < eventiBuffer.size(); i++) {
-            Evento evento = eventiBuffer.get(i);
-            if (evento.getIdEvento() == eventoAggiornato.getIdEvento()) {
-                // Incrementa il numero di iscritti
-                eventoAggiornato.setIscritti(eventoAggiornato.getIscritti() + 1);
-                eventiBuffer.set(i, eventoAggiornato);
+
+    public static void aggiornaNumeroIscritti(long idEvento, int incremento, boolean persistence) {
+        if (persistence) {
+            aggiornaNumeroIscrittiNelDb(idEvento, incremento);
+        } else {
+            aggiornaNumeroIscrittiNelBuffer(idEvento, incremento);
+        }
+    }
+
+    private static boolean aggiornaNumeroIscrittiNelDb(long idEvento, int incremento) {
+        String query = "UPDATE Eventi SET iscritti = iscritti + ? WHERE idEvento = ?";
+        try (Connection conn = Connect.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, incremento); // Incremento (può essere positivo o negativo)
+            stmt.setLong(2, idEvento); // ID dell'evento
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0; // True se l'aggiornamento è riuscito
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante l'aggiornamento del numero di iscritti nel database.", e);
+        }
+    }
+
+    private static void aggiornaNumeroIscrittiNelBuffer(long idEvento, int incremento) {
+        for (Evento evento : eventiBuffer) { // Itera direttamente sulla lista
+            if (evento.getIdEvento() == idEvento) {
+                int nuoviIscritti = evento.getIscritti() + incremento;
+                if (nuoviIscritti < 0) {
+                    throw new IllegalArgumentException("Il numero di iscritti non può essere negativo.");
+                }
+                evento.setIscritti(nuoviIscritti); // Aggiorna il numero di iscritti
                 return;
             }
         }
-        throw new IllegalArgumentException("Evento non trovato per l'aggiornamento: " + eventoAggiornato.getIdEvento());
     }
-
 }
+
+

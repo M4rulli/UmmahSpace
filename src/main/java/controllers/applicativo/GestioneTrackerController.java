@@ -31,10 +31,18 @@ public class GestioneTrackerController  {
             throw new IllegalArgumentException("Tracker non trovato per l'utente.");
         }
 
+        // Recupera l'obiettivo giornaliero
+        int goal = tracker.getGoal();
+
         // Calcola il nuovo totale delle pagine lette
         int nuovePagine = tracker.getLetturaCorano() + pages;
 
-        // Verifica che il totale non superi il limite massimo
+        // Controlla che il totale delle pagine lette non superi l'obiettivo giornaliero
+        if (goal > 0 && nuovePagine > goal) {
+            throw new IllegalArgumentException("Non puoi leggere più del tuo obiettivo giornaliero di " + goal + " pagine.");
+        }
+
+        // Verifica che il totale non superi il limite massimo (604)
         if (nuovePagine > 604) {
             throw new IllegalArgumentException("Non puoi leggere più di 604 pagine.");
         }

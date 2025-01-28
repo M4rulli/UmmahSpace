@@ -78,9 +78,7 @@ public class LoginGUIController {
         if (trackerBean != null) {
             // Caso: login come partecipante
             session.setCurrentUsername(username);
-            session.setIdUtente(loginController.getUtenteId());
-            session.setTracker(trackerBean); // Salva il tracker nella sessione
-            session.setNome(loginController.getNome());
+            session.setTracker(trackerBean); // Salva il tracker nella sessione;
 
             // Mostra messaggio di successo e passa alla MainView
             System.out.println("Login effettuato con successo!");
@@ -91,8 +89,6 @@ public class LoginGUIController {
         } else if (session.isOrganizzatore()) {
             // Caso: login come organizzatore
             session.setCurrentUsername(username);
-            session.setIdUtente(loginController.getUtenteId());
-            session.setNome(loginController.getNome());
 
             // Mostra messaggio di successo e passa alla MainView
             System.out.println("Login effettuato con successo!");
@@ -102,14 +98,6 @@ public class LoginGUIController {
         } else {
             System.out.println("Login non effettuato.");
         }
-    }
-
-    // Metodo di utilità per mostrare un messaggio di errore
-    public static void showAlert(String title, String message, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private void listenOrganizzatoreCheckBox() {

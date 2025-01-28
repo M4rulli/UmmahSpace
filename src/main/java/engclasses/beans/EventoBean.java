@@ -6,7 +6,7 @@ public class EventoBean {
     private String descrizione;
     private String data;
     private String orario;
-    private int limitePartecipanti;
+    private String limitePartecipanti;
     private int iscritti;
     private String nomeOrganizzatore;
     private String cognomeOrganizzatore;
@@ -58,11 +58,11 @@ public class EventoBean {
         this.orario = orario;
     }
 
-    public int getLimitePartecipanti() {
+    public String getLimitePartecipanti() {
         return limitePartecipanti;
     }
 
-    public void setLimitePartecipanti(int limitePartecipanti) {
+    public void setLimitePartecipanti(String limitePartecipanti) {
         this.limitePartecipanti = limitePartecipanti;
     }
 
@@ -104,24 +104,10 @@ public class EventoBean {
         this.stato = stato;
     }
 
+    public boolean getStato() {return stato;}
+
     public boolean isChiuso() {
-        return !stato || iscritti >= limitePartecipanti;
+        return !stato || iscritti >= Integer.parseInt(limitePartecipanti);
     }
 
-    @Override
-    public String toString() {
-        return "EventoBean{" +
-                "idEvento=" + idEvento +
-                ", titolo='" + titolo + '\'' +
-                ", descrizione='" + descrizione + '\'' +
-                ", data='" + data + '\'' +
-                ", orario='" + orario + '\'' +
-                ", limitePartecipanti=" + limitePartecipanti +
-                ", iscritti=" + iscritti +
-                ", nomeOrganizzatore='" + nomeOrganizzatore + '\'' +
-                ", cognomeOrganizzatore='" + cognomeOrganizzatore + '\'' +
-                ", stato=" + stato +
-                ", idOrganizzatore='" + idOrganizzatore + '\'' +
-                '}';
-    }
 }

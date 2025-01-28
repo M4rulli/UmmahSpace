@@ -3,10 +3,13 @@ module com.project.ummahspace {
     requires com.dlsc.formsfx;
     requires org.controlsfx.controls;
     requires java.sql;
-    requires java.desktop;
-    requires eu.hansolo.toolbox;
     requires java.net.http;
     requires org.json;
+    requires org.girod.javafx.svgimage;
+    requires io;
+    requires kernel;
+    requires javafx.swing;
+    requires layout;
 
     exports misc; // Esporta il pacchetto principale per l'applicazione
     exports controllers.grafico;

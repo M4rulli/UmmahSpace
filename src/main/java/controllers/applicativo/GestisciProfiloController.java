@@ -9,6 +9,8 @@ import model.Partecipante;
 import model.Organizzatore;
 import model.Utente;
 
+import static misc.MessageUtils.mostraMessaggioErrore;
+
 public class GestisciProfiloController {
 
     private final Session session;
@@ -105,7 +107,7 @@ public class GestisciProfiloController {
 
         // Se ci sono errori, mostra una finestra di dialogo e ritorna false
         if (!errori.isEmpty()) {
-            showAlert("Errore", errori.toString(), Alert.AlertType.WARNING);
+            mostraMessaggioErrore("Errore", errori.toString());
             return false;
         }
 
@@ -156,32 +158,24 @@ public class GestisciProfiloController {
 
              // Verifica la password attuale
             if (!utente.getPassword().equals(currentPassword)) {
-                showAlert("Errore", "La vecchia password non è corretta.", Alert.AlertType.ERROR);
+                mostraMessaggioErrore("Errore", "La vecchia password non è corretta.");
                 return null;
             }
 
             // Verifica corrispondenza tra nuova password e conferma
             if (!newPassword.equals(confirmPassword)) {
-                showAlert("Errore", "La nuova password e la conferma non coincidono.", Alert.AlertType.ERROR);
+                mostraMessaggioErrore("Errore", "La nuova password e la conferma non coincidono.");
                 return null;
             }
 
             // Verifica che la nuova password sia diversa da quella attuale
             if (currentPassword.equals(newPassword)) {
-                showAlert("Errore", "La nuova password non può essere uguale a quella attuale.", Alert.AlertType.ERROR);
+                mostraMessaggioErrore("Errore", "La nuova password non può essere uguale a quella attuale.");
                 return null;
             }
 
             return newPassword; // Ritorna la nuova password se tutto è valido
         }
-
-    private void showAlert(String title, String message, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
     public boolean controllaCampo(String campo, String valore) {
         // Recupera l'utente (Organizzatore o Partecipante) in base al tipo di sessione

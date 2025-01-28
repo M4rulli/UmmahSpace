@@ -15,15 +15,18 @@ CREATE TABLE IF NOT EXISTS Partecipanti (
 
 -- Tabella Eventi
 CREATE TABLE IF NOT EXISTS Eventi (
-    idEvento INT AUTO_INCREMENT PRIMARY KEY,
-    titolo VARCHAR(100) NOT NULL,
-    descrizione TEXT NOT NULL,
-    data DATE NOT NULL,
-    orario TIME NOT NULL,
-    limitePartecipanti INT NOT NULL,
-    iscritti INT DEFAULT 0,
-    stato BOOLEAN NOT NULL DEFAULT TRUE,
-    idOrganizzatore TEXT NOT NULL
+    idEvento BIGINT NOT NULL PRIMARY KEY, -- Identificatore univoco dell'evento
+    idUtente VARCHAR(50) NOT NULL,       -- Identificatore dell'utente organizzatore
+    titolo VARCHAR(100) NOT NULL,       -- Titolo dell'evento
+    descrizione TEXT NOT NULL,          -- Descrizione dell'evento
+    data DATE NOT NULL,                 -- Data dell'evento
+    orario VARCHAR(20) NOT NULL,        -- Orario dell'evento
+    link VARCHAR(255),
+    nomeOrganizzatore VARCHAR(100),
+    cognomeOrganizzatore VARCHAR(100),
+    limitePartecipanti INT NOT NULL,    -- Limite dei partecipanti
+    iscritti INT DEFAULT 0,             -- Numero degli iscritti
+    stato BOOLEAN NOT NULL DEFAULT TRUE -- Stato dell'evento (attivo o meno)
 );
 
 -- Tabella Tracker
@@ -53,5 +56,19 @@ CREATE TABLE Organizzatori (
     password VARCHAR(255)        NOT NULL,              -- Password dell'utente
     stato    BOOLEAN             NOT NULL DEFAULT FALSE, -- Stato (es. attivo/inattivo)
     titoloDiStudio TEXT NOT NULL                         -- Titolo di Studio
+);
+
+-- Tabella Partecipazioni
+CREATE TABLE IF NOT EXISTS Partecipazioni (
+    idUtente VARCHAR(50) NOT NULL,
+    idEvento BIGINT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    cognome VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    dataIscrizione DATE NOT NULL,
+    PRIMARY KEY (idUtente, idEvento),
+    FOREIGN KEY (idUtente) REFERENCES Partecipanti(idUtente),
+    FOREIGN KEY (idEvento) REFERENCES Eventi(idEvento)
 );
 

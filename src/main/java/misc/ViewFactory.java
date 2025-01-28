@@ -5,14 +5,10 @@ import engclasses.beans.EventoBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.List;
-
-import static controllers.grafico.LoginGUIController.showAlert;
 
 /**
  * La classe ViewFactory è responsabile della gestione e creazione delle viste
@@ -58,7 +54,18 @@ public class ViewFactory {
     public void showMainView(Session session) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
         loader.setController(new MainViewGUIController(session));
-        showStage(loader, "UmmahSpace");
+        Parent root;
+        try {
+            root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("UmmahSpace");
+            stage.setResizable(false);
+            Scene scene = new Scene(root, 900, 800);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void loadCalendarioView(Pane parentContainer, Session session) {
@@ -75,7 +82,6 @@ public class ViewFactory {
             parentContainer.getChildren().add(calendarioView);
 
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Errore durante il caricamento di CalendarioView.", e);
         }
     }
@@ -99,23 +105,32 @@ public class ViewFactory {
     }
 
     public void loadListaEventiView(Pane parentContainer, Session session) {
-        if (session.isOrganizzatore()) {
-            try {
-                // Carica la vista per la lista degli eventi
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ListaEventiView.fxml"));
+        try {
+            FXMLLoader loader;
+            Parent view;
+
+            if (session.isOrganizzatore()) {
+                // Carica la vista per l'organizzatore
+                loader = new FXMLLoader(getClass().getResource("/ListaEventiView.fxml"));
                 GestioneListaEventiGUIController listaEventiController = new GestioneListaEventiGUIController(session);
                 loader.setController(listaEventiController);
-                Parent listaEventiView = loader.load();
-                // Svuota il contenitore e aggiunge la lista degli eventi
-                parentContainer.getChildren().clear();
-                parentContainer.getChildren().add(listaEventiView);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Errore durante il caricamento di ListaEventiView.fxml", e);
+                view = loader.load();
+            } else {
+                // Carica la vista per il partecipante
+                loader = new FXMLLoader(getClass().getResource("/PartecipazioniView.fxml"));
+                PartecipazioniGUIController partecipazioniGUIController = new PartecipazioniGUIController(session);
+                loader.setController(partecipazioniGUIController);
+                view = loader.load();
             }
-        }
 
+            // Svuota il contenitore e aggiunge la vista caricata
+            parentContainer.getChildren().clear();
+            parentContainer.getChildren().add(view);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il caricamento della vista.", e);
+        }
     }
 
     public void showSettings(Session session) {
@@ -124,10 +139,10 @@ public class ViewFactory {
         showStage(loader, "Gestione Profilo");
     }
 
-    public void showEventiGiornalieri(Session session, List<EventoBean> eventiDelGiorno) {
+    public void showEventiGiornalieri(Session session) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
-            loader.setController(new EventiGiornalieriGUIController(session, eventiDelGiorno));
+            loader.setController(new EventiGiornalieriGUIController(session));
             Parent root = loader.load();
 
             // Configura la scena
@@ -143,16 +158,10 @@ public class ViewFactory {
         }
     }
 
-    public void showEventDetailsView(EventoBean evento, Session session) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/DettagliEventoView.fxml"));
-        loader.setController(new DettagliEventoGUIController(evento, session));
-        showStage(loader, "Dettagli Evento");
-    }
-
-    public void showAggiungiEvento(Session session) {
+    public void showAggiungiEvento(Session session, String selectedDate  ) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AggiungiEventoView.fxml"));
-            loader.setController(new AggiungiEventoGUIController(session)); // Passa la ViewFactory
+            loader.setController(new AggiungiEventoGUIController(session, selectedDate)); // Passa la ViewFactory
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Aggiungi un evento");
@@ -164,22 +173,36 @@ public class ViewFactory {
             e.printStackTrace();
             throw new RuntimeException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
         }
-
     }
-    public void showModificaEvento(Session session, EventoBean evento) {
-        StringBuilder errori = new StringBuilder();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModificaEventoView.fxml"));
-        loader.setController(new ModificaEventoGUIController(session));
+
+    public void showModificaEvento(Session session) {
         try {
-            showStage(loader, "Modifica Evento");
-        } catch (Exception e) {
-            errori.append("Errore durante il caricamento della vista: ").append(e.getMessage()).append("\n");
-        }
-        if (errori.length() > 0) {
-            showAlert("Errore", errori.toString(), Alert.AlertType.WARNING);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModificaEventoView.fxml"));
+            loader.setController(new ModificaEventoGUIController(session));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Modifica Evento");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
         }
     }
 
-
+    public void showReportView(Session session) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ReportView.fxml"));
+            loader.setController(new ReportGUIController(session));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Genera un report");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
+        }
+    }
 
 }
