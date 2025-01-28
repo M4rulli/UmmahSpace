@@ -89,6 +89,8 @@ public class RegistrazioneController {
         session.setIdUtente(idUtente);
         session.setCurrentUsername(bean.getUsername());
         session.setNome(bean.getNome());
+        session.setCognomeOrganizzatore(bean.getCognome());
+        session.setNomeOrganizzatore(bean.getNome());
         
         // Salva l'organizzatore nel DAO
         OrganizzatoreDAO.aggiungiOrganizzatore(organizzatore, persistence);

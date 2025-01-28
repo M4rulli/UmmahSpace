@@ -40,6 +40,7 @@ public class IscrizioneEventoController {
             bean.setOrario(evento.getOrario());
             bean.setLimitePartecipanti(evento.getLimitePartecipanti());
             bean.setIscritti(evento.getIscritti());
+            bean.setLink(evento.getLink());
             bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
             bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
             bean.setStato(evento.getStato());
@@ -65,6 +66,7 @@ public class IscrizioneEventoController {
                 bean.setOrario(evento.getOrario());
                 bean.setLimitePartecipanti(evento.getLimitePartecipanti());
                 bean.setIscritti(evento.getIscritti());
+                bean.setLink(evento.getLink());
                 bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
                 bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
                 bean.setStato(evento.getStato());
@@ -168,6 +170,7 @@ public class IscrizioneEventoController {
                 eventoBean.setDescrizione(evento.getDescrizione());
                 eventoBean.setData(evento.getData());
                 eventoBean.setOrario(evento.getOrario());
+                eventoBean.setLink(evento.getLink());
                 eventoBean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
                 eventoBean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
                 eventoBean.setLimitePartecipanti(evento.getLimitePartecipanti());

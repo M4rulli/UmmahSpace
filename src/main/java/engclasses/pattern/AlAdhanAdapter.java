@@ -3,6 +3,7 @@ package engclasses.pattern;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,6 +27,11 @@ public class AlAdhanAdapter implements OrarioPreghiereAPI {
     @Override
     public Map<String, LocalTime> getOrarioPreghiere(double latitude, double longitude, LocalDate date) {
         try {
+            // Controllo se sei offline
+            if (!isOnline()) {
+                System.out.println("Nessuna connessione a Internet rilevata, impossibile ottenere gli orari delle preghiere.");
+                return getDefaultPrayerTimes();
+            }
             // Costruiamo la URL con i parametri (es. method=2 -> "Egyptian General Authority")
             String urlString = String.format(
                     "%s/%d-%02d-%02d?latitude=%.6f&longitude=%.6f&method=2",
@@ -94,4 +100,29 @@ public class AlAdhanAdapter implements OrarioPreghiereAPI {
         int minute = Integer.parseInt(parts[1]);
         return LocalTime.of(hour, minute);
     }
+    private boolean isOnline() {
+        try {
+            // Prova a connetterti al server DNS pubblico di Google
+            InetAddress address = InetAddress.getByName("8.8.8.8");
+            return address.isReachable(2000); // Timeout di 2 secondi
+        } catch (Exception e) {
+            System.err.println("Errore durante il controllo della connessione a Internet: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Restituisce orari predefiniti se non c'è connessione.
+     */
+    private Map<String, LocalTime> getDefaultPrayerTimes() {
+        Map<String, LocalTime> defaultTimes = new HashMap<>();
+        defaultTimes.put("Fajr", LocalTime.of(5, 0));    // Orario predefinito Fajr
+        defaultTimes.put("Dhuhr", LocalTime.of(12, 0));  // Orario predefinito Dhuhr
+        defaultTimes.put("Asr", LocalTime.of(15, 0));    // Orario predefinito Asr
+        defaultTimes.put("Maghrib", LocalTime.of(18, 0));// Orario predefinito Maghrib
+        defaultTimes.put("Isha", LocalTime.of(20, 0));   // Orario predefinito Isha
+        return defaultTimes;
+    }
 }
+
+

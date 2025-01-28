@@ -26,6 +26,8 @@ public class ModificaEventoGUIController {
     @FXML
     private TextField orarioFineField;
     @FXML
+    private TextField linkField;
+    @FXML
     private TextField limitePartecipantiField;
     @FXML
     private Button editButton;
@@ -57,11 +59,12 @@ public class ModificaEventoGUIController {
                 evento.getDescrizione(),
                 evento.getData(),
                 evento.getOrario(),
+                evento.getLink(),
                 evento.getLimitePartecipanti()
         );
     }
 
-    public void initializeEvent(String titolo, String descrizione, String data, String orario, String limitePartecipanti) {
+    public void initializeEvent(String titolo, String descrizione, String data, String orario, String Link, String limitePartecipanti) {
 
         String[] orariDivisi = orario.split(" - ");
         String orarioInizio = orariDivisi[0];
@@ -72,6 +75,7 @@ public class ModificaEventoGUIController {
         dataField.setText(data);
         orarioInizioField.setText(orarioInizio);
         orarioFineField.setText(orarioFine);
+        linkField.setText(Link);
         limitePartecipantiField.setText(limitePartecipanti);
 
         disableEditing();
@@ -93,6 +97,7 @@ public class ModificaEventoGUIController {
         String orarioFine = orarioFineField.getText().trim();
         String orarioCombinato = orarioInizio + " - " + orarioFine;
         updatedEvento.setOrario(orarioCombinato);
+        updatedEvento.setLink(linkField.getText().trim());
         updatedEvento.setLimitePartecipanti(limitePartecipantiField.getText().trim());
 
         boolean success = gestioneEventoController.aggiornaEvento(updatedEvento, session.getIdEvento());
@@ -103,6 +108,7 @@ public class ModificaEventoGUIController {
                     updatedEvento.getDescrizione(),
                     updatedEvento.getData(),
                     updatedEvento.getOrario(),
+                    updatedEvento.getLink(),
                     updatedEvento.getLimitePartecipanti()
             );
 
@@ -111,6 +117,7 @@ public class ModificaEventoGUIController {
             System.out.println("Descrizione: " + updatedEvento.getDescrizione());
             System.out.println("Data: " + updatedEvento.getData());
             System.out.println("Orario: " + updatedEvento.getOrario());
+            System.out.println("Link: " + updatedEvento.getLink());
             System.out.println("Limite: " + updatedEvento.getLimitePartecipanti());
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -143,6 +150,7 @@ public class ModificaEventoGUIController {
         dataField.setEditable(false);
         orarioFineField.setEditable(false);
         orarioInizioField.setEditable(false);
+        linkField.setEditable(false);
         limitePartecipantiField.setEditable(false);
 
         saveButton.setDisable(true);
@@ -156,6 +164,7 @@ public class ModificaEventoGUIController {
         dataField.setEditable(true);
         orarioFineField.setEditable(true);
         orarioInizioField.setEditable(true);
+        linkField.setEditable(true);
         limitePartecipantiField.setEditable(true);
 
         saveButton.setDisable(false);

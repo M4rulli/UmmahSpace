@@ -3,7 +3,6 @@ package controllers.applicativo;
 import engclasses.beans.EventoBean;
 import engclasses.beans.PartecipazioneBean;
 import engclasses.dao.GestioneEventoDAO;
-import engclasses.dao.IscrizioneEventoDAO;
 import engclasses.dao.PartecipazioneDAO;
 import misc.Session;
 import model.Evento;
@@ -39,6 +38,7 @@ public class GestioneEventoController {
             bean.setOrario(evento.getOrario());
             bean.setLimitePartecipanti(evento.getLimitePartecipanti());
             bean.setIscritti(evento.getIscritti());
+            bean.setLink(evento.getLink());
             bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
             bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
             bean.setStato(evento.getStato());
@@ -78,6 +78,7 @@ public class GestioneEventoController {
         nuovoEvento.setOrario(eventoBean.getOrario());
         nuovoEvento.setLimitePartecipanti(eventoBean.getLimitePartecipanti());
         nuovoEvento.setIscritti(0);
+        nuovoEvento.setLink(eventoBean.getLink());
         nuovoEvento.setNomeOrganizzatore(eventoBean.getNomeOrganizzatore());
         nuovoEvento.setCognomeOrganizzatore(eventoBean.getCognomeOrganizzatore());
         nuovoEvento.setStato(true);
@@ -85,6 +86,7 @@ public class GestioneEventoController {
         nuovoEvento.setIdOrganizzatore(session.getIdUtente());
 
         session.setIdEvento(idEvento);
+
 
         return GestioneEventoDAO.aggiungiEvento(nuovoEvento, session.isPersistence());
     }
@@ -110,6 +112,7 @@ public class GestioneEventoController {
         bean.setDescrizione(evento.getDescrizione());
         bean.setData(evento.getData());
         bean.setOrario(evento.getOrario());
+        bean.setLink(evento.getLink());
         bean.setLimitePartecipanti(evento.getLimitePartecipanti());
         return bean;
     }
@@ -144,6 +147,9 @@ public class GestioneEventoController {
 
         // Valida la data
         String erroriData = validaData(updatedBean);
+
+        // Valida il link
+        String erroriLink = validaLink(updatedBean);
 
         // Valida la fascia oraria
         String erroreFasciaOraria = validaFasciaOraria(updatedBean.getOrario(), updatedBean.getData(), session.getIdUtente(), idEvento);
@@ -278,6 +284,7 @@ public class GestioneEventoController {
                 }
             }
         }
+
         // Ritorna eventuali errori come stringa
         return errori.toString();
     }
@@ -311,4 +318,29 @@ public class GestioneEventoController {
         }
         return errori.toString();
     }
+    public String validaLink(EventoBean updatedBean) {
+        StringBuilder errori = new StringBuilder();
+
+        // Ottieni il link dal bean
+        String nuovoLink = updatedBean.getLink();
+
+        // Controllo se il link è null o vuoto (opzionale)
+        if (nuovoLink == null || nuovoLink.trim().isEmpty()) {
+            // Il link è facoltativo, nessun errore
+            return errori.toString();
+        }
+
+        // Regex per validare il formato base di un URL
+        String URL_REGEX = "^(https?://)?" + // Schema HTTP o HTTPS (facoltativo)
+                "([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}" + // Nome dominio
+                "(:\\d{1,5})?" + // Porta (opzionale)
+                "(\\/\\S*)?$"; // Path o query string (opzionale)
+
+        // Verifica il formato del link
+        if (!nuovoLink.matches(URL_REGEX)) {
+            errori.append("Il link deve essere valido, es. 'https://example.com'.\n");
+        }
+        return errori.toString();
+    }
+
 }

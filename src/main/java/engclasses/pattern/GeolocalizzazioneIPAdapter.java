@@ -3,6 +3,7 @@ package engclasses.pattern;
 import engclasses.pattern.interfaces.GeolocalizzazioneAPI;
 import model.PosizioneGeografica;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -18,6 +19,11 @@ public class GeolocalizzazioneIPAdapter implements GeolocalizzazioneAPI {
     @Override
     public PosizioneGeografica getGeoLocation() {
         try {
+            // Controllo se sei offline
+            if (!isOnline()) {
+                System.out.println("Nessuna connessione a Internet rilevata, impossibile ottenere la geolocalizzazione.");
+                return new PosizioneGeografica(0.0, 0.0); // Ritorna una posizione predefinita
+            }
             // URL dell'API di ip-api
             String url = "http://ip-api.com/json/";
 
@@ -51,4 +57,17 @@ public class GeolocalizzazioneIPAdapter implements GeolocalizzazioneAPI {
             throw new RuntimeException("Errore nella geolocalizzazione con ip-api.com", e);
         }
     }
+
+    private boolean isOnline() {
+        try {
+            // Prova a connetterti al server DNS pubblico di Google
+            InetAddress address = InetAddress.getByName("8.8.8.8");
+            return address.isReachable(2000); // Timeout di 2 secondi
+        } catch (Exception e) {
+            System.err.println("Errore durante il controllo della connessione a Internet: " + e.getMessage());
+            return false;
+        }
+    }
+
+
 }

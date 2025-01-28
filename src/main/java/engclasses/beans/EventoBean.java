@@ -8,6 +8,7 @@ public class EventoBean {
     private String orario;
     private String limitePartecipanti;
     private int iscritti;
+    private String link;
     private String nomeOrganizzatore;
     private String cognomeOrganizzatore;
     private boolean stato;
@@ -72,6 +73,14 @@ public class EventoBean {
 
     public void setIscritti(int iscritti) {
         this.iscritti = iscritti;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public String getNomeOrganizzatore() {

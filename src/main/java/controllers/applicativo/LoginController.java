@@ -53,6 +53,8 @@ public class LoginController {
             if (organizzatore != null && organizzatore.getPassword().equals(loginBean.getPassword())) {
                 session.setIdUtente(organizzatore.getIdUtente());
                 session.setNome(organizzatore.getNome());
+                session.setNomeOrganizzatore(organizzatore.getNome());
+                session.setCognomeOrganizzatore(organizzatore.getCognome());
                 return null; // Gli organizzatori non hanno tracker
             }
 

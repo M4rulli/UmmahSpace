@@ -43,8 +43,6 @@ public class GestioneTrackerDAO {
             if (rs.next()) {
                 Tracker tracker = new Tracker(
                         rs.getInt("letturaCorano"),
-                        rs.getInt("giorniDigiuno"),
-                        rs.getInt("preghiereComplete"),
                         idUtente,
                         rs.getInt("goal"),
                         rs.getDouble("progress")
@@ -69,18 +67,16 @@ public class GestioneTrackerDAO {
     }
 
     private static void saveOrUpdateTrackerInDb(Tracker tracker) {
-        String query = "INSERT INTO Tracker (idUtente, letturaCorano, giorniDigiuno, preghiereComplete, goal, progress, haDigiunato, noteDigiuno, fajr, dhuhr, asr, maghrib, isha) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE letturaCorano = VALUES(letturaCorano), giorniDigiuno = VALUES(giorniDigiuno), " +
-                "preghiereComplete = VALUES(preghiereComplete), goal = VALUES(goal), progress = VALUES(progress), haDigiunato = VALUES(haDigiunato), " +
+        String query = "INSERT INTO Tracker (idUtente, letturaCorano, goal, progress, haDigiunato, noteDigiuno, fajr, dhuhr, asr, maghrib, isha) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE letturaCorano = VALUES(letturaCorano), " +
+                "goal = VALUES(goal), progress = VALUES(progress), haDigiunato = VALUES(haDigiunato), " +
                 "noteDigiuno = VALUES(noteDigiuno), fajr = VALUES(fajr), dhuhr = VALUES(dhuhr), asr = VALUES(asr), maghrib = VALUES(maghrib), isha = VALUES(isha)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, tracker.getIdUtente());
             stmt.setInt(2, tracker.getLetturaCorano());
-            stmt.setInt(3, tracker.getGiorniDigiuno());
-            stmt.setInt(4, tracker.getPreghiereComplete());
             stmt.setInt(5, tracker.getGoal());
             stmt.setDouble(6,tracker.getProgresso());
             stmt.setBoolean(7, tracker.isHaDigiunato());

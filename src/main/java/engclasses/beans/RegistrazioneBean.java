@@ -11,6 +11,8 @@ public class RegistrazioneBean {
     private String newPassword;
     private String confirmPassword;
     private String titoloDiStudio;
+    private String nomeOrganizzatore;
+    private String cognomeOrganizzatore;
 
     public RegistrazioneBean() {}
 
@@ -96,4 +98,11 @@ public class RegistrazioneBean {
         this.titoloDiStudio = titoloDiStudio;
     }
 
+    public String getNomeOrganizzatore() { return nomeOrganizzatore;}
+
+    public void setNomeOrganizzatore(String nomeOrganizzatore) { this.nomeOrganizzatore = nomeOrganizzatore; }
+
+    public String getCognomeOrganizzatore() { return nomeOrganizzatore;}
+
+    public void setCognomeOrganizzatore(String cognomeOrganizzatore) { this.cognomeOrganizzatore = cognomeOrganizzatore; }
 }

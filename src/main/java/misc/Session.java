@@ -24,6 +24,8 @@ public class Session {
     private String idUtente;
     private GestioneTrackerBean trackerBean; // Oggetto per gestire il tracker
     private boolean isOrganizzatore;
+    private String nomeOrganizzatore;
+    private String cognomeOrganizzatore;
     private long idEvento;
     private List<EventoBean> eventiDelGiorno;
 
@@ -80,6 +82,14 @@ public class Session {
     public boolean isOrganizzatore() {
         return isOrganizzatore;
     }
+
+    public String getNomeOrganizzatore() { return nomeOrganizzatore; }
+
+    public void setNomeOrganizzatore(String nomeOrganizzatore) { this.nomeOrganizzatore = nomeOrganizzatore; }
+
+    public String getCognomeOrganizzatore() { return cognomeOrganizzatore; }
+
+    public void setCognomeOrganizzatore (String cognomeOrganizzatore) { this.cognomeOrganizzatore = cognomeOrganizzatore;  }
 
     public void setIsOrganizzatore(boolean organizzatore) {
         isOrganizzatore = organizzatore;

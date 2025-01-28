@@ -174,8 +174,8 @@ public class GestioneEventoDAO {
 
     // Salva un evento nel database
     private static boolean salvaEventoInDb(Evento evento) {
-        String query = "INSERT INTO Eventi (idEvento, idUtente, titolo, descrizione, data, orario, limitePartecipanti, iscritti, stato) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Eventi (idEvento, idUtente, titolo, descrizione, data, orario, link, nomeOrganizzatore, cognomeOrganizzatore, limitePartecipanti, iscritti, stato) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -185,9 +185,12 @@ public class GestioneEventoDAO {
             stmt.setString(4, evento.getDescrizione());
             stmt.setString(5, evento.getData());
             stmt.setString(6, evento.getOrario());
-            stmt.setString(7, evento.getLimitePartecipanti());
-            stmt.setInt(8, evento.getIscritti());
-            stmt.setBoolean(9, evento.getStato());
+            stmt.setString(7, evento.getLink());
+            stmt.setString(8, evento.getNomeOrganizzatore());
+            stmt.setString(9, evento.getCognomeOrganizzatore());
+            stmt.setString(10, evento.getLimitePartecipanti());
+            stmt.setInt(11, evento.getIscritti());
+            stmt.setBoolean(12, evento.getStato());
 
             stmt.executeUpdate();
             return true;
@@ -198,7 +201,7 @@ public class GestioneEventoDAO {
     }
 
     private static void aggiornaEventoInDb(Evento eventoAggiornato) {
-        String query = "UPDATE Eventi SET titolo = ?, descrizione = ?, data = ?, orario = ?, limitePartecipanti = ?, iscritti = ?, stato = ?, idUtente = ? " +
+        String query = "UPDATE Eventi SET titolo = ?, descrizione = ?, data = ?, orario = ?, link = ?, limitePartecipanti = ?, iscritti = ?, stato = ?, idUtente = ? " +
                 "WHERE idEvento = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -208,11 +211,12 @@ public class GestioneEventoDAO {
             stmt.setString(2, eventoAggiornato.getDescrizione());
             stmt.setString(3, eventoAggiornato.getData());
             stmt.setString(4, eventoAggiornato.getOrario());
-            stmt.setString(5, eventoAggiornato.getLimitePartecipanti());
-            stmt.setInt(6, eventoAggiornato.getIscritti());
-            stmt.setBoolean(7, eventoAggiornato.getStato());
-            stmt.setString(8, eventoAggiornato.getIdOrganizzatore());
-            stmt.setLong(9, eventoAggiornato.getIdEvento());
+            stmt.setString(5, eventoAggiornato.getLink());
+            stmt.setString(6, eventoAggiornato.getLimitePartecipanti());
+            stmt.setInt(7, eventoAggiornato.getIscritti());
+            stmt.setBoolean(8, eventoAggiornato.getStato());
+            stmt.setString(9, eventoAggiornato.getIdOrganizzatore());
+            stmt.setLong(10, eventoAggiornato.getIdEvento());
 
             stmt.executeUpdate();
         } catch (SQLException e) {

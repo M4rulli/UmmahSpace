@@ -28,6 +28,9 @@ public class AggiungiEventoGUIController {
     private TextField orarioField2;
 
     @FXML
+    private TextField linkField;
+
+    @FXML
     private TextField limitePartecipantiField;
 
     @FXML
@@ -56,6 +59,7 @@ public class AggiungiEventoGUIController {
         String descrizione = descrizioneField.getText().trim();
         String orarioInizio = orarioField1.getText().trim();
         String orarioFine = orarioField2.getText().trim();
+        String link = linkField.getText().trim();
         String limitePartecipantiText = limitePartecipantiField.getText().trim();
 
         // Formatta l'orario
@@ -65,8 +69,11 @@ public class AggiungiEventoGUIController {
         evento.setTitolo(titolo);
         evento.setDescrizione(descrizione);
         evento.setOrario(orario);
+        evento.setLink(link);
         evento.setLimitePartecipanti(limitePartecipantiText);
         evento.setData(selectedDate);
+        evento.setCognomeOrganizzatore(session.getCognomeOrganizzatore());
+        evento.setNomeOrganizzatore(session.getNomeOrganizzatore());
 
         // Chiamata al Controller applicativo
         GestioneEventoController gestioneEventoController = new GestioneEventoController(session);

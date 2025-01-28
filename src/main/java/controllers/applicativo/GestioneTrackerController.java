@@ -38,6 +38,9 @@ public class GestioneTrackerController  {
         int nuovePagine = tracker.getLetturaCorano() + pages;
 
         // Controlla che il totale delle pagine lette non superi l'obiettivo giornaliero
+        if (goal == 0) {
+            throw new IllegalArgumentException("Obiettivo di lettura non inizializzato. Imposta prima un obiettivo.");
+        }
         if (goal > 0 && nuovePagine > goal) {
             throw new IllegalArgumentException("Non puoi leggere più del tuo obiettivo giornaliero di " + goal + " pagine.");
         }

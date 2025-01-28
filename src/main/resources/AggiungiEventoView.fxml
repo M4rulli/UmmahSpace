@@ -4,10 +4,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox spacing="10" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="619.0" prefWidth="608.0" spacing="10" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <!-- Titolo -->
-    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="555.0"
-           text="Aggiungi un nuovo evento">
+    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="555.0" text="Aggiungi un nuovo evento">
         <font>
             <Font name="Helvetica Bold" size="18.0" />
         </font>
@@ -32,6 +31,11 @@
 
     <!-- Campo Orario -->
     <TextField fx:id="orarioField2" promptText="Orario Fine Evento (es. 11:00)" style="-fx-font-size: 14px;" />
+
+    <Label style="-fx-font-size: 14px;" text="Link:" />
+
+    <!-- Campo Link -->
+    <TextField fx:id="linkField" promptText="Link" style="-fx-font-size: 14px;" />
 
     <Label style="-fx-font-size: 14px;" text="Limite Partecipanti:" />
 

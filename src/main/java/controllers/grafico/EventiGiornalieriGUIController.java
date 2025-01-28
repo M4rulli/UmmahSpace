@@ -49,6 +49,10 @@ public class EventiGiornalieriGUIController {
         Label titleLabel = new Label(evento.getTitolo());
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333; ");
 
+        Label descrizioneLabel = new Label("Descrizione:"+ evento.getDescrizione());
+        descrizioneLabel.setStyle("-fx-font-size: 14px; fx-text-fill: #666; ");
+
+
         Label timeLabel = new Label("Orario: " + evento.getOrario());
         timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; ");
 
@@ -57,6 +61,9 @@ public class EventiGiornalieriGUIController {
 
         Label participantsLabel = new Label("Iscritti: " + evento.getIscritti() + "/" + evento.getLimitePartecipanti());
         participantsLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
+
+        Label linkLabel = new Label("Link: " + evento.getLink());
+        linkLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #444;");
 
         Label statusLabel = new Label(evento.isChiuso() ? "Chiuso" : "Aperto");
         statusLabel.setStyle(evento.isChiuso()

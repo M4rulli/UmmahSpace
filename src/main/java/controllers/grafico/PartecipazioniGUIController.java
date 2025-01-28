@@ -60,6 +60,10 @@ public class PartecipazioniGUIController {
         Label titleLabel = new Label(partecipazione.getTitolo());
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;");
 
+        // Descrizione dell'evento
+        Label descrizioneLabel = new Label("Descrizione:"+ partecipazione.getDescrizione());
+        descrizioneLabel.setStyle("-fx-font-size: 14px; fx-text-fill: #666; ");
+
         // Orario dell'evento
         Label timeLabel = new Label("Orario: " + partecipazione.getOrario());
         timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");

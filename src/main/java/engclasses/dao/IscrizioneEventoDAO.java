@@ -70,6 +70,9 @@ public class IscrizioneEventoDAO {
                     evento.setDescrizione(rs.getString("descrizione"));
                     evento.setData(rs.getString("data"));
                     evento.setOrario(rs.getString("orario"));
+                    evento.setLink(rs.getString("link"));
+                    evento.setNomeOrganizzatore(rs.getString("nomeOrganizzatore"));
+                    evento.setCognomeOrganizzatore(rs.getString("cognomeOrganizzatore"));
                     evento.setLimitePartecipanti(rs.getString("limitePartecipanti"));
                     evento.setIscritti(rs.getInt("iscritti"));
                     evento.setStato(rs.getBoolean("stato"));

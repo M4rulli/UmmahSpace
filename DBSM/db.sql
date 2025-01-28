@@ -33,8 +33,6 @@ CREATE TABLE IF NOT EXISTS Eventi (
 CREATE TABLE Tracker (
     idUtente VARCHAR(255) PRIMARY KEY,      -- ID univoco dell'utente (chiave primaria)
     letturaCorano INT NOT NULL DEFAULT 0,   -- Numero di pagine lette del Corano
-    giorniDigiuno INT NOT NULL DEFAULT 0,   -- Numero di giorni di digiuno completati
-    preghiereComplete INT NOT NULL DEFAULT 0, -- Numero di preghiere completate
     goal INT NOT NULL DEFAULT 0,            -- Obiettivo giornaliero
     progress DOUBLE NOT NULL DEFAULT 0,      -- Progresso attuale
     haDigiunato BOOLEAN NOT NULL DEFAULT 0, -- Indica se l'utente ha digiunato
@@ -46,7 +44,7 @@ CREATE TABLE Tracker (
     isha BOOLEAN NOT NULL DEFAULT 0         -- Stato della preghiera Isha
 );
 
--- Tabella Orgqnizzatori
+-- Tabella Organizzatori
 CREATE TABLE Organizzatori (
     idUtente VARCHAR(255) PRIMARY KEY,                  -- ID unico dell'utente
     nome     VARCHAR(100)        NOT NULL,              -- Nome dell'utente
