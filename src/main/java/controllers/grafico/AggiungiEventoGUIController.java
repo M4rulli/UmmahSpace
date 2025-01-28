@@ -1,12 +1,11 @@
 package controllers.grafico;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 import engclasses.beans.EventoBean;
 import controllers.applicativo.GestioneEventoController;

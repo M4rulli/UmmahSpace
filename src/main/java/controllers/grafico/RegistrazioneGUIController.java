@@ -5,7 +5,7 @@ import engclasses.beans.RegistrazioneBean;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 import org.controlsfx.control.ToggleSwitch;
 
@@ -64,7 +64,6 @@ public class RegistrazioneGUIController {
 
     @FXML
     public void onSignUpClicked() {
-        boolean persistence = session.isPersistence();
 
         // Raccoglie i dati dalla UI
         String nome = nomeField.getText().trim();
@@ -73,7 +72,6 @@ public class RegistrazioneGUIController {
         String password = passwordField.getText();
         String confirmPassword = confermaPasswordField.getText();
         String email = emailField.getText();
-        boolean isOrganizzatore = organizzatoreCheckBox.isSelected();
         String titoloDiStudio = titoloDiStudioField.getText();
 
         // Crea il bean con i dati di input
@@ -84,7 +82,6 @@ public class RegistrazioneGUIController {
         registrazioneBean.setPassword(password);
         registrazioneBean.setConfirmPassword(confirmPassword);
         registrazioneBean.setEmail(email);
-        registrazioneBean.setSeiOrganizzatore(isOrganizzatore);
         if (session.isOrganizzatore()) {
             registrazioneBean.setTitoloDiStudio(titoloDiStudio.isEmpty() ? null : titoloDiStudio);
         } else {

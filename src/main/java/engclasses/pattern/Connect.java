@@ -1,4 +1,4 @@
-package misc;
+package engclasses.pattern;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

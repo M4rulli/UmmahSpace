@@ -13,10 +13,6 @@ public class PartecipazioneBean {
     private long idEvento;           // ID univoco dell'evento
     private String dataIscrizione;   // Data di iscrizione all'evento
 
-    // Costruttore vuoto
-    public PartecipazioneBean() {
-    }
-
     // Getter e Setter
     public String getIdUtente() {
         return idUtente;

@@ -1,6 +1,6 @@
 package engclasses.dao;
 
-import misc.Connect;
+import engclasses.pattern.Connect;
 import model.Partecipazione;
 
 import java.sql.Connection;
@@ -13,6 +13,7 @@ import java.util.List;
 public class PartecipazioneDAO {
     private static final List<Partecipazione> partecipazioniBuffer = new ArrayList<>();
 
+    private PartecipazioneDAO() {}
 
     public static void salvaPartecipazione(Partecipazione partecipazione, boolean persistence) {
         if (persistence) {
@@ -44,7 +45,6 @@ public class PartecipazioneDAO {
 
             stmt.executeUpdate();
             } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("Errore durante il salvataggio della partecipazione nel database.", e);
         }
     }
@@ -75,7 +75,6 @@ public class PartecipazioneDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("Errore durante la verifica della partecipazione nel database: " + e.getMessage(), e);
         }
         return false;
@@ -102,7 +101,8 @@ public class PartecipazioneDAO {
 
     // Metodo per recuperare le partecipazioni dal database
     private static List<Partecipazione> recuperaPartecipazioniDaDb(String idUtente) {
-        String query = "SELECT * FROM Partecipazioni WHERE idUtente = ?";
+        String query = "SELECT idUtente, idEvento, nome, cognome, username, email, dataIscrizione " +
+                "FROM Partecipazioni WHERE idUtente = ?";
         List<Partecipazione> partecipazioni = new ArrayList<>();
 
         try (Connection conn = Connect.getInstance().getConnection();
@@ -123,7 +123,6 @@ public class PartecipazioneDAO {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("Errore nel recupero delle partecipazioni dal database", e);
         }
         return partecipazioni;
@@ -150,7 +149,8 @@ public class PartecipazioneDAO {
 
     // Metodo per recuperare le partecipazioni dal database basato sull'ID evento
     private static List<Partecipazione> recuperaPartecipazioniDaDbPerEvento(long idEvento) {
-        String query = "SELECT * FROM Partecipazioni WHERE idEvento = ?";
+        String query = "SELECT idUtente, idEvento, nome, cognome, username, email, dataIscrizione " +
+                "FROM Partecipazioni WHERE idEvento = ?";
         List<Partecipazione> partecipazioni = new ArrayList<>();
 
         try (Connection conn = Connect.getInstance().getConnection();
@@ -171,7 +171,6 @@ public class PartecipazioneDAO {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException("Errore nel recupero delle partecipazioni dal database per l'evento", e);
         }
         return partecipazioni;
@@ -207,7 +206,6 @@ public class PartecipazioneDAO {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }

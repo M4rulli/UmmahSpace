@@ -1,7 +1,6 @@
 package controllers.grafico;
 
 import controllers.applicativo.OrarioPreghiereController;
-import engclasses.beans.EventoBean;
 import engclasses.pattern.AlAdhanAdapter;
 import engclasses.pattern.GeolocalizzazioneIPAdapter;
 import javafx.fxml.FXML;
@@ -11,13 +10,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -27,7 +24,6 @@ import static misc.MessageUtils.mostraMessaggioConfermaConScelta;
 public class MainViewGUIController {
 
     private final Session session;
-    private final LocalDateTime currentDateTime;
 
     @FXML
     private Label welcomeLabel;
@@ -65,7 +61,6 @@ public class MainViewGUIController {
 
     public MainViewGUIController(Session session) {
         this.session = session;
-        this.currentDateTime = LocalDateTime.now();
     }
 
     @FXML
@@ -105,7 +100,7 @@ public class MainViewGUIController {
         welcomeLabel.setText("Benvenuto, " + session.getNome() + "!");
 
         // Array dei messaggi motivazionali
-        String[] MESSAGES = {
+        String[] messages = {
                 "As-Salamu Alaikum, ricorda: il tempo ben speso è una benedizione.",
                 "Ogni evento pianificato è un'opportunità per fare del bene!",
                 "Che Allah benedica la tua giornata e i tuoi sforzi.",
@@ -118,7 +113,7 @@ public class MainViewGUIController {
 
         // Genera un messaggio casuale
         Random random = new Random();
-        String randomMessage = MESSAGES[random.nextInt(MESSAGES.length)];
+        String randomMessage = messages[random.nextInt(messages.length)];
         subMessageLabel.setText(randomMessage);
 
         // Combina il messaggio casuale con quello principale
@@ -137,9 +132,7 @@ public class MainViewGUIController {
 
             // Apri la finestra delle impostazioni
             Model.getInstance().getViewFactory().showSettings(session);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
     }
 
     // Metodo per gestire il click sul pulsante

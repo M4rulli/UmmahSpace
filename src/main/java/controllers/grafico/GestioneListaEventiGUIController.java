@@ -9,7 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 
 import java.util.List;
@@ -70,9 +70,13 @@ public class GestioneListaEventiGUIController {
 
             // Stato dell'evento (Aperto o Chiuso)
             Label statusLabel = new Label(evento.isChiuso() ? "Chiuso" : "Aperto");
-            statusLabel.setStyle(evento.isChiuso()
-                    ? "-fx-text-fill: red; -fx-font-weight: bold;"
-                    : "-fx-text-fill: green; -fx-font-weight: bold;");
+            if (evento.isChiuso()) {
+                statusLabel.setStyle("-fx-text-fill: red;");
+            } else {
+                statusLabel.setStyle("-fx-text-fill: green;");
+            }
+
+            statusLabel.setStyle("-fx-font-weight: bold;");
 
             // Contenitore separato per i bottoni
             HBox buttonContainer = new HBox(10); // 10 è la distanza tra i bottoni
@@ -85,7 +89,7 @@ public class GestioneListaEventiGUIController {
             // Crea il bottone "Gestisci"
             Button modificaButton = new Button("Gestisci");
             // Disabilita il bottone se l'evento è chiuso
-            modificaButton.setDisable(!evento.getStato());
+            modificaButton.setDisable(!evento.isStato());
             modificaButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10; ");
             modificaButton.setOnAction(e -> onGestisciEventoClicked(evento.getIdEvento()));
 

@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public class MessageUtils {
 
+    private MessageUtils() {}
+
     /**
      * Mostra un messaggio di conferma con il testo fornito..
      */

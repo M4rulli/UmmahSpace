@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
+    private DateUtil() {}
+
     /**
      * Ottiene la data odierna sia nel calendario gregoriano che nel calendario Hijri.
      * Il formato delle date è sincronizzato e restituisce una stringa leggibile.

@@ -5,7 +5,7 @@ import engclasses.beans.RegistrazioneBean;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 
 import static misc.MessageUtils.mostraMessaggioConferma;
@@ -36,12 +36,6 @@ public class GestisciProfiloGUIController {
     @FXML
     private Button backButton;
 
-    private String currentUsername;
-    private String originalName;
-    private String originalSurname;
-    private String originalUsername;
-    private String originalEmail;
-
     private final GestisciProfiloController gestisciProfiloController;
 
     public GestisciProfiloGUIController(Session session) {
@@ -51,9 +45,9 @@ public class GestisciProfiloGUIController {
 
     @FXML
     public void initialize() {
-        backButton.setOnAction(event -> {onBackButtonClicked();});
-        saveButton.setOnAction(event -> {onSaveButtonClicked();});
-        editButton.setOnAction(event -> {onEditButtonClicked();});
+        backButton.setOnAction(event -> onBackButtonClicked());
+        saveButton.setOnAction(event -> onSaveButtonClicked());
+        editButton.setOnAction(event -> onEditButtonClicked());
 
         // Recupera i dati dell'utente
         RegistrazioneBean bean = gestisciProfiloController.inizializzaProfilo(session.getIdUtente());
@@ -65,16 +59,10 @@ public class GestisciProfiloGUIController {
     }
 
     public void initializeProfile(String name, String surname, String username, String email) {
-        this.originalName = name;
-        this.originalSurname = surname;
-        this.originalUsername = username;
-        this.originalEmail = email;
-
         nameField.setText(name);
         surnameField.setText(surname);
         usernameField.setText(username);
         emailField.setText(email);
-
         disableEditing();
     }
 
@@ -102,18 +90,14 @@ public class GestisciProfiloGUIController {
         boolean success = profileController.aggiornaProfilo(updatedBean, currentPassword, newPassword, confirmPassword);
 
         if (success) {
-            currentUsername = updatedBean.getUsername(); // Aggiorna il currentUsername
             initializeProfile(
                     updatedBean.getNome(),
                     updatedBean.getCognome(),
                     updatedBean.getUsername(),
                     updatedBean.getEmail()
             );
-
-
             mostraMessaggioConferma("Conferma", "Modifiche salvate con successo!");
-        } else {
-            }
+        }
     }
 
     @FXML
@@ -147,8 +131,11 @@ public class GestisciProfiloGUIController {
     }
 
     private void enableEditing() {
-        nameField.setEditable(true);
-        surnameField.setEditable(true);
+        // Permette la modifica solo se l'utente NON è un organizzatore
+        if (!session.isOrganizzatore()) {
+            nameField.setEditable(true);
+            surnameField.setEditable(true);
+        }
         usernameField.setEditable(true);
         emailField.setEditable(true);
 

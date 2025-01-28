@@ -1,7 +1,7 @@
 package engclasses.dao;
 
 import model.Evento;
-import misc.Connect;
+import engclasses.pattern.Connect;
 
 import java.sql.*;
 import java.util.*;
@@ -10,8 +10,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class GestioneEventoDAO {
+
     private static final List<Evento> eventiBuffer = new ArrayList<>();
 
+    private GestioneEventoDAO() {
+
+    }
 
     // Recupera tutti gli eventi associati a un organizzatore (dal buffer o database)
     public static List<Evento> getEventiByOrganizzatore(String idUtente, boolean persistence) {
@@ -141,29 +145,17 @@ public class GestioneEventoDAO {
     // Recupera eventi dal database basandoci sull'id dell'organizzatore
     private static List<Evento> recuperaEventiDaDb(String idUtente) {
         List<Evento> eventi = new ArrayList<>();
-        String query = "SELECT * FROM Eventi WHERE idUtente = ?";
+        String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +
+                "nomeOrganizzatore, cognomeOrganizzatore, stato, idEvento, idUtente " +
+                "FROM Eventi WHERE idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, idUtente);
-
+            // Esegue la query
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Evento evento = new Evento(
-                            rs.getString("titolo"),
-                            rs.getString("descrizione"),
-                            rs.getString("data"),
-                            rs.getString("orario"),
-                            rs.getString("limitePartecipanti"),
-                            rs.getInt("iscritti"),
-                            rs.getString("link"),
-                            rs.getString("nomeOrganizzatore"),
-                            rs.getString("cognomeOrganizzatore"),
-                            rs.getBoolean("stato"),
-                            rs.getLong("idEvento"),
-                            rs.getString("idUtente")
-                    );
-                    eventi.add(evento);
+                    eventi.add(fromResultSet(rs));
                 }
             }
         } catch (SQLException e) {
@@ -236,8 +228,7 @@ public class GestioneEventoDAO {
             int rowsDeleted = stmt.executeUpdate();
             if (rowsDeleted > 0) {
                 return true;
-            } else {
-                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -246,28 +237,16 @@ public class GestioneEventoDAO {
     
     // Recupera un evento dal database tramite ID
     private static Evento recuperaEventoDaDb(long idEvento) {
-        String query = "SELECT * FROM Eventi WHERE idEvento = ?";
+        String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +
+                "nomeOrganizzatore, cognomeOrganizzatore, stato, idEvento, idUtente " +
+                "FROM Eventi WHERE idEvento = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setLong(1, idEvento);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Evento(
-                            rs.getString("titolo"),
-                            rs.getString("descrizione"),
-                            rs.getString("data"),
-                            rs.getString("orario"),
-                            rs.getString("limitePartecipanti"),
-                            rs.getInt("iscritti"),
-                            rs.getString("link"),
-                            rs.getString("nomeOrganizzatore"),
-                            rs.getString("cognomeOrganizzatore"),
-                            rs.getBoolean("stato"),
-                            rs.getLong("idEvento"),
-                            rs.getString("idUtente")
-                    );
+                    return fromResultSet(rs);
                 }
             }
         } catch (SQLException e) {
@@ -278,7 +257,9 @@ public class GestioneEventoDAO {
 
     // Recupera eventi da una data specifica dal database
     private static List<Evento> getEventoByDataDb(String data, String idOrganizzatore) {
-        String query = "SELECT * FROM Eventi WHERE data = ? AND idUtente = ?";
+        String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +
+                "nomeOrganizzatore, cognomeOrganizzatore, stato, idEvento, idUtente " +
+                "FROM Eventi WHERE data = ? AND idUtente = ?";
         List<Evento> eventi = new ArrayList<>();
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -290,21 +271,7 @@ public class GestioneEventoDAO {
             // Esegue la query
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Evento evento = new Evento(
-                            rs.getString("titolo"),
-                            rs.getString("descrizione"),
-                            rs.getString("data"),
-                            rs.getString("orario"),
-                            rs.getString("limitePartecipanti"),
-                            rs.getInt("iscritti"),
-                            rs.getString("link"),
-                            rs.getString("nomeOrganizzatore"),
-                            rs.getString("cognomeOrganizzatore"),
-                            rs.getBoolean("stato"),
-                            rs.getLong("idEvento"),
-                            rs.getString("idUtente")
-                    );
-                    eventi.add(evento);
+                    eventi.add(fromResultSet(rs));
                 }
             }
         } catch (SQLException e) {
@@ -313,4 +280,25 @@ public class GestioneEventoDAO {
         return eventi;
     }
 
+    /**
+     * Crea un oggetto Evento a partire da un ResultSet.
+     * Questo metodo viene utilizzato per evitare codice duplicato durante la costruzione di eventi
+     * recuperati dal database.
+     */
+    private static Evento fromResultSet(ResultSet rs) throws SQLException {
+        return new Evento(
+                rs.getString("titolo"),
+                rs.getString("descrizione"),
+                rs.getString("data"),
+                rs.getString("orario"),
+                rs.getString("limitePartecipanti"),
+                rs.getInt("iscritti"),
+                rs.getString("link"),
+                rs.getString("nomeOrganizzatore"),
+                rs.getString("cognomeOrganizzatore"),
+                rs.getBoolean("stato"),
+                rs.getLong("idEvento"),
+                rs.getString("idUtente")
+        );
+    }
 }

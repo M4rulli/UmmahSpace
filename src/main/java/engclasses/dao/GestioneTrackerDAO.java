@@ -1,8 +1,7 @@
 package engclasses.dao;
 
-import misc.Connect;
+import engclasses.pattern.Connect;
 import model.Tracker;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +14,7 @@ public class GestioneTrackerDAO {
     // Buffer per memorizzare i tracker
     private static final Map<String, Tracker> trackerBuffer = new HashMap<>();
 
+    private GestioneTrackerDAO() {}
 
     public static Tracker getTracker(String idUtente, boolean persistence) {
         if (persistence) {
@@ -33,7 +33,9 @@ public class GestioneTrackerDAO {
     }
 
     private static Tracker getTrackerFromDb(String idUtente) {
-        String query = "SELECT * FROM Tracker WHERE idUtente = ?";
+        String query = "SELECT letturaCorano, idUtente, goal, progress, haDigiunato, noteDigiuno, " +
+                "fajr, dhuhr, asr, maghrib, isha " +
+                "FROM Tracker WHERE idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -93,10 +95,7 @@ public class GestioneTrackerDAO {
     }
 
     private static Tracker getTrackerFromBuffer(String idUtente) {
-        Tracker tracker = trackerBuffer.get(idUtente);
-        if (tracker == null) {
-            }
-        return tracker;
+        return trackerBuffer.get(idUtente);
     }
 
     private static void saveOrUpdateTrackerInBuffer(Tracker tracker) {

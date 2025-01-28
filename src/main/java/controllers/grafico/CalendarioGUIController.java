@@ -9,7 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 
 import java.time.LocalDate;

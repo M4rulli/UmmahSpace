@@ -1,7 +1,7 @@
 package engclasses.dao;
 
 import model.Organizzatore;
-import misc.Connect;
+import engclasses.pattern.Connect;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,9 +17,7 @@ public class OrganizzatoreDAO {
     private static final Map<String, Organizzatore> bufferOrganizzatori = new HashMap<>();
     private static final Set<String> CAMPI_VALIDI = Set.of("username", "idUtente", "email");
 
-
-    // Costruttore
-    public OrganizzatoreDAO() {}
+    private OrganizzatoreDAO() {}
 
     // Aggiunge un organizzatore, scegliendo tra buffer o database in base al flag 'persistence'
     public static void aggiungiOrganizzatore(Organizzatore organizzatore, boolean persistence) {
@@ -121,8 +119,7 @@ public class OrganizzatoreDAO {
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
                 return true;
-            } else {
-                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

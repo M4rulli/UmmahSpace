@@ -2,7 +2,7 @@ package controllers.applicativo;
 
 import engclasses.beans.GestioneTrackerBean;
 import engclasses.dao.GestioneTrackerDAO;
-import misc.GestioneTrackerBeanFactory;
+import engclasses.pattern.GestioneTrackerBeanFactory;
 import misc.Session;
 import model.Tracker;
 import java.util.List;

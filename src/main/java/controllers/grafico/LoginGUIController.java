@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import misc.Session;
-import misc.Model;
+import engclasses.pattern.Model;
 
 import static misc.MessageUtils.mostraMessaggioConferma;
 

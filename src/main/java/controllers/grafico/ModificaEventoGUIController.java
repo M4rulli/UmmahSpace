@@ -5,7 +5,7 @@ import engclasses.beans.EventoBean;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import misc.Model;
+import engclasses.pattern.Model;
 import misc.Session;
 import javafx.scene.control.Button;
 
@@ -64,7 +64,7 @@ public class ModificaEventoGUIController {
         );
     }
 
-    public void initializeEvent(String titolo, String descrizione, String data, String orario, String Link, String limitePartecipanti) {
+    public void initializeEvent(String titolo, String descrizione, String data, String orario, String link, String limitePartecipanti) {
 
         String[] orariDivisi = orario.split(" - ");
         String orarioInizio = orariDivisi[0];
@@ -75,7 +75,7 @@ public class ModificaEventoGUIController {
         dataField.setText(data);
         orarioInizioField.setText(orarioInizio);
         orarioFineField.setText(orarioFine);
-        linkField.setText(Link);
+        linkField.setText(link);
         limitePartecipantiField.setText(limitePartecipanti);
 
         disableEditing();
@@ -172,7 +172,6 @@ public class ModificaEventoGUIController {
         if (conferma) {
             try {
                 // Usa il metodo applicativo per chiudere l'evento
-                GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
                 gestioneEventoController.chiudiEvento();
 
                 mostraMessaggioConferma("Evento Chiuso", "L'evento è stato chiuso con successo.");

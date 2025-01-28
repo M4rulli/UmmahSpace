@@ -12,11 +12,6 @@ public class EventoBean {
     private String nomeOrganizzatore;
     private String cognomeOrganizzatore;
     private boolean stato;
-    private String idOrganizzatore;
-
-    // Costruttore vuoto
-    public EventoBean() {
-    }
 
     // Getter e Setter
     public long getIdEvento() {
@@ -98,12 +93,6 @@ public class EventoBean {
     public void setCognomeOrganizzatore(String cognomeOrganizzatore) {
         this.cognomeOrganizzatore = cognomeOrganizzatore;
     }
-    public String getIdOrganizzatore() {
-        return idOrganizzatore;
-    }
-    public void setIdOrganizzatore(String idOrganizzatore) {
-        this.idOrganizzatore = idOrganizzatore;
-    }
 
     public boolean isStato() {
         return stato;
@@ -112,8 +101,6 @@ public class EventoBean {
     public void setStato(boolean stato) {
         this.stato = stato;
     }
-
-    public boolean getStato() {return stato;}
 
     public boolean isChiuso() {
         return !stato || iscritti >= Integer.parseInt(limitePartecipanti);

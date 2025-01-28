@@ -1,4 +1,4 @@
-package misc;
+package engclasses.pattern;
 
 /**
  * La classe Model funge da punto centrale per la gestione dell'istanza
@@ -11,23 +11,27 @@ package misc;
  */
 
 public class Model {
-    private static Model model;
+    private static volatile Model model;
     private final ViewFactory viewFactory;
 
-    // Costruttore privato
+    // Costruttore privato per impedire l'istanziazione diretta
     private Model() {
         this.viewFactory = new ViewFactory();
     }
 
     // Metodo per ottenere l'istanza singleton
-    public static synchronized Model getInstance() {
+    public static Model getInstance() {
         if (model == null) {
-            model = new Model();
+            synchronized (Model.class) {
+                if (model == null) {
+                    model = new Model();
+                }
+            }
         }
         return model;
     }
 
-    // Getter per la ViewFactory
+    // Metodo per ottenere la ViewFactory
     public ViewFactory getViewFactory() {
         return viewFactory;
     }

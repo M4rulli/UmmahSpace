@@ -2,7 +2,6 @@ package controllers.grafico;
 
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
-import engclasses.beans.PartecipazioneBean;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -97,9 +96,11 @@ public class PartecipazioniGUIController {
 
         // Stato dell'evento (Aperto o Chiuso)
         Label statusLabel = new Label(partecipazione.isChiuso() ? "Chiuso" : "Aperto");
-        statusLabel.setStyle(partecipazione.isChiuso()
-                ? "-fx-text-fill: red; -fx-font-weight: bold;"
-                : "-fx-text-fill: green; -fx-font-weight: bold;");
+        if (partecipazione.isChiuso()) {
+            statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else {
+            statusLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+        }
 
         // Pulsante per annullare l'iscrizione
         Button detailButton = new Button("Disiscriviti");

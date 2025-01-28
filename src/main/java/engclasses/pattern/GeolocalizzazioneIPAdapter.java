@@ -2,8 +2,6 @@ package engclasses.pattern;
 
 import engclasses.pattern.interfaces.GeolocalizzazioneAPI;
 import model.PosizioneGeografica;
-
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

@@ -18,6 +18,7 @@ module com.project.ummahspace {
 
     opens controllers.grafico to javafx.fxml; // Permette a JavaFX di accedere ai controller grafici
     opens controllers.applicativo to javafx.fxml; // Se necessario
-    opens engclasses.beans to javafx.fxml; // Se necessario
+    opens engclasses.beans to javafx.fxml;
+    exports engclasses.pattern; // Se necessario
 
 }

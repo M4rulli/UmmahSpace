@@ -1,12 +1,12 @@
-package misc;
+package engclasses.pattern;
 
 import controllers.grafico.*;
-import engclasses.beans.EventoBean;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import misc.Session;
 
 import java.io.IOException;
 

@@ -6,17 +6,9 @@ public class RegistrazioneBean {
     private String username;
     private String email;
     private String password;
-    private Boolean seiOrganizzatore;
-    private String currentPassword;
-    private String newPassword;
     private String confirmPassword;
     private String titoloDiStudio;
-    private String nomeOrganizzatore;
-    private String cognomeOrganizzatore;
 
-    public RegistrazioneBean() {}
-
-    // Getter e Setter
     public String getNome() {
         return nome;
     }
@@ -57,31 +49,6 @@ public class RegistrazioneBean {
         this.password = password;
     }
 
-    public Boolean getSeiOrganizzatore() {
-        return seiOrganizzatore;
-    }
-
-    public void setSeiOrganizzatore(Boolean seiOrganizzatore) {
-        this.seiOrganizzatore = seiOrganizzatore;
-    }
-
-    // Getter e Setter per le password
-    public String getCurrentPassword() {
-        return currentPassword;
-    }
-
-    public void setCurrentPassword(String currentPassword) {
-        this.currentPassword = currentPassword;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
-
     public String getConfirmPassword() {
         return confirmPassword;
     }
@@ -98,11 +65,4 @@ public class RegistrazioneBean {
         this.titoloDiStudio = titoloDiStudio;
     }
 
-    public String getNomeOrganizzatore() { return nomeOrganizzatore;}
-
-    public void setNomeOrganizzatore(String nomeOrganizzatore) { this.nomeOrganizzatore = nomeOrganizzatore; }
-
-    public String getCognomeOrganizzatore() { return nomeOrganizzatore;}
-
-    public void setCognomeOrganizzatore(String cognomeOrganizzatore) { this.cognomeOrganizzatore = cognomeOrganizzatore; }
 }

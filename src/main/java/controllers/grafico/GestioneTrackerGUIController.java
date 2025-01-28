@@ -11,10 +11,7 @@ import misc.DateUtil;
 import misc.Session;
 import org.controlsfx.control.ToggleSwitch;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static misc.MessageUtils.mostraMessaggioErrore;
 
@@ -276,11 +273,14 @@ public class GestioneTrackerGUIController {
 
         // Creare una bean per trasportare i dati
         GestioneTrackerBean trackerBean = new GestioneTrackerBean();
-        trackerBean.setPreghiera("Fajr", fajrDone);
-        trackerBean.setPreghiera("Dhuhr", dhuhrDone);
-        trackerBean.setPreghiera("Asr", asrDone);
-        trackerBean.setPreghiera("Maghrib", maghribDone);
-        trackerBean.setPreghiera("Isha", ishaDone);
+
+        // Lista delle preghiere con i rispettivi valori booleani
+        List<String> preghiere = List.of("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha");
+        List<Boolean> statiPreghiere = List.of(fajrDone, dhuhrDone, asrDone, maghribDone, ishaDone);
+
+        for (int i = 0; i < preghiere.size(); i++) {
+            trackerBean.setPreghiera(preghiere.get(i), statiPreghiere.get(i));
+        }
 
         // Passare al Controller Applicativo e ottenere una bean aggiornata
         GestioneTrackerController controller = new GestioneTrackerController(session);
@@ -291,7 +291,7 @@ public class GestioneTrackerGUIController {
             session.setTracker(updatedBean);
 
         } catch (IllegalArgumentException e) {
-            mostraMessaggioErrore("Errore", null);
+            mostraMessaggioErrore(ERRORE , null);
         }
     }
 

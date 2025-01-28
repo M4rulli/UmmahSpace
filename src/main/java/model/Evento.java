@@ -1,6 +1,5 @@
 package model;
 
-
 public class Evento {
     // Attributi privati
     private String titolo;
@@ -19,7 +18,7 @@ public class Evento {
 
     // Costruttore con tutti i campi
     public Evento(String titolo, String descrizione, String data, String orario, String limitePartecipanti, int iscritti,
-                  String link, String nomeOrganizzatore, String cognomeOrganizzatore, boolean stato, long idEvento, String IdOrganizzatore) {
+                  String link, String nomeOrganizzatore, String cognomeOrganizzatore, boolean stato, long idEvento, String idOrganizzatore) {
         this.titolo = titolo;
         this.descrizione = descrizione;
         this.data = data;
@@ -31,11 +30,10 @@ public class Evento {
         this.cognomeOrganizzatore = cognomeOrganizzatore;
         this.stato = stato;
         this.idEvento = idEvento;
-        this.idOrganizzatore = IdOrganizzatore;
+        this.idOrganizzatore = idOrganizzatore;
     }
 
-    public Evento() {
-    }
+    public Evento() {}
 
     // Getter e Setter
     public String getTitolo() {
@@ -131,25 +129,6 @@ public class Evento {
 
     public void setIdOrganizzatore(String idOrganizzatore) {
         this.idOrganizzatore = idOrganizzatore;
-    }
-
-    // Metodo toString per rappresentare l'entità in formato leggibile
-    @Override
-    public String toString() {
-        return "Evento{" +
-                "titolo='" + titolo + '\'' +
-                ", descrizione='" + descrizione + '\'' +
-                ", data='" + data + '\'' +
-                ", orario='" + orario + '\'' +
-                ", limitePartecipanti=" + limitePartecipanti +
-                ", iscritti=" + iscritti +
-                ", link='" + link + '\'' +
-                ", nomeOrganizzatore='" + nomeOrganizzatore + '\'' +
-                ", cognomeOrganizzatore='" + cognomeOrganizzatore + '\'' +
-                ", stato=" + stato +
-                ", idEvento=" + idEvento +
-                ", idOrganizzatore=" + idOrganizzatore +
-                '}';
     }
 
 }

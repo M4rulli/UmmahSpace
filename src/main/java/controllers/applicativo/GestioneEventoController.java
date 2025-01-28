@@ -215,7 +215,7 @@ public class GestioneEventoController {
         validaCampo(eventoBean.getOrario(), "L'orario dell'evento", errori);
 
         // Validazione descrizione (lunghezza massima)
-        validaLunghezza(eventoBean.getDescrizione(), "La descrizione", 500, errori);
+        validaLunghezza(eventoBean.getDescrizione(), errori);
 
         // Validazione orario
         validaFormatoOrario(eventoBean.getOrario(), errori);
@@ -235,9 +235,9 @@ public class GestioneEventoController {
     }
 
     // Metodo per validare la lunghezza di un campo
-    private void validaLunghezza(String valore, String nomeCampo, int maxLunghezza, List<String> errori) {
-        if (valore != null && valore.length() > maxLunghezza) {
-            errori.add(nomeCampo + " non può essere più lungo di " + maxLunghezza + " caratteri.");
+    private void validaLunghezza(String valore, List<String> errori) {
+        if (valore != null && valore.length() > 500) {
+            errori.add("La descrizione" + " non può essere più lungo di " + 500 + " caratteri.");
         }
     }
 
@@ -356,10 +356,10 @@ public class GestioneEventoController {
         }
 
         // Regex per validare il formato base di un URL
-        String urlRegex = "^(https?:\\/\\/)?"
-                + "([a-zA-Z0-9\\-\\.]+\\.)+[a-zA-Z]{2,}"  // Nome dominio
+        String urlRegex = "^(https?://)?"
+                + "([a-zA-Z0-9\\-.]+\\.)+[a-zA-Z]{2,}"  // Nome dominio
                 + "(:\\d{1,5})?"                          // Porta (opzionale)
-                + "(\\/\\S*)?$";                          // Path o query string (opzionale)
+                + "(/\\S*)?$";                          // Path o query string (opzionale)
 
         // Verifica il formato del link
         if (!nuovoLink.matches(urlRegex)) {

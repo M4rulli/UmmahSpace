@@ -1,4 +1,4 @@
-package utils;
+package misc;
 
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -13,13 +13,14 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 
 public class PDFExporter {
+
+    private PDFExporter() {}
 
     /**
      * Esporta il contenuto di un nodo JavaFX in un file PDF.

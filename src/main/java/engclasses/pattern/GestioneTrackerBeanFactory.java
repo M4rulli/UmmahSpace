@@ -1,4 +1,4 @@
-package misc;
+package engclasses.pattern;
 
 import engclasses.beans.GestioneTrackerBean;
 import model.Tracker;
@@ -13,6 +13,8 @@ public class GestioneTrackerBeanFactory {
     /**
      Metodo statico per creare una GestioneTrackerBean da un oggetto Tracker.
      */
+
+    private GestioneTrackerBeanFactory() {}
 
     public static GestioneTrackerBean createTrackerBeanFromFactory(Tracker tracker) {
 

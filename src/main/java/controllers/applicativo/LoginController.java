@@ -5,7 +5,7 @@ import engclasses.beans.LoginBean;
 import engclasses.dao.GestioneTrackerDAO;
 import engclasses.dao.OrganizzatoreDAO;
 import engclasses.dao.PartecipanteDAO;
-import misc.GestioneTrackerBeanFactory;
+import engclasses.pattern.GestioneTrackerBeanFactory;
 import misc.Session;
 import model.Organizzatore;
 import model.Partecipante;
@@ -16,6 +16,7 @@ public class LoginController {
 
     private final Session session;
 
+    private static final String LOGIN_ERROR_MESSAGE = "Errore di Login";
 
     public LoginController(Session session) {
         this.session = session;
@@ -25,7 +26,7 @@ public class LoginController {
         // Validazione campi di login
         String errori = validaCampiLogin(loginBean);
         if (!errori.isEmpty()) {
-            mostraMessaggioErrore("Errore di Login", errori);
+            mostraMessaggioErrore(LOGIN_ERROR_MESSAGE, errori);
             return null;
         }
 
@@ -60,7 +61,7 @@ public class LoginController {
             return new GestioneTrackerBean();
         }
 
-        mostraMessaggioErrore("Errore di Login", "Credenziali non valide: controlla username e password.");
+        mostraMessaggioErrore(LOGIN_ERROR_MESSAGE, "Credenziali non valide: controlla username e password.");
         return null;
     }
 
@@ -73,7 +74,7 @@ public class LoginController {
             return recuperaTracker(partecipante, persistence);
         }
 
-        mostraMessaggioErrore("Errore di Login", "Credenziali non valide: controlla username e password.");
+        mostraMessaggioErrore(LOGIN_ERROR_MESSAGE, "Credenziali non valide: controlla username e password.");
         return null;
     }
 

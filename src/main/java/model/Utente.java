@@ -9,8 +9,7 @@ public abstract class Utente {
     protected String idUtente;
     protected Boolean stato;
 
-    // Costruttore
-    public Utente(String nome, String cognome, String username, String email, String password, String idUtente, Boolean stato) {
+    protected Utente(String nome, String cognome, String username, String email, String password, String idUtente, Boolean stato) {
         this.nome = nome;
         this.cognome = cognome;
         this.username = username;

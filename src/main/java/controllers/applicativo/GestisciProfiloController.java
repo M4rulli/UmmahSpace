@@ -63,7 +63,6 @@ public class GestisciProfiloController {
         validaUsername(updatedBean.getUsername(), utente, errori);
         validaEmail(updatedBean.getEmail(), utente, errori);
 
-
         // Cambio password se necessario
         if (currentPassword != null
                 && !currentPassword.isEmpty() &&
@@ -121,7 +120,7 @@ public class GestisciProfiloController {
     private void validaUsername(String username, Utente utente, StringBuilder errori) {
         if (username == null || username.trim().isEmpty()) {
             errori.append("L'username non può essere vuoto.\n");
-        } else if (!username.equals(utente.getUsername()) && !controllaCampo(USERNAME, username)) {
+        } else if (!username.equals(utente.getUsername()) && controllaCampo(USERNAME, username)) {
             errori.append("L'username è già in uso.\n");
         }
     }
@@ -132,7 +131,7 @@ public class GestisciProfiloController {
             errori.append("L'email non può essere vuota.\n");
         } else if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
             errori.append("L'email non è valida. Deve seguire il formato standard (es. esempio@email.com).\n");
-        } else if (!email.equals(utente.getEmail()) && !controllaCampo("email", email)) {
+        } else if (!email.equals(utente.getEmail()) && controllaCampo("email", email)) {
             errori.append("L'email è già in uso.\n");
         }
     }
@@ -202,6 +201,6 @@ public class GestisciProfiloController {
                 : PartecipanteDAO.selezionaPartecipante(campo, valore, session.isPersistence());
 
         // Il campo è disponibile per l’utente attuale
-        return utente == null;
+        return utente != null;
     }
 }

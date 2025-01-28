@@ -14,8 +14,7 @@ public class GestioneTrackerBean {
     private Set<String> motivazioniDigiuno;
     private double progress;
     private String idUtente; // ID dell'utente
-
-    public GestioneTrackerBean() {}
+    private final Map<String, Boolean> preghiere = new HashMap<>();
 
     public int getLetturaCorano() {
         return letturaCorano;
@@ -56,8 +55,6 @@ public class GestioneTrackerBean {
     public Set<String> getMotivazioniDigiuno() {
         return motivazioniDigiuno != null ? motivazioniDigiuno : new HashSet<>();
     }
-
-    private Map<String, Boolean> preghiere = new HashMap<>();
 
     public void setPreghiera(String nome, boolean completata) {
         preghiere.put(nome, completata);

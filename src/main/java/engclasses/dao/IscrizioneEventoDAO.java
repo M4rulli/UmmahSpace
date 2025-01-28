@@ -1,23 +1,21 @@
 package engclasses.dao;
 
-import misc.Connect;
+import engclasses.pattern.Connect;
 import model.Evento;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IscrizioneEventoDAO {
+
     private static final List<Evento> eventiBuffer = new ArrayList<>();
-
-
     // Popola inizialmente il buffer con eventi hard-coded
     static {
         eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", "50", 10, "www.evento1.com", "Mario", "Rossi", true, 1, ""));
         eventiBuffer.add(new Evento("Evento 2", "Descrizione 2", "2025-01-02", "15:00", "30", 5, "www.evento2.com", "Luca", "Bianchi", true, 2, ""));
-        eventiBuffer.add(new Evento("Evento 3", "Descrizione 3", "2025-01-03", "09:00", "20", 15, "www.evento3.com", "Anna", "Verdi", true, 3, ""));
-        eventiBuffer.add(new Evento("Evento 4", "Descrizione 4", "2025-01-03", "09:00", "20", 20, "www.evento4.com", "Romolo", "Remo", true, 4, ""));
-        eventiBuffer.add(new Evento("Evento 5", "Descrizione 5", "2025-01-03", "09:00", "20", 20, "www.evento5.com", "Ciao", "Darwin", true, 5, ""));
     }
+
+    private IscrizioneEventoDAO() { }
 
     // Metodo per ottenere tutti gli eventi (buffer o database)
     public static List<Evento> getEventiPerMeseAnno(int mese, int anno, boolean persistence) {
@@ -48,7 +46,9 @@ public class IscrizioneEventoDAO {
     // Metodo per ottenere tutti gli eventi per un mese e anno dal database
     public static List<Evento> getEventiPerMeseAnnoDb(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
-        String query = "SELECT * FROM Eventi WHERE MONTH(data) = ? AND YEAR(data) = ?";
+        String query = "SELECT idEvento, idUtente, titolo, descrizione, data, orario, link, " +
+                "nomeOrganizzatore, cognomeOrganizzatore, limitePartecipanti, iscritti, stato " +
+                "FROM Eventi WHERE MONTH(data) = ? AND YEAR(data) = ?";
 
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
