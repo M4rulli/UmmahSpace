@@ -29,9 +29,7 @@ public class ViewFactory {
             stage.setTitle(title);
             stage.setScene(new Scene(root));
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento della finestra: " + title, e);
+        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra: " + title, e);
         }
     }
 
@@ -97,9 +95,7 @@ public class ViewFactory {
                 parentContainer.getChildren().clear();
                 parentContainer.getChildren().add(trackerView);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Errore durante il caricamento di TrackerView.fxml", e);
+            } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento di TrackerView.fxml", e);
             }
         }
     }
@@ -127,9 +123,7 @@ public class ViewFactory {
             parentContainer.getChildren().clear();
             parentContainer.getChildren().add(view);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento della vista.", e);
+        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della vista.", e);
         }
     }
 
@@ -152,9 +146,7 @@ public class ViewFactory {
             Scene scene = new Scene(root, 600, 400);
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento della finestra Eventi Giornalieri", e);
+        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Eventi Giornalieri", e);
         }
     }
 
@@ -169,9 +161,7 @@ public class ViewFactory {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
+        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
         }
     }
 
@@ -184,9 +174,7 @@ public class ViewFactory {
             stage.setTitle("Modifica Evento");
             stage.setScene(new Scene(root));
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
+        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
         }
     }
 
@@ -199,9 +187,7 @@ public class ViewFactory {
             stage.setTitle("Genera un report");
             stage.setScene(new Scene(root));
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
+        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
         }
     }
 

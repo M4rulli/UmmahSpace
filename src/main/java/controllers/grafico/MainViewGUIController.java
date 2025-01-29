@@ -23,6 +23,7 @@ import static misc.MessageUtils.mostraMessaggioConfermaConScelta;
 
 public class MainViewGUIController {
 
+    private final Random random = new Random();
     private final Session session;
 
     @FXML
@@ -112,7 +113,6 @@ public class MainViewGUIController {
         };
 
         // Genera un messaggio casuale
-        Random random = new Random();
         String randomMessage = messages[random.nextInt(messages.length)];
         subMessageLabel.setText(randomMessage);
 
@@ -123,16 +123,9 @@ public class MainViewGUIController {
 
     @FXML
     public void onProfileButtonClicked() {
-        try {
-            // Recupera lo Stage corrente (finestra principale)
-            Stage currentStage = (Stage) profileButton.getScene().getWindow();
-
-            // Chiudi la finestra principale
-            Model.getInstance().getViewFactory().closeStage(currentStage);
-
-            // Apri la finestra delle impostazioni
-            Model.getInstance().getViewFactory().showSettings(session);
-        } catch (Exception e) {}
+        Stage currentStage = (Stage) profileButton.getScene().getWindow();
+        Model.getInstance().getViewFactory().closeStage(currentStage);
+        Model.getInstance().getViewFactory().showSettings(session);
     }
 
     // Metodo per gestire il click sul pulsante

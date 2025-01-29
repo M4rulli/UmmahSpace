@@ -2,6 +2,8 @@ package engclasses.pattern;
 
 import engclasses.pattern.interfaces.GeolocalizzazioneAPI;
 import model.PosizioneGeografica;
+
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -28,7 +30,15 @@ public class GeolocalizzazioneIPAdapter implements GeolocalizzazioneAPI {
 
             // Invia la richiesta utilizzando un client HTTP
             HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response;
+            try {
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Segnala che il thread è stato interrotto
+                throw new RuntimeException("Thread interrotto durante la richiesta HTTP", e);
+            } catch (IOException e) {
+                throw new RuntimeException("Errore di I/O durante la richiesta HTTP", e);
+            }
 
             // Parsing della risposta JSON
             JSONObject jsonObject = new JSONObject(response.body());
@@ -45,9 +55,7 @@ public class GeolocalizzazioneIPAdapter implements GeolocalizzazioneAPI {
             // Restituisce l'oggetto PosizioneGeografica
             return new PosizioneGeografica(latitude, longitude);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore nella geolocalizzazione con ip-api.com", e);
+        } catch (Exception e) {throw new RuntimeException("Errore nella geolocalizzazione con ip-api.com", e);
         }
     }
 }

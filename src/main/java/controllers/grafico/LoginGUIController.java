@@ -3,6 +3,10 @@ package controllers.grafico;
 import controllers.applicativo.LoginController;
 import engclasses.beans.GestioneTrackerBean;
 import engclasses.beans.LoginBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.LoginFallitoException;
+import engclasses.exceptions.TrackerNonTrovatoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -42,7 +46,14 @@ public class LoginGUIController {
         registrationLink.setOnAction(event -> onHyperLinkRegistrationClicked());
 
         // Assegna l'azione al bottone di login
-        loginButton.setOnAction(event -> onLoginClicked());
+        loginButton.setOnAction(event -> {
+            try {
+                onLoginClicked();
+            } catch (LoginFallitoException | DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     TrackerNonTrovatoException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         // Listener per la checkbox
         listenOrganizzatoreCheckBox();
@@ -62,7 +73,7 @@ public class LoginGUIController {
     }
 
     @FXML
-    private void onLoginClicked() {
+    private void onLoginClicked() throws LoginFallitoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException {
         // Preleva i campi username e password dalla GUI
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -79,13 +90,13 @@ public class LoginGUIController {
         if (trackerBean != null && trackerBean != ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come partecipante
             session.setCurrentUsername(username);
-            session.setTracker(trackerBean); // Salva il tracker nella sessione;
+            session.setTracker(trackerBean);
 
             // Mostra messaggio di successo e passa alla MainView
             mostraMessaggioConferma("Successo", "Login effettuato con successo!");
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
-            Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
+            Model.getInstance().getViewFactory().closeStage(stage);
+            Model.getInstance().getViewFactory().showMainView(session);
 
         } else if (trackerBean == ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come organizzatore
@@ -94,15 +105,14 @@ public class LoginGUIController {
             // Mostra messaggio di successo e passa alla MainView
             mostraMessaggioConferma("Successo", "Login effettuato con successo!");
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            Model.getInstance().getViewFactory().closeStage(stage); // Chiudi la finestra corrente
-            Model.getInstance().getViewFactory().showMainView(session); // Mostra la MainView
+            Model.getInstance().getViewFactory().closeStage(stage);
+            Model.getInstance().getViewFactory().showMainView(session);
         }
     }
 
     private void listenOrganizzatoreCheckBox() {
-        organizzatoreCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            session.setIsOrganizzatore(newValue); // Aggiorna lo stato nella sessione
-        });
+        organizzatoreCheckbox.selectedProperty().addListener((observable, oldValue, newValue) ->
+                session.setIsOrganizzatore(newValue));
     }
 
 }

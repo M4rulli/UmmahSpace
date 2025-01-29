@@ -15,10 +15,14 @@ module com.project.ummahspace {
     exports controllers.grafico;
     exports controllers.applicativo;
     exports engclasses.beans;
+    exports model;
+    exports engclasses.exceptions;
+    exports engclasses.pattern.interfaces;
 
-    opens controllers.grafico to javafx.fxml; // Permette a JavaFX di accedere ai controller grafici
-    opens controllers.applicativo to javafx.fxml; // Se necessario
+
+    opens controllers.grafico to javafx.fxml;
+    opens controllers.applicativo to javafx.fxml;
     opens engclasses.beans to javafx.fxml;
-    exports engclasses.pattern; // Se necessario
+    exports engclasses.pattern;
 
 }

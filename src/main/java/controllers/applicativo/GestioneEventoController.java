@@ -4,10 +4,15 @@ import engclasses.beans.EventoBean;
 import engclasses.beans.PartecipazioneBean;
 import engclasses.dao.GestioneEventoDAO;
 import engclasses.dao.PartecipazioneDAO;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.EventoNonTrovatoException;
+import engclasses.pattern.BeanFactory;
 import misc.Session;
 import model.Evento;
 import model.Partecipazione;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -26,32 +31,19 @@ public class GestioneEventoController {
     }
 
     // Metodo per recuperare tutti gli eventi associati a un organizzatore
-    public List<EventoBean> getEventiOrganizzatore(String idUtente, Session session) {
+    public List<EventoBean> getEventiOrganizzatore(String idUtente, Session session) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         List<Evento> eventi = GestioneEventoDAO.getEventiByOrganizzatore(idUtente, session.isPersistence());
         List<EventoBean> eventoBeans = new ArrayList<>();
 
         for (Evento evento : eventi) {
-            EventoBean bean = new EventoBean();
-            bean.setIdEvento(evento.getIdEvento());
-            bean.setTitolo(evento.getTitolo());
-            bean.setDescrizione(evento.getDescrizione());
-            bean.setData(evento.getData());
-            bean.setOrario(evento.getOrario());
-            bean.setLimitePartecipanti(evento.getLimitePartecipanti());
-            bean.setIscritti(evento.getIscritti());
-            bean.setLink(evento.getLink());
-            bean.setNomeOrganizzatore(evento.getNomeOrganizzatore());
-            bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
-            bean.setStato(evento.getStato());
-
+            EventoBean bean = BeanFactory.createEventoBean(evento);
             eventoBeans.add(bean);
-
         }
         return eventoBeans;
     }
 
     // Metodo per aggiungere un nuovo evento per un organizzatore
-    public boolean aggiungiEvento(EventoBean eventoBean) {
+    public boolean aggiungiEvento(EventoBean eventoBean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         // Valida i dati forniti nella bean
         String erroriData = validaEvento(eventoBean);
@@ -75,6 +67,14 @@ public class GestioneEventoController {
         long idEvento = System.currentTimeMillis(); // Restituisce il numero di millisecondi dal 1 gennaio 1970
 
         // Creazione del nuovo evento
+        Evento nuovoEvento = getEvento(eventoBean, idEvento);
+        session.setIdEvento(idEvento);
+
+        return GestioneEventoDAO.aggiungiEvento(nuovoEvento, session.isPersistence());
+    }
+
+
+    private Evento getEvento(EventoBean eventoBean, long idEvento) {
         Evento nuovoEvento = new Evento();
         nuovoEvento.setTitolo(eventoBean.getTitolo());
         nuovoEvento.setDescrizione(eventoBean.getDescrizione());
@@ -88,15 +88,11 @@ public class GestioneEventoController {
         nuovoEvento.setStato(true);
         nuovoEvento.setIdEvento(idEvento);
         nuovoEvento.setIdOrganizzatore(session.getIdUtente());
-
-        session.setIdEvento(idEvento);
-
-
-        return GestioneEventoDAO.aggiungiEvento(nuovoEvento, session.isPersistence());
+        return nuovoEvento;
     }
 
     // Metodo per eliminare un evento
-    public boolean eliminaEvento(long idEvento, String idUtente) {
+    public boolean eliminaEvento(long idEvento, String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (idEvento <= 0) {
             mostraMessaggioErrore(MESSAGGIO_ERRORE, "ID evento non valido.");
             return false;
@@ -105,9 +101,13 @@ public class GestioneEventoController {
     }
 
     // Metodo per popolare i campi dell'evento da modificare
-    public EventoBean inizializzaEvento() {
+    public EventoBean inizializzaEvento() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         Evento evento = GestioneEventoDAO.getEventoById(session.getIdEvento(), session.isPersistence());
+
+        if (evento == null) {
+            throw new EventoNonTrovatoException("L'evento non è stato trovato.");
+        }
 
         // Creare una bean per il trasferimento
         EventoBean bean = new EventoBean();
@@ -121,7 +121,7 @@ public class GestioneEventoController {
         return bean;
     }
 
-    public List<PartecipazioneBean> getPartecipazioniEvento() {
+    public List<PartecipazioneBean> getPartecipazioniEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Recupera le partecipazioni dal database o buffer
         List<Partecipazione> partecipazioni = PartecipazioneDAO.recuperaPartecipazioniPerEvento(session.getIdEvento(), session.isPersistence());
         if (partecipazioni.isEmpty()) {
@@ -141,7 +141,7 @@ public class GestioneEventoController {
         return partecipazioneBeans;
     }
 
-    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) {
+    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         // Recupera l'evento corrente dal database o dal buffer
         Evento eventoEsistente = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
@@ -191,7 +191,7 @@ public class GestioneEventoController {
     }
 
     // Metodo per aggiornare lo stato di un evento
-    public void chiudiEvento() {
+    public void chiudiEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Recupera l'evento dal DAO
         Evento evento = GestioneEventoDAO.getEventoById(session.getIdEvento(), session.isPersistence());
         if (evento == null) {
@@ -313,7 +313,7 @@ public class GestioneEventoController {
         return errori.toString();
     }
 
-    private String validaFasciaOraria(String orarioNuovoEvento, String dataNuovoEvento, String idOrganizzatore, long idEventoCorrente) {
+    private String validaFasciaOraria(String orarioNuovoEvento, String dataNuovoEvento, String idOrganizzatore, long idEventoCorrente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         StringBuilder errori = new StringBuilder();
         // Recupera gli eventi per la stessa data e organizzatore
         List<Evento> eventiEsistenti = GestioneEventoDAO.recuperaEventoPerData(dataNuovoEvento, idOrganizzatore, session.isPersistence());
@@ -354,15 +354,9 @@ public class GestioneEventoController {
             // Il link è facoltativo, nessun errore
             return errori.toString();
         }
-
-        // Regex per validare il formato base di un URL
-        String urlRegex = "^(https?://)?"
-                + "([a-zA-Z0-9\\-.]+\\.)+[a-zA-Z]{2,}"  // Nome dominio
-                + "(:\\d{1,5})?"                          // Porta (opzionale)
-                + "(/\\S*)?$";                          // Path o query string (opzionale)
-
-        // Verifica il formato del link
-        if (!nuovoLink.matches(urlRegex)) {
+        try {
+            new URL(nuovoLink); // Se non è valido, genera un'eccezione
+        } catch (Exception e) {
             errori.append("Il link deve essere valido, es. 'https://example.com'.\n");
         }
         return errori.toString();

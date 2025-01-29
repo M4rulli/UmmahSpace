@@ -1,5 +1,7 @@
 package engclasses.dao;
 
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import model.Evento;
 import engclasses.pattern.Connect;
 
@@ -18,7 +20,7 @@ public class GestioneEventoDAO {
     }
 
     // Recupera tutti gli eventi associati a un organizzatore (dal buffer o database)
-    public static List<Evento> getEventiByOrganizzatore(String idUtente, boolean persistence) {
+    public static List<Evento> getEventiByOrganizzatore(String idUtente, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return recuperaEventiDaDb(idUtente);
         } else {
@@ -27,7 +29,7 @@ public class GestioneEventoDAO {
     }
 
     // Aggiunge un nuovo evento (buffer o database)
-    public static boolean aggiungiEvento(Evento nuovoEvento, boolean persistence) {
+    public static boolean aggiungiEvento(Evento nuovoEvento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return salvaEventoInDb(nuovoEvento);
         } else {
@@ -36,7 +38,7 @@ public class GestioneEventoDAO {
     }
 
     // Aggiorna un evento esistente (buffer o database)
-    public static void aggiornaEvento(Evento eventoAggiornato, boolean persistence) {
+    public static void aggiornaEvento(Evento eventoAggiornato, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             aggiornaEventoInDb(eventoAggiornato);
         } else {
@@ -45,7 +47,7 @@ public class GestioneEventoDAO {
     }
 
     // Recupera tutti gli eventi in base ad una data specifica (buffer o database)
-    public static List<Evento> recuperaEventoPerData(String data, String idOrganizzatore, boolean persistence) {
+    public static List<Evento> recuperaEventoPerData(String data, String idOrganizzatore, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return getEventoByDataDb(data, idOrganizzatore);
         } else {
@@ -53,7 +55,7 @@ public class GestioneEventoDAO {
     }}
 
     // Elimina un evento (buffer o database)
-    public static boolean eliminaEvento(long idEvento, String idUtente, boolean persistence) {
+    public static boolean eliminaEvento(long idEvento, String idUtente, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return eliminaEventoDaDb(idEvento, idUtente);
         } else {
@@ -73,7 +75,7 @@ public class GestioneEventoDAO {
     }
 
     // Recupera un evento per ID (dal buffer o dal database)
-    public static Evento getEventoById(long idEvento, boolean persistence) {
+    public static Evento getEventoById(long idEvento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return recuperaEventoDaDb(idEvento);
         } else {
@@ -86,9 +88,7 @@ public class GestioneEventoDAO {
         try {
             eventiBuffer.add(nuovoEvento);
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        } catch (Exception e) {return false;
         }
     }
 
@@ -143,7 +143,7 @@ public class GestioneEventoDAO {
     // ------------------ METODI DATABASE ------------------
 
     // Recupera eventi dal database basandoci sull'id dell'organizzatore
-    private static List<Evento> recuperaEventiDaDb(String idUtente) {
+    private static List<Evento> recuperaEventiDaDb(String idUtente) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         List<Evento> eventi = new ArrayList<>();
         String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +
                 "nomeOrganizzatore, cognomeOrganizzatore, stato, idEvento, idUtente " +
@@ -159,13 +159,13 @@ public class GestioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return eventi;
     }
 
     // Salva un evento nel database
-    private static boolean salvaEventoInDb(Evento evento) {
+    private static boolean salvaEventoInDb(Evento evento) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "INSERT INTO Eventi (idEvento, idUtente, titolo, descrizione, data, orario, link, nomeOrganizzatore, cognomeOrganizzatore, limitePartecipanti, iscritti, stato) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
@@ -187,12 +187,11 @@ public class GestioneEventoDAO {
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
     }
 
-    private static void aggiornaEventoInDb(Evento eventoAggiornato) {
+    private static void aggiornaEventoInDb(Evento eventoAggiornato) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "UPDATE Eventi SET titolo = ?, descrizione = ?, data = ?, orario = ?, link = ?, limitePartecipanti = ?, iscritti = ?, stato = ?, idUtente = ? " +
                 "WHERE idEvento = ?";
         try (Connection conn = Connect.getInstance().getConnection();
@@ -212,12 +211,12 @@ public class GestioneEventoDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
     }
 
     // Elimina un evento dal database
-    private static boolean eliminaEventoDaDb(long idEvento, String idUtente) {
+    private static boolean eliminaEventoDaDb(long idEvento, String idUtente) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "DELETE FROM Eventi WHERE idEvento = ? AND idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -230,13 +229,12 @@ public class GestioneEventoDAO {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+        } return false;
     }
     
     // Recupera un evento dal database tramite ID
-    private static Evento recuperaEventoDaDb(long idEvento) {
+    private static Evento recuperaEventoDaDb(long idEvento) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +
                 "nomeOrganizzatore, cognomeOrganizzatore, stato, idEvento, idUtente " +
                 "FROM Eventi WHERE idEvento = ?";
@@ -250,13 +248,13 @@ public class GestioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return null;  // Evento non trovato nel database
     }
 
     // Recupera eventi da una data specifica dal database
-    private static List<Evento> getEventoByDataDb(String data, String idOrganizzatore) {
+    private static List<Evento> getEventoByDataDb(String data, String idOrganizzatore) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +
                 "nomeOrganizzatore, cognomeOrganizzatore, stato, idEvento, idUtente " +
                 "FROM Eventi WHERE data = ? AND idUtente = ?";
@@ -275,7 +273,7 @@ public class GestioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return eventi;
     }

@@ -2,6 +2,9 @@ package controllers.grafico;
 
 import controllers.applicativo.RegistrazioneController;
 import engclasses.beans.RegistrazioneBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.RegistrazioneFallitaException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -45,7 +48,14 @@ public class RegistrazioneGUIController {
 
     @FXML
     private void initialize() {
-        registratiButton.setOnAction(event -> onSignUpClicked());
+        registratiButton.setOnAction(event -> {
+            try {
+                onSignUpClicked();
+            } catch (RegistrazioneFallitaException | DatabaseConnessioneFallitaException |
+                     DatabaseOperazioneFallitaException e) {
+                throw new RuntimeException(e);
+            }
+        });
         loginLink.setOnAction(event -> onHyperLinkLoginClicked());
         // Configura il ToggleSwitch
         persistenceSwitch.setOnMouseClicked(event -> togglePersistence());
@@ -63,7 +73,7 @@ public class RegistrazioneGUIController {
     }
 
     @FXML
-    public void onSignUpClicked() {
+    public void onSignUpClicked() throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         // Raccoglie i dati dalla UI
         String nome = nomeField.getText().trim();

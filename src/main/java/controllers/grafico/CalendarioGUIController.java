@@ -2,6 +2,9 @@ package controllers.grafico;
 
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.EventoNonTrovatoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -49,22 +52,32 @@ public class CalendarioGUIController {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         currentMonth = YearMonth.now();
         updateCalendar();
 
         previousMonthButton.setOnAction(event -> {
             currentMonth = currentMonth.minusMonths(1);
-            updateCalendar();
+            try {
+                updateCalendar();
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     EventoNonTrovatoException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         nextMonthButton.setOnAction(event -> {
             currentMonth = currentMonth.plusMonths(1);
-            updateCalendar();
+            try {
+                updateCalendar();
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     EventoNonTrovatoException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
-    void updateCalendar() {
+    void updateCalendar() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController(session);
 
         updateCalendarTitle();
@@ -167,7 +180,13 @@ public class CalendarioGUIController {
 
             // Ottieni gli eventi filtrati direttamente dal controller applicativo
             IscrizioneEventoController applicativoController = new IscrizioneEventoController(session);
-            List<EventoBean> eventiDelGiorno = applicativoController.getEventiPerGiorno(giorno, mese, anno);
+            List<EventoBean> eventiDelGiorno;
+            try {
+                eventiDelGiorno = applicativoController.getEventiPerGiorno(giorno, mese, anno);
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     EventoNonTrovatoException ex) {
+                throw new RuntimeException(ex);
+            }
 
             // Salva la lista nella sessione
             session.setEventiDelGiorno(eventiDelGiorno);

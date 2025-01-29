@@ -1,5 +1,7 @@
 package engclasses.dao;
 
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.pattern.Connect;
 import model.Partecipazione;
 
@@ -15,7 +17,7 @@ public class PartecipazioneDAO {
 
     private PartecipazioneDAO() {}
 
-    public static void salvaPartecipazione(Partecipazione partecipazione, boolean persistence) {
+    public static void salvaPartecipazione(Partecipazione partecipazione, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             // Salva nel database
             aggiungiPartecipazioneDb(partecipazione);
@@ -29,7 +31,7 @@ public class PartecipazioneDAO {
         partecipazioniBuffer.add(partecipazione);
         }
 
-    public static void aggiungiPartecipazioneDb(Partecipazione partecipazione) {
+    public static void aggiungiPartecipazioneDb(Partecipazione partecipazione) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         String query = "INSERT INTO Partecipazioni (idUtente, idEvento, nome, cognome, username, email, dataIscrizione) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
@@ -45,12 +47,12 @@ public class PartecipazioneDAO {
 
             stmt.executeUpdate();
             } catch (SQLException e) {
-            throw new RuntimeException("Errore durante il salvataggio della partecipazione nel database.", e);
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
     }
 
     // Metodo per verificare se un partecipante è iscritto a un evento (database o buffer)
-    public static boolean isPartecipanteIscritto(String idUtente, long idEvento, boolean persistence) {
+    public static boolean isPartecipanteIscritto(String idUtente, long idEvento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             // Verifica nel database
             return isPartecipanteIscrittoDb(idUtente, idEvento);
@@ -61,7 +63,7 @@ public class PartecipazioneDAO {
     }
 
     // Metodo per verificare se un partecipante è iscritto a uno specifico evento nel database
-    public static boolean isPartecipanteIscrittoDb(String idUtente, long idEvento) {
+    public static boolean isPartecipanteIscrittoDb(String idUtente, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         String query = "SELECT COUNT(*) FROM Partecipazioni WHERE idUtente = ? AND idEvento = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -75,7 +77,7 @@ public class PartecipazioneDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Errore durante la verifica della partecipazione nel database: " + e.getMessage(), e);
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return false;
     }
@@ -91,7 +93,7 @@ public class PartecipazioneDAO {
     }
 
     // Metodo hub per recuperare le partecipazioni
-    public static List<Partecipazione> recuperaPartecipazioni(String idUtente, boolean persistence) {
+    public static List<Partecipazione> recuperaPartecipazioni(String idUtente, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return recuperaPartecipazioniDaDb(idUtente);
         } else {
@@ -100,7 +102,7 @@ public class PartecipazioneDAO {
     }
 
     // Metodo per recuperare le partecipazioni dal database
-    private static List<Partecipazione> recuperaPartecipazioniDaDb(String idUtente) {
+    private static List<Partecipazione> recuperaPartecipazioniDaDb(String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         String query = "SELECT idUtente, idEvento, nome, cognome, username, email, dataIscrizione " +
                 "FROM Partecipazioni WHERE idUtente = ?";
         List<Partecipazione> partecipazioni = new ArrayList<>();
@@ -123,7 +125,7 @@ public class PartecipazioneDAO {
                 ));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Errore nel recupero delle partecipazioni dal database", e);
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return partecipazioni;
     }
@@ -139,7 +141,7 @@ public class PartecipazioneDAO {
     }
 
     // Metodo hub per recuperare le partecipazioni basato sull'ID evento
-    public static List<Partecipazione> recuperaPartecipazioniPerEvento(long idEvento, boolean persistence) {
+    public static List<Partecipazione> recuperaPartecipazioniPerEvento(long idEvento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return recuperaPartecipazioniDaDbPerEvento(idEvento);
         } else {
@@ -148,7 +150,7 @@ public class PartecipazioneDAO {
     }
 
     // Metodo per recuperare le partecipazioni dal database basato sull'ID evento
-    private static List<Partecipazione> recuperaPartecipazioniDaDbPerEvento(long idEvento) {
+    private static List<Partecipazione> recuperaPartecipazioniDaDbPerEvento(long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         String query = "SELECT idUtente, idEvento, nome, cognome, username, email, dataIscrizione " +
                 "FROM Partecipazioni WHERE idEvento = ?";
         List<Partecipazione> partecipazioni = new ArrayList<>();
@@ -171,7 +173,7 @@ public class PartecipazioneDAO {
                 ));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Errore nel recupero delle partecipazioni dal database per l'evento", e);
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return partecipazioni;
     }
@@ -187,7 +189,7 @@ public class PartecipazioneDAO {
         return partecipazioni;
     }
 
-    public static boolean rimuoviPartecipazione(long idEvento, String idUtente, boolean persistence) {
+    public static boolean rimuoviPartecipazione(long idEvento, String idUtente, boolean persistence) throws DatabaseConnessioneFallitaException {
         if (persistence) {
             return rimuoviPartecipazioneDalDb(idEvento, idUtente);
         } else {
@@ -195,7 +197,7 @@ public class PartecipazioneDAO {
         }
     }
 
-    private static boolean rimuoviPartecipazioneDalDb(long idEvento, String idUtente) {
+    private static boolean rimuoviPartecipazioneDalDb(long idEvento, String idUtente) throws DatabaseConnessioneFallitaException {
         String query = "DELETE FROM Partecipazioni WHERE idEvento = ? AND idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -216,12 +218,5 @@ public class PartecipazioneDAO {
                 partecipazione.getIdEvento() == idEvento && partecipazione.getIdUtente().equals(idUtente)
         );
     }
-
-
-
-
-
-
-
-
+    
 }

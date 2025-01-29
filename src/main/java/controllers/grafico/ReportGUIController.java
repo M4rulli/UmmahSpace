@@ -4,6 +4,9 @@ package controllers.grafico;
 import engclasses.beans.EventoBean;
 import engclasses.beans.PartecipazioneBean;
 import controllers.applicativo.GestioneEventoController;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.EventoNonTrovatoException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -69,7 +72,7 @@ public class ReportGUIController {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Configura le colonne della tabella
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("Nome"));
         surnameColumn.setCellValueFactory(new PropertyValueFactory<>("Cognome"));
@@ -87,20 +90,20 @@ public class ReportGUIController {
         printButton.setOnAction(event -> onPrintButtonClicked());
     }
 
-    private void popolaCampiEvento() {
+    private void popolaCampiEvento() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         EventoBean evento = eventoController.inizializzaEvento(); // Recupera i dettagli dell'evento
         eventTitleLabel.setText("Titolo Evento: " + evento.getTitolo());
         eventDateLabel.setText("Data Evento: " + evento.getData());
         reportTimestampLabel.setText("Generato il: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
-    private void popolaTabellaPartecipanti() {
+    private void popolaTabellaPartecipanti() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         List<PartecipazioneBean> partecipazioni = eventoController.getPartecipazioniEvento();
         ObservableList<PartecipazioneBean> observableList = FXCollections.observableArrayList(partecipazioni);
         participantsTable.setItems(observableList);
     }
 
-    private void popolaGraficoPartecipazioni() {
+    private void popolaGraficoPartecipazioni() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         List<PartecipazioneBean> partecipazioni = eventoController.getPartecipazioniEvento();
 
         // Mappa per contare il numero di iscritti per data
@@ -149,9 +152,7 @@ public class ReportGUIController {
 
             // Mostra un messaggio di successo
             mostraMessaggioConferma("PDF Generato", "Il report è stato salvato con successo come " + outputPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostraMessaggioErrore("Errore", "Si è verificato un errore durante la generazione del PDF.");
+        } catch (Exception e) {mostraMessaggioErrore("Errore", "Si è verificato un errore durante la generazione del PDF.");
             }
     }
 }

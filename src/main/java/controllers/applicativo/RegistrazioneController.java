@@ -4,6 +4,9 @@ import engclasses.beans.RegistrazioneBean;
 import engclasses.dao.GestioneTrackerDAO;
 import engclasses.dao.PartecipanteDAO;
 import engclasses.dao.OrganizzatoreDAO;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.RegistrazioneFallitaException;
 import misc.Session;
 import model.*;
 import java.util.UUID;
@@ -19,7 +22,7 @@ public class RegistrazioneController {
         this.session = session;
     }
 
-    public boolean registraUtente(RegistrazioneBean bean, boolean persistence) {
+    public boolean registraUtente(RegistrazioneBean bean, boolean persistence) throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         // Genera un ID univoco per l'utente
         this.idUtente = UUID.randomUUID().toString();
@@ -30,14 +33,21 @@ public class RegistrazioneController {
         }
 
         // Registra l'organizzatore o il partecipante
+        boolean success;
         if (session.isOrganizzatore()) {
-            return registraOrganizzatore(bean, persistence); // Solo organizzatori
+            success = registraOrganizzatore(bean, persistence); // Solo organizzatori
         } else {
-            return registraPartecipante(bean, persistence); // Solo partecipanti
+            success = registraPartecipante(bean, persistence); // Solo partecipanti
         }
+
+        // Se la registrazione non è andata a buon fine, lancia un'eccezione
+        if (!success) {
+            throw new RegistrazioneFallitaException("Errore nella registrazione: si è verificato un problema durante il salvataggio.");
+        }
+        return true;
     }
 
-    private boolean registraPartecipante(RegistrazioneBean bean, boolean persistence) {
+    private boolean registraPartecipante(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         Partecipante partecipante = new Partecipante(
                 idUtente,  // ID univoco generato
@@ -64,7 +74,7 @@ public class RegistrazioneController {
         return true;
     }
 
-    private boolean registraOrganizzatore(RegistrazioneBean bean, boolean persistence) {
+    private boolean registraOrganizzatore(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         Organizzatore organizzatore = new Organizzatore(
                 idUtente,  // ID univoco generato
@@ -89,7 +99,7 @@ public class RegistrazioneController {
         return true;
     }
 
-    public boolean validaRegistrazione(RegistrazioneBean bean) {
+    public boolean validaRegistrazione(RegistrazioneBean bean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         StringBuilder errori = new StringBuilder();
 
         // Recupera utente corrente
@@ -116,7 +126,7 @@ public class RegistrazioneController {
     }
 
     // Metodo per recuperare l'utente corrente
-    private void recuperaUtente() {
+    private void recuperaUtente() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (session.isOrganizzatore()) {
             OrganizzatoreDAO.selezionaOrganizzatore("idUtente", idUtente, session.isPersistence());
         } else {
@@ -143,7 +153,7 @@ public class RegistrazioneController {
     }
 
     // Metodo per validare l'username
-    private void validaUsername(String username, StringBuilder errori) {
+    private void validaUsername(String username, StringBuilder errori) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (username == null || username.trim().isEmpty()) {
             errori.append("L'username non può essere vuoto.\n");
         } else if (controllaCampo("username", username)) {
@@ -162,7 +172,7 @@ public class RegistrazioneController {
     }
 
     // Metodo per validare l'email
-    private void validaEmail(String email, StringBuilder errori) {
+    private void validaEmail(String email, StringBuilder errori) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (email == null || email.trim().isEmpty()) {
             errori.append("L'email non può essere vuota.\n");
         } else if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
@@ -181,7 +191,7 @@ public class RegistrazioneController {
         }
     }
 
-    public boolean controllaCampo(String campo, String valore) {
+    public boolean controllaCampo(String campo, String valore) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Recupera l'utente (Organizzatore o Partecipante) in base al tipo di sessione
         Utente utente = session.isOrganizzatore()
                 ? OrganizzatoreDAO.selezionaOrganizzatore(campo, valore, session.isPersistence())

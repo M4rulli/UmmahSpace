@@ -29,10 +29,6 @@ public class OrarioPreghiereController {
         inizializzaOrariOrdinati(orariCalcolati);
     }
 
-    // Ordine predefinito delle preghiere
-    private static final List<String> ORDINE_PREDEFINITO = List.of(
-            "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"
-    );
 
     // Metodo per ordinare le preghiere
     private void inizializzaOrariOrdinati(Map<String, LocalTime> orariPreghiere) {

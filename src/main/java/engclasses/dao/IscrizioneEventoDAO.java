@@ -1,5 +1,7 @@
 package engclasses.dao;
 
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.pattern.Connect;
 import model.Evento;
 import java.sql.*;
@@ -18,7 +20,7 @@ public class IscrizioneEventoDAO {
     private IscrizioneEventoDAO() { }
 
     // Metodo per ottenere tutti gli eventi (buffer o database)
-    public static List<Evento> getEventiPerMeseAnno(int mese, int anno, boolean persistence) {
+    public static List<Evento> getEventiPerMeseAnno(int mese, int anno, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             // Recupera dal database
             return getEventiPerMeseAnnoDb(mese, anno);
@@ -44,7 +46,7 @@ public class IscrizioneEventoDAO {
     }
 
     // Metodo per ottenere tutti gli eventi per un mese e anno dal database
-    public static List<Evento> getEventiPerMeseAnnoDb(int mese, int anno) {
+    public static List<Evento> getEventiPerMeseAnnoDb(int mese, int anno) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
         String query = "SELECT idEvento, idUtente, titolo, descrizione, data, orario, link, " +
                 "nomeOrganizzatore, cognomeOrganizzatore, limitePartecipanti, iscritti, stato " +
@@ -77,13 +79,13 @@ public class IscrizioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return eventiPerMeseAnno;
     }
 
 
-    public static void aggiornaNumeroIscritti(long idEvento, int incremento, boolean persistence) {
+    public static void aggiornaNumeroIscritti(long idEvento, int incremento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             aggiornaNumeroIscrittiNelDb(idEvento, incremento);
         } else {
@@ -91,7 +93,7 @@ public class IscrizioneEventoDAO {
         }
     }
 
-    private static void aggiornaNumeroIscrittiNelDb(long idEvento, int incremento) {
+    private static void aggiornaNumeroIscrittiNelDb(long idEvento, int incremento) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "UPDATE Eventi SET iscritti = iscritti + ? WHERE idEvento = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -101,8 +103,7 @@ public class IscrizioneEventoDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante l'aggiornamento del numero di iscritti nel database.", e);
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
     }
 

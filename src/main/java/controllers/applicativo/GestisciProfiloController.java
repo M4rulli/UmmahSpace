@@ -3,6 +3,9 @@ package controllers.applicativo;
 import engclasses.beans.RegistrazioneBean;
 import engclasses.dao.OrganizzatoreDAO;
 import engclasses.dao.PartecipanteDAO;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.UtenteNonTrovatoException;
 import misc.Session;
 import model.Partecipante;
 import model.Organizzatore;
@@ -22,7 +25,7 @@ public class GestisciProfiloController {
     }
 
     // Metodo per popolare i campi del profilo utente
-    public RegistrazioneBean inizializzaProfilo(String idUtente) {
+    public RegistrazioneBean inizializzaProfilo(String idUtente) throws UtenteNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         // Recupero dei dati (controlla se è un partecipante o un organizzatore)
         Utente utente;
@@ -32,6 +35,10 @@ public class GestisciProfiloController {
             utente = PartecipanteDAO.selezionaPartecipante(ID_UTENTE, idUtente, session.isPersistence());
         }
 
+        if (utente == null) {
+            throw new UtenteNonTrovatoException("L'utente con ID " + idUtente + " non è stato trovato.");
+        }
+
         // Creare una bean per il trasferimento
         RegistrazioneBean bean = new RegistrazioneBean();
         if (utente instanceof Partecipante partecipante) {
@@ -39,7 +46,7 @@ public class GestisciProfiloController {
             bean.setCognome(partecipante.getCognome());
             bean.setUsername(partecipante.getUsername());
             bean.setEmail(partecipante.getEmail());
-        } else if (utente != null) {
+        } else {
             Organizzatore organizzatore = (Organizzatore) utente;
             bean.setNome(organizzatore.getNome());
             bean.setCognome(organizzatore.getCognome());
@@ -50,7 +57,7 @@ public class GestisciProfiloController {
     }
 
     // Aggiorna i dati del profilo
-    public boolean aggiornaProfilo(RegistrazioneBean updatedBean, String currentPassword, String newPassword, String confirmPassword) {
+    public boolean aggiornaProfilo(RegistrazioneBean updatedBean, String currentPassword, String newPassword, String confirmPassword) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         boolean persistence = session.isPersistence();
         StringBuilder errori = new StringBuilder();
 
@@ -92,7 +99,7 @@ public class GestisciProfiloController {
     }
 
     // Metodo per recuperare l'utente corrente
-    private Utente recuperaUtenteCorrente() {
+    private Utente recuperaUtenteCorrente() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         return session.isOrganizzatore()
                 ? OrganizzatoreDAO.selezionaOrganizzatore(ID_UTENTE, session.getIdUtente(), session.isPersistence())
                 : PartecipanteDAO.selezionaPartecipante(ID_UTENTE, session.getIdUtente(), session.isPersistence());
@@ -117,7 +124,7 @@ public class GestisciProfiloController {
     }
 
     // Validazione Username
-    private void validaUsername(String username, Utente utente, StringBuilder errori) {
+    private void validaUsername(String username, Utente utente, StringBuilder errori) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (username == null || username.trim().isEmpty()) {
             errori.append("L'username non può essere vuoto.\n");
         } else if (!username.equals(utente.getUsername()) && controllaCampo(USERNAME, username)) {
@@ -126,7 +133,7 @@ public class GestisciProfiloController {
     }
 
     // Validazione Email
-    private void validaEmail(String email, Utente utente, StringBuilder errori) {
+    private void validaEmail(String email, Utente utente, StringBuilder errori) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (email == null || email.trim().isEmpty()) {
             errori.append("L'email non può essere vuota.\n");
         } else if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
@@ -137,7 +144,7 @@ public class GestisciProfiloController {
     }
 
     // Metodo per aggiornare i dati nel database
-    private boolean aggiornaDatiNelDatabase(RegistrazioneBean updatedBean, Utente utente, boolean persistence) {
+    private boolean aggiornaDatiNelDatabase(RegistrazioneBean updatedBean, Utente utente, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (utente instanceof Partecipante) {
             Partecipante partecipanteAggiornato = new Partecipante(
                     utente.getIdUtente(),
@@ -167,7 +174,7 @@ public class GestisciProfiloController {
 
 
     // Modifica la password
-    public String changePassword(String currentPassword, String newPassword, String confirmPassword, String username) {
+    public String changePassword(String currentPassword, String newPassword, String confirmPassword, String username) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         Utente utente = session.isOrganizzatore()
                 ? OrganizzatoreDAO.selezionaOrganizzatore(USERNAME, username, session.isPersistence())
@@ -194,7 +201,7 @@ public class GestisciProfiloController {
             return newPassword; // Ritorna la nuova password se tutto è valido
         }
 
-    public boolean controllaCampo(String campo, String valore) {
+    public boolean controllaCampo(String campo, String valore) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Recupera l'utente (Organizzatore o Partecipante) in base al tipo di sessione
         Utente utente = session.isOrganizzatore()
                 ? OrganizzatoreDAO.selezionaOrganizzatore(campo, valore, session.isPersistence())

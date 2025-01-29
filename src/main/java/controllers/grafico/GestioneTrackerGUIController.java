@@ -2,6 +2,9 @@ package controllers.grafico;
 
 import controllers.applicativo.GestioneTrackerController;
 import engclasses.beans.GestioneTrackerBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.TrackerNonTrovatoException;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -88,7 +91,14 @@ public class GestioneTrackerGUIController {
     private void initialize() {
         setGoalButton.setOnAction(event -> onImpostaObiettivoClicked() );
         addReadingButton.setOnAction(event -> onAggiungiLetturaClicked());
-        salvaDigiunoButton.setOnAction(actionEvent -> onSalvaDigiunoClicked());
+        salvaDigiunoButton.setOnAction(actionEvent -> {
+            try {
+                onSalvaDigiunoClicked();
+            } catch (DatabaseConnessioneFallitaException | TrackerNonTrovatoException |
+                     DatabaseOperazioneFallitaException e) {
+                throw new RuntimeException(e);
+            }
+        });
         salvaPreghiereButton.setOnAction(event -> onSalvaPreghiereClicked());
         setupPrayerButtons();
         // Blocca dimensioni della barra di progresso
@@ -136,7 +146,8 @@ public class GestioneTrackerGUIController {
                 // Aggiorna la UI
                 aggiornaBarra();
 
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | TrackerNonTrovatoException | DatabaseConnessioneFallitaException |
+                     DatabaseOperazioneFallitaException e) {
                 mostraMessaggioErrore(ERRORE, "Inserisci un numero valido.");
             }
         });
@@ -179,13 +190,14 @@ public class GestioneTrackerGUIController {
                 // Aggiorna la UI
                 aggiornaBarra();
             }
-                catch (NumberFormatException e) {
+                catch (NumberFormatException | TrackerNonTrovatoException | DatabaseConnessioneFallitaException |
+                       DatabaseOperazioneFallitaException e) {
                 mostraMessaggioErrore(ERRORE, "Inserisci un numero valido.");
             }
         });
     }
 
-    private void aggiornaBarra() {
+    private void aggiornaBarra() throws DatabaseConnessioneFallitaException, TrackerNonTrovatoException, DatabaseOperazioneFallitaException {
 
         // Crea un'istanza del controller applicativo
         GestioneTrackerController gestioneTrackerController = new GestioneTrackerController(session);
@@ -236,7 +248,7 @@ public class GestioneTrackerGUIController {
     }
 
     @FXML
-    private void onSalvaDigiunoClicked() {
+    private void onSalvaDigiunoClicked() throws DatabaseConnessioneFallitaException, TrackerNonTrovatoException, DatabaseOperazioneFallitaException {
         // Raccoglie i dati dalla GUI
         boolean haDigiunato = fastingSwitch.isSelected();
         String note = fastingNotes.getText();
@@ -290,7 +302,8 @@ public class GestioneTrackerGUIController {
             // Salva la bean aggiornata nella sessione
             session.setTracker(updatedBean);
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | TrackerNonTrovatoException | DatabaseConnessioneFallitaException |
+                 DatabaseOperazioneFallitaException e) {
             mostraMessaggioErrore(ERRORE , null);
         }
     }

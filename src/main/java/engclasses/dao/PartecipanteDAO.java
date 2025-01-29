@@ -1,8 +1,9 @@
 package engclasses.dao;
 
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import model.Partecipante;
 import engclasses.pattern.Connect;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +21,7 @@ public class PartecipanteDAO {
     private PartecipanteDAO() {}
 
     // Aggiunge un partecipante, scegliendo tra buffer o database in base al flag 'persistence'
-    public static void aggiungiPartecipante(Partecipante partecipante, boolean persistence) {
+    public static void aggiungiPartecipante(Partecipante partecipante, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             salvaInDb(partecipante); // Salvataggio nel database
         } else {
@@ -34,7 +35,7 @@ public class PartecipanteDAO {
     }
 
     // Salva un partecipante nel database
-    private static void salvaInDb(Partecipante partecipante) {
+    private static void salvaInDb(Partecipante partecipante) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "INSERT INTO Partecipanti (idUtente, nome, cognome, username, email, password, stato) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -49,12 +50,12 @@ public class PartecipanteDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
     }
 
     // Seleziona un partecipante in base al campo specificato (es. username, email, idUtente)
-    public static Partecipante selezionaPartecipante(String campo, String valore, boolean persistence) {
+    public static Partecipante selezionaPartecipante(String campo, String valore, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             // Recupera dal database
             return recuperaDaDb(campo, valore);
@@ -64,7 +65,7 @@ public class PartecipanteDAO {
     }
 
     // Recupera un partecipante dal database in base al campo specificato
-    private static Partecipante recuperaDaDb(String campo, String valore) {
+    private static Partecipante recuperaDaDb(String campo, String valore) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Controlla se il campo è valido
         if (!CAMPI_VALIDI.contains(campo)) {
             throw new IllegalArgumentException("Campo non valido: " + campo);
@@ -92,12 +93,12 @@ public class PartecipanteDAO {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return null;
     }
 
-    public static boolean aggiornaPartecipante(Partecipante partecipanteAggiornato, boolean persistence) {
+    public static boolean aggiornaPartecipante(Partecipante partecipanteAggiornato, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return aggiornaInDb(partecipanteAggiornato);
         } else {
@@ -105,7 +106,7 @@ public class PartecipanteDAO {
         }
     }
 
-    private static boolean aggiornaInDb(Partecipante partecipanteAggiornato) {
+    private static boolean aggiornaInDb(Partecipante partecipanteAggiornato) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         String query = "UPDATE partecipanti SET nome = ?, cognome = ?, username = ?, email = ?, password = ? WHERE idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -138,7 +139,7 @@ public class PartecipanteDAO {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return false;
     }

@@ -2,6 +2,9 @@ package controllers.grafico;
 
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.EventoNonTrovatoException;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -25,7 +28,7 @@ public class PartecipazioniGUIController {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         // Crea un'istanza del controller applicativo
         IscrizioneEventoController iscrizioneEventoController = new IscrizioneEventoController(session);
         // Recupera i dettagli delle dettagliPartecipazioneUtente dal livello applicativo

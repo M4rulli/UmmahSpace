@@ -1,5 +1,7 @@
 package engclasses.dao;
 
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import model.Organizzatore;
 import engclasses.pattern.Connect;
 
@@ -20,7 +22,7 @@ public class OrganizzatoreDAO {
     private OrganizzatoreDAO() {}
 
     // Aggiunge un organizzatore, scegliendo tra buffer o database in base al flag 'persistence'
-    public static void aggiungiOrganizzatore(Organizzatore organizzatore, boolean persistence) {
+    public static void aggiungiOrganizzatore(Organizzatore organizzatore, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             salvaInDb(organizzatore); // Salvataggio nel database
         } else {
@@ -34,28 +36,22 @@ public class OrganizzatoreDAO {
         }
 
     // Salva un organizzatore nel database
-    private static void salvaInDb(Organizzatore organizzatore) {
+    private static void salvaInDb(Organizzatore organizzatore) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "INSERT INTO Organizzatori (idUtente, nome, cognome, username, email, password, stato, titoloDiStudio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, organizzatore.getIdUtente());
-            stmt.setString(2, organizzatore.getNome());
-            stmt.setString(3, organizzatore.getCognome());
-            stmt.setString(4, organizzatore.getUsername());
-            stmt.setString(5, organizzatore.getEmail());
-            stmt.setString(6, organizzatore.getPassword());
-            stmt.setBoolean(7, organizzatore.isStato());
-            stmt.setString(8, organizzatore.getTitoloDiStudio());
+            setOrganizzatoreParameters(stmt, organizzatore);
 
             stmt.executeUpdate();
             } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
     }
 
+
     // Seleziona un organizzatore in base al campo specificato (es. username, idUtente)
-    public static Organizzatore selezionaOrganizzatore(String campo, String valore, boolean persistence) {
+    public static Organizzatore selezionaOrganizzatore(String campo, String valore, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return recuperaDaDb(campo, valore); // Recupera dal database
         } else {
@@ -64,7 +60,7 @@ public class OrganizzatoreDAO {
     }
 
     // Recupera un organizzatore dal database
-    private static Organizzatore recuperaDaDb(String campo, String idUtente) {
+    private static Organizzatore recuperaDaDb(String campo, String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Controlla se il campo è valido
         if (!CAMPI_VALIDI.contains(campo)) {
             throw new IllegalArgumentException("Campo non valido: " + campo);
@@ -90,13 +86,13 @@ public class OrganizzatoreDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return null; // Nessun organizzatore trovato
     }
 
     // Aggiorna un organizzatore
-    public static boolean aggiornaOrganizzatore(Organizzatore organizzatoreAggiornato, boolean persistence) {
+    public static boolean aggiornaOrganizzatore(Organizzatore organizzatoreAggiornato, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
             return aggiornaInDb(organizzatoreAggiornato);
         } else {
@@ -104,27 +100,27 @@ public class OrganizzatoreDAO {
         }
     }
 
-    private static boolean aggiornaInDb(Organizzatore organizzatoreAggiornato) {
+    private static boolean aggiornaInDb(Organizzatore organizzatoreAggiornato) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         String query = "UPDATE Organizzatori SET nome = ?, cognome = ?, username = ?, email = ?, password = ? WHERE idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, organizzatoreAggiornato.getNome());
-            stmt.setString(2, organizzatoreAggiornato.getCognome());
-            stmt.setString(3, organizzatoreAggiornato.getUsername());
-            stmt.setString(4, organizzatoreAggiornato.getEmail());
-            stmt.setString(5, organizzatoreAggiornato.getPassword());
-            stmt.setString(6, organizzatoreAggiornato.getIdUtente());
+            setUserParameters(stmt,
+                    organizzatoreAggiornato.getNome(),
+                    organizzatoreAggiornato.getCognome(),
+                    organizzatoreAggiornato.getUsername(),
+                    organizzatoreAggiornato.getEmail(),
+                    organizzatoreAggiornato.getPassword(),
+                    organizzatoreAggiornato.getIdUtente()
+            );
+            stmt.executeUpdate();
 
-            int rowsUpdated = stmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                return true;
-            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
         }
         return false;
     }
+
 
     private static boolean aggiornaInBuffer(Organizzatore organizzatoreAggiornato) {
         String idUtente = organizzatoreAggiornato.getIdUtente();
@@ -135,5 +131,25 @@ public class OrganizzatoreDAO {
 
         bufferOrganizzatori.put(idUtente, organizzatoreAggiornato);
         return true;
+    }
+
+    private static void setOrganizzatoreParameters(PreparedStatement stmt, Organizzatore organizzatore) throws SQLException {
+        stmt.setString(1, organizzatore.getIdUtente());
+        stmt.setString(2, organizzatore.getNome());
+        stmt.setString(3, organizzatore.getCognome());
+        stmt.setString(4, organizzatore.getUsername());
+        stmt.setString(5, organizzatore.getEmail());
+        stmt.setString(6, organizzatore.getPassword());
+        stmt.setBoolean(7, organizzatore.isStato());
+        stmt.setString(8, organizzatore.getTitoloDiStudio());
+    }
+
+    private static void setUserParameters(PreparedStatement stmt, String nome, String cognome, String username, String email, String password, String idUtente) throws SQLException {
+        stmt.setString(1, nome);
+        stmt.setString(2, cognome);
+        stmt.setString(3, username);
+        stmt.setString(4, email);
+        stmt.setString(5, password);
+        stmt.setString(6, idUtente);
     }
 }

@@ -2,6 +2,9 @@ package controllers.grafico;
 
 import controllers.applicativo.GestisciProfiloController;
 import engclasses.beans.RegistrazioneBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.UtenteNonTrovatoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -44,9 +47,15 @@ public class GestisciProfiloGUIController {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws UtenteNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         backButton.setOnAction(event -> onBackButtonClicked());
-        saveButton.setOnAction(event -> onSaveButtonClicked());
+        saveButton.setOnAction(event -> {
+            try {
+                onSaveButtonClicked();
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException e) {
+                throw new RuntimeException(e);
+            }
+        });
         editButton.setOnAction(event -> onEditButtonClicked());
 
         // Recupera i dati dell'utente
@@ -72,7 +81,7 @@ public class GestisciProfiloGUIController {
     }
 
     @FXML
-    private void onSaveButtonClicked() {
+    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Crea un bean con i dati aggiornati
         RegistrazioneBean updatedBean = new RegistrazioneBean();
         updatedBean.setNome(nameField.getText());

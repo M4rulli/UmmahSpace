@@ -2,6 +2,9 @@ package controllers.grafico;
 
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.EventoNonTrovatoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -28,7 +31,7 @@ public class GestioneListaEventiGUIController {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         // Crea un'istanza del controller applicativo
         GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
 
@@ -96,7 +99,13 @@ public class GestioneListaEventiGUIController {
             // Crea il bottone "Elimina"
             Button eliminaButton = new Button("Elimina");
             eliminaButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 5 10;");
-            eliminaButton.setOnAction(e -> onEliminaEvento(evento));
+            eliminaButton.setOnAction(e -> {
+                try {
+                    onEliminaEvento(evento);
+                } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             // Crea il pulsante report
             Button reportButton = new Button("Report");
@@ -127,7 +136,7 @@ public class GestioneListaEventiGUIController {
 
     // Metodo per gestire l'eliminazione dell'evento
     @FXML
-    private void onEliminaEvento(EventoBean evento) {
+    private void onEliminaEvento(EventoBean evento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Mostra una finestra di conferma con pulsanti classici
         boolean risposta = mostraMessaggioConfermaConScelta("Conferma Eliminazione", "Sei sicuro di voler eliminare l'evento " + evento.getTitolo() + "?");
         if (risposta) {

@@ -1,5 +1,7 @@
 package controllers.grafico;
 
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -16,25 +18,18 @@ public class AggiungiEventoGUIController {
 
     @FXML
     private TextField titoloField;
-
     @FXML
     private TextArea descrizioneField;
-
     @FXML
     private TextField orarioField1;
-
     @FXML
     private TextField orarioField2;
-
     @FXML
     private TextField linkField;
-
     @FXML
     private TextField limitePartecipantiField;
-
     @FXML
     private Button salvaButton;
-
     @FXML
     private Button annullaButton;
 
@@ -48,11 +43,17 @@ public class AggiungiEventoGUIController {
 
     @FXML
     public void initialize() {
-        salvaButton.setOnAction(e -> saveNewEvent());
-        annullaButton.setOnAction(e -> {onAnnullaButtonClicked();});
+        salvaButton.setOnAction(e -> {
+            try {
+                saveNewEvent();
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        annullaButton.setOnAction(e -> onAnnullaButtonClicked());
     }
 
-    private void saveNewEvent() {
+    private void saveNewEvent() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Ottieni i dati dai campi
         String titolo = titoloField.getText().trim();
         String descrizione = descrizioneField.getText().trim();
