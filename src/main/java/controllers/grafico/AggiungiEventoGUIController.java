@@ -2,6 +2,7 @@ package controllers.grafico;
 
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.ValidazioneEventoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -13,6 +14,7 @@ import engclasses.beans.EventoBean;
 import controllers.applicativo.GestioneEventoController;
 
 import static misc.MessageUtils.mostraMessaggioConferma;
+import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class AggiungiEventoGUIController {
 
@@ -43,17 +45,18 @@ public class AggiungiEventoGUIController {
 
     @FXML
     public void initialize() {
-        salvaButton.setOnAction(e -> {
+        salvaButton.setOnAction(event -> {
             try {
                 saveNewEvent();
-            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException ex) {
-                throw new RuntimeException(ex);
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     ValidazioneEventoException e) { mostraMessaggioErrore("Errore", e.getMessage());
+                throw new RuntimeException(e);
             }
         });
         annullaButton.setOnAction(e -> onAnnullaButtonClicked());
     }
 
-    private void saveNewEvent() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private void saveNewEvent() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ValidazioneEventoException {
         // Ottieni i dati dai campi
         String titolo = titoloField.getText().trim();
         EventoBean evento = creaEventoBean(titolo);

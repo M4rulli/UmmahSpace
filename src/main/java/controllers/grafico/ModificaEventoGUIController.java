@@ -2,10 +2,7 @@ package controllers.grafico;
 
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;
-import engclasses.exceptions.DatabaseConnessioneFallitaException;
-import engclasses.exceptions.DatabaseOperazioneFallitaException;
-import engclasses.exceptions.EventoNonTrovatoException;
-import engclasses.exceptions.ViewFactoryException;
+import engclasses.exceptions.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -62,7 +59,7 @@ public class ModificaEventoGUIController {
             try {
                 onSaveButtonClicked();
             } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
-                     EventoNonTrovatoException e) {
+                     EventoNonTrovatoException | ValidazioneEventoException e) { mostraMessaggioErrore("Errore", e.getMessage());
                 throw new RuntimeException(e);
             }
         });
@@ -104,7 +101,7 @@ public class ModificaEventoGUIController {
     }
 
     @FXML
-    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
+    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException, ValidazioneEventoException {
         // Crea un bean con i dati aggiornati
         EventoBean updatedEvento = new EventoBean();
         updatedEvento.setTitolo(titoloField.getText());

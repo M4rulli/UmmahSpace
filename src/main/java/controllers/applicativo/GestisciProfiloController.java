@@ -6,20 +6,18 @@ import engclasses.dao.PartecipanteDAO;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.UtenteNonTrovatoException;
+import engclasses.exceptions.ValidazioneProfiloException;
 import engclasses.pattern.BeanFactory;
 import misc.Session;
 import model.Partecipante;
 import model.Organizzatore;
 import model.Utente;
 
-import static misc.MessageUtils.mostraMessaggioErrore;
-
 public class GestisciProfiloController {
 
     private final Session session;
     private static final String ID_UTENTE = "idUtente";
     private static final String USERNAME = "username";
-    private static final String ERRORE = "Errore";
 
     public GestisciProfiloController(Session session) {
         this.session = session;
@@ -43,46 +41,34 @@ public class GestisciProfiloController {
     }
 
     // Aggiorna i dati del profilo
-    public boolean aggiornaProfilo(RegistrazioneBean updatedBean, String currentPassword, String newPassword, String confirmPassword) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public boolean aggiornaProfilo(RegistrazioneBean updatedBean, String currentPassword, String newPassword, String confirmPassword)
+            throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ValidazioneProfiloException {
+
         boolean persistence = session.isPersistence();
         StringBuilder errori = new StringBuilder();
 
         // Recupera l'utente corrente
         Utente utente = recuperaUtenteCorrente();
 
-        // Validazioni
+        // Validazioni generali
         validaNome(updatedBean.getNome(), errori);
         validaCognome(updatedBean.getCognome(), errori);
         validaUsername(updatedBean.getUsername(), utente, errori);
         validaEmail(updatedBean.getEmail(), utente, errori);
 
-        // Cambio password se necessario
-        if (currentPassword != null
-                && !currentPassword.isEmpty() &&
-                newPassword != null && !newPassword.isEmpty() &&
-                confirmPassword != null && !confirmPassword.isEmpty()) {
-            // Verifica che la nuova password sia valida
-            String newPasswordValue = changePassword(currentPassword, newPassword, confirmPassword, utente.getUsername());
+        // Validazione della password (se necessaria)
+        String nuovaPassword = validaPassword(currentPassword, newPassword, confirmPassword, utente, errori);
+        updatedBean.setPassword(nuovaPassword != null ? nuovaPassword : utente.getPassword());
 
-            if (newPasswordValue == null) {
-                return false; // Fallisce se la nuova password non è valida
-            }
-            updatedBean.setPassword(newPasswordValue); // Imposta la nuova password
-        }
-        else {
-            // Mantieni la password attuale se non è stata modificata
-            updatedBean.setPassword(utente.getPassword());
-        }
-
-        // Se ci sono errori, mostra un messaggio e termina
+        // Se ci sono errori, lancia un'eccezione personalizzata
         if (!errori.isEmpty()) {
-            mostraMessaggioErrore(ERRORE, errori.toString());
-            return false;
+            throw new ValidazioneProfiloException(errori.toString());
         }
 
         // Aggiorna il profilo nel database
         return aggiornaDatiNelDatabase(updatedBean, utente, persistence);
     }
+
 
     // Metodo per recuperare l'utente corrente
     private Utente recuperaUtenteCorrente() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
@@ -160,32 +146,34 @@ public class GestisciProfiloController {
 
 
     // Modifica la password
-    public String changePassword(String currentPassword, String newPassword, String confirmPassword, String username) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    // Validazione e cambio password
+    private String validaPassword(String currentPassword, String newPassword, String confirmPassword, Utente utente, StringBuilder errori) {
+        if (currentPassword != null && !currentPassword.isEmpty() &&
+                newPassword != null && !newPassword.isEmpty() &&
+                confirmPassword != null && !confirmPassword.isEmpty()) {
 
-        Utente utente = session.isOrganizzatore()
-                ? OrganizzatoreDAO.selezionaOrganizzatore(USERNAME, username, session.isPersistence())
-                : PartecipanteDAO.selezionaPartecipante(USERNAME, username, session.isPersistence());
-
-
-             // Verifica la password attuale
+            // Verifica la password attuale
             if (!utente.getPassword().equals(currentPassword)) {
-                mostraMessaggioErrore(ERRORE, "La vecchia password non è corretta.");
+                errori.append("La vecchia password non è corretta.\n");
                 return null;
             }
 
             // Verifica corrispondenza tra nuova password e conferma
             if (!newPassword.equals(confirmPassword)) {
-                mostraMessaggioErrore(ERRORE, "La nuova password e la conferma non coincidono.");
+                errori.append("La nuova password e la conferma non coincidono.\n");
                 return null;
             }
 
-            // Verifica che la nuova password sia diversa da quella attuale
+            // Verifica che la nuova password sia diversa dalla attuale
             if (currentPassword.equals(newPassword)) {
-                mostraMessaggioErrore(ERRORE, "La nuova password non può essere uguale a quella attuale.");
+                errori.append("La nuova password non può essere uguale a quella attuale.\n");
                 return null;
             }
+
             return newPassword; // Ritorna la nuova password se tutto è valido
         }
+        return null;
+    }
 
     public boolean controllaCampo(String campo, String valore) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Recupera l'utente (Organizzatore o Partecipante) in base al tipo di sessione

@@ -2,18 +2,14 @@ package controllers.grafico;
 
 import controllers.applicativo.GestisciProfiloController;
 import engclasses.beans.RegistrazioneBean;
-import engclasses.exceptions.DatabaseConnessioneFallitaException;
-import engclasses.exceptions.DatabaseOperazioneFallitaException;
-import engclasses.exceptions.UtenteNonTrovatoException;
-import engclasses.exceptions.ViewFactoryException;
+import engclasses.exceptions.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import engclasses.pattern.Model;
 import misc.Session;
 
-import static misc.MessageUtils.mostraMessaggioConferma;
-import static misc.MessageUtils.mostraMessaggioConfermaConScelta;
+import static misc.MessageUtils.*;
 
 public class GestisciProfiloGUIController {
 
@@ -59,13 +55,12 @@ public class GestisciProfiloGUIController {
         saveButton.setOnAction(event -> {
             try {
                 onSaveButtonClicked();
-            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException e) {
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     ValidazioneProfiloException e) { mostraMessaggioErrore("Errore", e.getMessage());
                 throw new RuntimeException(e);
             }
         });
         editButton.setOnAction(event -> onEditButtonClicked());
-
-
 
         // Recupera i dati dell'utente
         RegistrazioneBean bean = gestisciProfiloController.inizializzaProfilo(session.getIdUtente());
@@ -90,7 +85,7 @@ public class GestisciProfiloGUIController {
     }
 
     @FXML
-    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ValidazioneProfiloException {
         // Crea un bean con i dati aggiornati
         RegistrazioneBean updatedBean = new RegistrazioneBean();
         updatedBean.setNome(nameField.getText());

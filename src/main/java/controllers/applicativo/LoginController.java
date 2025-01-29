@@ -14,13 +14,10 @@ import misc.Session;
 import model.Organizzatore;
 import model.Partecipante;
 import model.Tracker;
-import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class LoginController {
 
     private final Session session;
-
-    private static final String LOGIN_ERROR_MESSAGE = "Errore di Login";
 
     public LoginController(Session session) {
         this.session = session;
@@ -31,7 +28,7 @@ public class LoginController {
         // Validazione campi di login
         String errori = validaCampiLogin(loginBean);
         if (!errori.isEmpty()) {
-           mostraMessaggioErrore(LOGIN_ERROR_MESSAGE, errori);
+            throw new LoginFallitoException(errori);
         }
 
         GestioneTrackerBean trackerBean;
@@ -41,11 +38,6 @@ public class LoginController {
             trackerBean = effettuaLoginOrganizzatore(loginBean, persistence);
         } else {
             trackerBean = effettuaLoginPartecipante(loginBean, persistence);
-        }
-
-        // Se il login non ha avuto successo, lancia un'eccezione
-        if (trackerBean == null) {
-            throw new LoginFallitoException("Login fallito: credenziali errate o utente inesistente.");
         }
 
         return trackerBean;
@@ -65,29 +57,25 @@ public class LoginController {
     }
 
     // Metodo per il login di un organizzatore
-    private GestioneTrackerBean effettuaLoginOrganizzatore(LoginBean loginBean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private GestioneTrackerBean effettuaLoginOrganizzatore(LoginBean loginBean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, LoginFallitoException {
         Organizzatore organizzatore = OrganizzatoreDAO.selezionaOrganizzatore("username", loginBean.getUsername(), persistence);
 
         if (organizzatore != null && organizzatore.getPassword().equals(loginBean.getPassword())) {
             aggiornaSessioneOrganizzatore(organizzatore);
             return new GestioneTrackerBean();
         }
-
-        mostraMessaggioErrore(LOGIN_ERROR_MESSAGE, "Credenziali non valide: controlla username e password.");
-        return null;
+        throw new LoginFallitoException("Credenziali non valide: controlla username e password.");
     }
 
     // Metodo per il login di un partecipante
-    private GestioneTrackerBean effettuaLoginPartecipante(LoginBean loginBean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException {
+    private GestioneTrackerBean effettuaLoginPartecipante(LoginBean loginBean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException, LoginFallitoException {
         Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("username", loginBean.getUsername(), persistence);
 
         if (partecipante != null && partecipante.getPassword().equals(loginBean.getPassword())) {
             aggiornaSessionePartecipante(partecipante);
             return recuperaTracker(partecipante, persistence);
         }
-
-        mostraMessaggioErrore(LOGIN_ERROR_MESSAGE, "Credenziali non valide: controlla username e password.");
-        return null;
+        throw new LoginFallitoException("Credenziali non valide: controlla username e password.");
     }
 
     // Metodo per aggiornare la sessione dell'organizzatore
@@ -114,6 +102,4 @@ public class LoginController {
             return null;
         }
     }
-
-
 }

@@ -2,10 +2,7 @@ package controllers.grafico;
 
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;
-import engclasses.exceptions.DatabaseConnessioneFallitaException;
-import engclasses.exceptions.DatabaseOperazioneFallitaException;
-import engclasses.exceptions.EventoNonTrovatoException;
-import engclasses.exceptions.ViewFactoryException;
+import engclasses.exceptions.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -88,7 +85,8 @@ public class GestioneListaEventiGUIController {
         Button eliminaButton = creaBottone("Elimina", "#f44336", true, e -> {
             try {
                 onEliminaEvento(evento);
-            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException ex) {
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     EventoNonTrovatoException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -96,7 +94,7 @@ public class GestioneListaEventiGUIController {
         Button reportButton = creaBottone("Report", "#8e8e8e", true, e -> {
             try {
                 onReportButtonClicked(evento.getIdEvento());
-            } catch (ViewFactoryException ex) {
+            } catch (ViewFactoryException | PartecipazioniNonTrovateException ex) { mostraMessaggioErrore("Errore", "Impossibile generare il report, nessuna partecipazione esistente per l'evento selezionato.");
                 throw new RuntimeException(ex);
             }
         });
@@ -139,7 +137,7 @@ public class GestioneListaEventiGUIController {
 
     // Metodo per gestire l'eliminazione dell'evento
     @FXML
-    private void onEliminaEvento(EventoBean evento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private void onEliminaEvento(EventoBean evento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         // Mostra una finestra di conferma con pulsanti classici
         boolean risposta = mostraMessaggioConfermaConScelta("Conferma Eliminazione", "Sei sicuro di voler eliminare l'evento " + evento.getTitolo() + "?");
         if (risposta) {

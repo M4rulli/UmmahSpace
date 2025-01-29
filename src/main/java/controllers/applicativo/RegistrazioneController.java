@@ -11,8 +11,6 @@ import misc.Session;
 import model.*;
 import java.util.UUID;
 
-import static misc.MessageUtils.mostraMessaggioAttenzione;
-
 public class RegistrazioneController {
 
     private final Session session;
@@ -27,27 +25,22 @@ public class RegistrazioneController {
         // Genera un ID univoco per l'utente
         this.idUtente = UUID.randomUUID().toString();
 
+        String errori = validaRegistrazione(bean);
         // Validazione dei dati
-        if (!validaRegistrazione(bean)) {
-            return false; // Interrompi il flusso se ci sono errori
+        if (!errori.isEmpty()) {
+            throw new RegistrazioneFallitaException(errori);
         }
 
         // Registra l'organizzatore o il partecipante
-        boolean success;
         if (session.isOrganizzatore()) {
-            success = registraOrganizzatore(bean, persistence); // Solo organizzatori
+            registraOrganizzatore(bean, persistence);
         } else {
-            success = registraPartecipante(bean, persistence); // Solo partecipanti
-        }
-
-        // Se la registrazione non è andata a buon fine, lancia un'eccezione
-        if (!success) {
-            throw new RegistrazioneFallitaException("Errore nella registrazione: si è verificato un problema durante il salvataggio.");
+            registraPartecipante(bean, persistence);
         }
         return true;
     }
 
-    private boolean registraPartecipante(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private void registraPartecipante(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         Partecipante partecipante = new Partecipante(
                 idUtente,  // ID univoco generato
@@ -71,10 +64,9 @@ public class RegistrazioneController {
         GestioneTrackerDAO.saveOrUpdateTracker(partecipante.getTrackerSpirituale(), session.isPersistence());
 
         // Log dell'operazione
-        return true;
     }
 
-    private boolean registraOrganizzatore(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private void registraOrganizzatore(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         Organizzatore organizzatore = new Organizzatore(
                 idUtente,  // ID univoco generato
@@ -96,10 +88,9 @@ public class RegistrazioneController {
         
         // Salva l'organizzatore nel DAO
         OrganizzatoreDAO.aggiungiOrganizzatore(organizzatore, persistence);
-        return true;
     }
 
-    public boolean validaRegistrazione(RegistrazioneBean bean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public String validaRegistrazione(RegistrazioneBean bean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         StringBuilder errori = new StringBuilder();
 
         // Recupera utente corrente
@@ -115,14 +106,7 @@ public class RegistrazioneController {
         if (session.isOrganizzatore()) {
             validaTitoloDiStudio(bean.getTitoloDiStudio(), errori);
         }
-
-        // Se ci sono errori, mostra un messaggio e ritorna false
-        if (!errori.isEmpty()) {
-            mostraMessaggioAttenzione("Risolvi i seguenti errori:", errori.toString());
-            return false;
-        }
-
-        return true;
+        return errori.toString();
     }
 
     // Metodo per recuperare l'utente corrente

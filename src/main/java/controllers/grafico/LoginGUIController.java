@@ -11,6 +11,7 @@ import misc.Session;
 import engclasses.pattern.Model;
 
 import static misc.MessageUtils.mostraMessaggioConferma;
+import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class LoginGUIController {
 
@@ -54,6 +55,7 @@ public class LoginGUIController {
                 onLoginClicked();
             } catch (LoginFallitoException | DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
                      TrackerNonTrovatoException | ViewFactoryException e) {
+                mostraMessaggioErrore("Errore di Login", e.getMessage());
                 throw new RuntimeException(e);
             }
         });

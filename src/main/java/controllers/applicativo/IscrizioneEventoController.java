@@ -4,10 +4,7 @@ import engclasses.beans.EventoBean;
 import engclasses.dao.GestioneEventoDAO;
 import engclasses.dao.IscrizioneEventoDAO;
 import engclasses.dao.PartecipazioneDAO;
-import engclasses.exceptions.DatabaseConnessioneFallitaException;
-import engclasses.exceptions.DatabaseOperazioneFallitaException;
-import engclasses.exceptions.EventoNonTrovatoException;
-import engclasses.exceptions.IscrizioneEventoException;
+import engclasses.exceptions.*;
 import engclasses.pattern.BeanFactory;
 import engclasses.pattern.Facade;
 import misc.Session;
@@ -19,12 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class IscrizioneEventoController {
 
     private final Session session;
-    private static final String ERRORE = "Errore";
 
     public IscrizioneEventoController(Session session) {
         this.session = session;
@@ -59,34 +54,24 @@ public class IscrizioneEventoController {
         return eventiDelGiorno;
     }
 
-    public boolean iscriviPartecipante(long idEvento) throws IscrizioneEventoException {
-        try {
-            // Verifica se il partecipante è già iscritto a questo specifico evento
-            if (PartecipazioneDAO.isPartecipanteIscritto(session.getIdUtente(), idEvento, session.isPersistence())) {
-                mostraMessaggioErrore(ERRORE, "Sei già iscritto a questo evento.");
-                return false;
-            }
+    public boolean iscriviPartecipante(long idEvento) throws IscrizioneEventoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, UtenteNonTrovatoException {
 
-            // Recupera i dati dell'evento dal DAO
-            Evento evento = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
-            if (evento == null) {
-                throw new EventoNonTrovatoException("Evento non trovato per l'ID: " + idEvento);
-            }
-
-            // Verifica il limite di partecipanti
-            if (!evento.getStato() || evento.getIscritti() >= Integer.parseInt(evento.getLimitePartecipanti())) {
-                mostraMessaggioErrore(ERRORE, "L'evento ha raggiunto il limite di partecipanti o è chiuso.");
-                return false;
-            }
-
-            // Incrementa il numero di iscritti
-            IscrizioneEventoDAO.aggiornaNumeroIscritti(idEvento, 1, session.isPersistence());
-            Facade.getInstance().iscriviPartecipanteFacade(idEvento, session.getIdUtente(), session.isPersistence());
-            return true;
-
-        }  catch (Exception e) {
-            throw new IscrizioneEventoException("Errore durante l'iscrizione del partecipante.", e);
+        // Verifica se l'ID evento è valido
+        if (idEvento <= 0) {
+            throw new IscrizioneEventoException("Errore durante l'iscrizione: ID evento non valido.",
+                    new EventoNonTrovatoException("ID evento non valido: " + idEvento));
         }
+
+        String errori = validaIscrizione(idEvento);
+        // Se ci sono errori, lancia un'eccezione con il messaggio accumulato
+        if (!errori.isEmpty()) {
+            throw new IscrizioneEventoException(errori);
+        }
+
+        // Incrementa il numero di iscritti
+        IscrizioneEventoDAO.aggiornaNumeroIscritti(idEvento, 1, session.isPersistence());
+        Facade.getInstance().iscriviPartecipanteFacade(idEvento, session.getIdUtente(), session.isPersistence());
+        return true;
     }
 
     public boolean cancellaIscrizione(EventoBean eventoBean) {
@@ -127,5 +112,27 @@ public class IscrizioneEventoController {
             }
         }
         return eventiIscritti;
+    }
+
+    private String validaIscrizione(long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+        StringBuilder errori = new StringBuilder();
+
+        // Controllo se è già iscritto
+        if (PartecipazioneDAO.isPartecipanteIscritto(session.getIdUtente(), idEvento, session.isPersistence())) {
+            errori.append("Sei già iscritto a questo evento.\n");
+        }
+
+        // Recupera l'evento
+        Evento evento = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
+        if (evento == null) {
+            errori.append("Evento non trovato per l'ID: ").append(idEvento).append("\n");
+        } else {
+            // Verifica se l’evento è aperto e se non ha raggiunto il limite partecipanti
+            if (!evento.getStato() || evento.getIscritti() >= Integer.parseInt(evento.getLimitePartecipanti())) {
+                errori.append("L'evento ha raggiunto il limite di partecipanti o è chiuso.\n");
+            }
+        }
+
+        return errori.toString();
     }
 }

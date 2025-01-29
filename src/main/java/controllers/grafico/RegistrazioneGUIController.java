@@ -13,6 +13,8 @@ import engclasses.pattern.Model;
 import misc.Session;
 import org.controlsfx.control.ToggleSwitch;
 
+import static misc.MessageUtils.mostraMessaggioErrore;
+
 public class RegistrazioneGUIController {
 
     @FXML
@@ -54,6 +56,7 @@ public class RegistrazioneGUIController {
                 onSignUpClicked();
             } catch (RegistrazioneFallitaException | DatabaseConnessioneFallitaException |
                      DatabaseOperazioneFallitaException | ViewFactoryException e) {
+                mostraMessaggioErrore("Errore di Registrazione", e.getMessage());
                 throw new RuntimeException(e);
             }
         });

@@ -4,9 +4,7 @@ import engclasses.beans.EventoBean;
 import engclasses.beans.PartecipazioneBean;
 import engclasses.dao.GestioneEventoDAO;
 import engclasses.dao.PartecipazioneDAO;
-import engclasses.exceptions.DatabaseConnessioneFallitaException;
-import engclasses.exceptions.DatabaseOperazioneFallitaException;
-import engclasses.exceptions.EventoNonTrovatoException;
+import engclasses.exceptions.*;
 import engclasses.pattern.BeanFactory;
 import engclasses.pattern.Facade;
 import misc.Session;
@@ -21,12 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static engclasses.pattern.BeanFactory.createPartecipazioneBean;
-import static misc.MessageUtils.mostraMessaggioErrore;
+
 
 public class GestioneEventoController {
 
     private final Session session;
-    private static final String MESSAGGIO_ERRORE = "Errore";
 
     public GestioneEventoController(Session session) {
         this.session = session;
@@ -45,26 +42,24 @@ public class GestioneEventoController {
     }
 
     // Metodo per aggiungere un nuovo evento per un organizzatore
-    public boolean aggiungiEvento(EventoBean eventoBean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public boolean aggiungiEvento(EventoBean eventoBean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ValidazioneEventoException {
         String erroriData = validaEvento(eventoBean);
         String erroriLink = validaLink(eventoBean);
         String erroreFasciaOraria = validaFasciaOraria(eventoBean.getOrario(), eventoBean.getData(), session.getIdUtente(), eventoBean.getIdEvento());
         String errori = erroriData + erroreFasciaOraria + erroriLink;
 
-        // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi
+        // Se ci sono errori nella validazione, lancia l'eccezione
         if (!errori.isEmpty()) {
-            mostraMessaggioErrore(MESSAGGIO_ERRORE, errori);
-            return false;
+            throw new ValidazioneEventoException(errori);
         }
         return Facade.getInstance().aggiungiEventoFacade(eventoBean, session.getIdUtente(), session.isPersistence());
     }
 
 
     // Metodo per eliminare un evento
-    public boolean eliminaEvento(long idEvento, String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public boolean eliminaEvento(long idEvento, String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         if (idEvento <= 0) {
-            mostraMessaggioErrore(MESSAGGIO_ERRORE, "ID evento non valido.");
-            return false;
+            throw new EventoNonTrovatoException("L'evento non è stato trovato.");
         }
         return GestioneEventoDAO.eliminaEvento(idEvento, idUtente, session.isPersistence());
     }
@@ -78,11 +73,11 @@ public class GestioneEventoController {
         return BeanFactory.createEventoBean(evento);
     }
 
-    public List<PartecipazioneBean> getPartecipazioniEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public List<PartecipazioneBean> getPartecipazioniEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, PartecipazioniNonTrovateException {
         // Recupera le partecipazioni dal database o buffer
         List<Partecipazione> partecipazioni = PartecipazioneDAO.recuperaPartecipazioniPerEvento(session.getIdEvento(), session.isPersistence());
         if (partecipazioni.isEmpty()) {
-            mostraMessaggioErrore("Impossibile generare il Report", "Non sono state trovate partecipazioni per l'evento specificato.");
+            throw new PartecipazioniNonTrovateException("Impossibile generare il Report");
         }
         // Trasforma la lista di partecipazioni in una lista di bean
         List<PartecipazioneBean> partecipazioneBeans = new ArrayList<>();
@@ -92,7 +87,7 @@ public class GestioneEventoController {
         return partecipazioneBeans;
     }
 
-    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
+    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException, ValidazioneEventoException {
 
         // Valida i dati forniti nella bean aggiornata
         String erroriEvento = validaEvento(updatedBean);
@@ -105,8 +100,7 @@ public class GestioneEventoController {
 
         // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi l'aggiornamento
         if (!errori.isEmpty()) {
-            mostraMessaggioErrore(MESSAGGIO_ERRORE, errori);
-            return false;
+            throw new ValidazioneEventoException(errori);
         }
 
         // Utilizza la Facade per aggiornare l'evento
@@ -115,11 +109,11 @@ public class GestioneEventoController {
     }
 
     // Metodo per aggiornare lo stato di un evento
-    public void chiudiEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public void chiudiEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         // Recupera l'evento dal DAO
         Evento evento = GestioneEventoDAO.getEventoById(session.getIdEvento(), session.isPersistence());
         if (evento == null) {
-            throw new IllegalArgumentException("Evento non trovato per l'ID: " + session.getIdEvento());
+            throw new EventoNonTrovatoException("L'evento non è stato trovato.");
         }
 
         // Aggiorna lo stato dell'evento a "chiuso"

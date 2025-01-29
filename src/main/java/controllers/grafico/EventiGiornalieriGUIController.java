@@ -2,6 +2,10 @@ package controllers.grafico;
 
 import controllers.applicativo.IscrizioneEventoController;
 import engclasses.beans.EventoBean;
+import engclasses.exceptions.DatabaseConnessioneFallitaException;
+import engclasses.exceptions.DatabaseOperazioneFallitaException;
+import engclasses.exceptions.IscrizioneEventoException;
+import engclasses.exceptions.UtenteNonTrovatoException;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -114,7 +118,8 @@ public class EventiGiornalieriGUIController {
                     Stage stage = (Stage) eventContainer.getScene().getWindow();
                     stage.close();
                 }
-            } catch (Exception e) {
+            } catch (IscrizioneEventoException | DatabaseConnessioneFallitaException |
+                     DatabaseOperazioneFallitaException | UtenteNonTrovatoException e) {
                 mostraMessaggioErrore("Errore", "Errore: " + e.getMessage());
             }
         }
