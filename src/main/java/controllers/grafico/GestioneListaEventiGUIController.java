@@ -93,7 +93,7 @@ public class GestioneListaEventiGUIController {
             }
         });
 
-        Button reportButton = creaBottone("Report", "#e0e0e0", true, e -> {
+        Button reportButton = creaBottone("Report", "#8e8e8e", true, e -> {
             try {
                 onReportButtonClicked(evento.getIdEvento());
             } catch (ViewFactoryException ex) {
@@ -136,6 +136,7 @@ public class GestioneListaEventiGUIController {
         placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: #888; -fx-padding: 20; -fx-alignment: center;");
         eventContainer.getChildren().add(placeholder);
     }
+
     // Metodo per gestire l'eliminazione dell'evento
     @FXML
     private void onEliminaEvento(EventoBean evento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {

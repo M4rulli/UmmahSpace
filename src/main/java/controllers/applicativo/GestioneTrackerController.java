@@ -22,12 +22,9 @@ public class GestioneTrackerController {
     // Aggiunge una lettura
     public GestioneTrackerBean aggiungiLettura(GestioneTrackerBean trackerBean) throws TrackerNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         Tracker tracker = recuperaTracker();
-
         int nuovePagine = getNuovePagine(tracker, trackerBean.getLetturaCorano());
-
         tracker.setLetturaCorano(nuovePagine);
         GestioneTrackerDAO.saveOrUpdateTracker(tracker, session.isPersistence());
-
         return BeanFactory.createTrackerBeanFromFactory(tracker);
     }
 
@@ -56,10 +53,8 @@ public class GestioneTrackerController {
         int pagesRead = tracker.getLetturaCorano();
         double progress = (goal > 0) ? (double) pagesRead / goal : 0.0;
         progress = Math.min(progress, 1.0);
-
         tracker.setProgresso(progress);
         GestioneTrackerDAO.saveOrUpdateTracker(tracker, session.isPersistence());
-
         return BeanFactory.createTrackerBeanFromFactory(tracker);
     }
 
@@ -70,9 +65,7 @@ public class GestioneTrackerController {
         for (String preghiera : PREGHIERE) {
             tracker.setPreghiera(preghiera, trackerBean.getPreghiera(preghiera));
         }
-
         GestioneTrackerDAO.saveOrUpdateTracker(tracker, session.isPersistence());
-
         return BeanFactory.createTrackerBeanFromFactory(tracker);
     }
 
@@ -82,20 +75,16 @@ public class GestioneTrackerController {
 
         tracker.setGoal(trackerBean.getGoal());
         GestioneTrackerDAO.saveOrUpdateTracker(tracker, session.isPersistence());
-
         return BeanFactory.createTrackerBeanFromFactory(tracker);
     }
 
     // Metodo per aggiornare lo stato del digiuno
     public GestioneTrackerBean aggiornaDigiuno(GestioneTrackerBean bean) throws TrackerNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         Tracker tracker = recuperaTracker();
-
         tracker.setHaDigiunato(bean.isHaDigiunato());
         tracker.setNoteDigiuno(bean.getNoteDigiuno());
         tracker.setMotivazioniDigiuno(bean.getMotivazioniDigiuno());
-
         GestioneTrackerDAO.saveOrUpdateTracker(tracker, session.isPersistence());
-
         return BeanFactory.createTrackerBeanFromFactory(tracker);
     }
 

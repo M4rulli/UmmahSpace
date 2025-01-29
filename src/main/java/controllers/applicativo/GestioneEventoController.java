@@ -8,6 +8,7 @@ import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
 import engclasses.pattern.BeanFactory;
+import engclasses.pattern.Facade;
 import misc.Session;
 import model.Evento;
 import model.Partecipazione;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static engclasses.pattern.BeanFactory.createPartecipazioneBean;
 import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class GestioneEventoController {
@@ -44,17 +46,9 @@ public class GestioneEventoController {
 
     // Metodo per aggiungere un nuovo evento per un organizzatore
     public boolean aggiungiEvento(EventoBean eventoBean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
-
-        // Valida i dati forniti nella bean
         String erroriData = validaEvento(eventoBean);
-
-        // Valida il link
         String erroriLink = validaLink(eventoBean);
-
-        // Valida la fascia oraria
         String erroreFasciaOraria = validaFasciaOraria(eventoBean.getOrario(), eventoBean.getData(), session.getIdUtente(), eventoBean.getIdEvento());
-
-        // Combina gli errori
         String errori = erroriData + erroreFasciaOraria + erroriLink;
 
         // Se ci sono errori nella validazione, mostra un messaggio di avviso e interrompi
@@ -62,34 +56,9 @@ public class GestioneEventoController {
             mostraMessaggioErrore(MESSAGGIO_ERRORE, errori);
             return false;
         }
-
-        // Crea un identificatore per l'evento appena aggiunto
-        long idEvento = System.currentTimeMillis(); // Restituisce il numero di millisecondi dal 1 gennaio 1970
-
-        // Creazione del nuovo evento
-        Evento nuovoEvento = getEvento(eventoBean, idEvento);
-        session.setIdEvento(idEvento);
-
-        return GestioneEventoDAO.aggiungiEvento(nuovoEvento, session.isPersistence());
+        return Facade.getInstance().aggiungiEventoFacade(eventoBean, session.getIdUtente(), session.isPersistence());
     }
 
-
-    private Evento getEvento(EventoBean eventoBean, long idEvento) {
-        Evento nuovoEvento = new Evento();
-        nuovoEvento.setTitolo(eventoBean.getTitolo());
-        nuovoEvento.setDescrizione(eventoBean.getDescrizione());
-        nuovoEvento.setData(eventoBean.getData());
-        nuovoEvento.setOrario(eventoBean.getOrario());
-        nuovoEvento.setLimitePartecipanti(eventoBean.getLimitePartecipanti());
-        nuovoEvento.setIscritti(0);
-        nuovoEvento.setLink(eventoBean.getLink());
-        nuovoEvento.setNomeOrganizzatore(eventoBean.getNomeOrganizzatore());
-        nuovoEvento.setCognomeOrganizzatore(eventoBean.getCognomeOrganizzatore());
-        nuovoEvento.setStato(true);
-        nuovoEvento.setIdEvento(idEvento);
-        nuovoEvento.setIdOrganizzatore(session.getIdUtente());
-        return nuovoEvento;
-    }
 
     // Metodo per eliminare un evento
     public boolean eliminaEvento(long idEvento, String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
@@ -102,60 +71,33 @@ public class GestioneEventoController {
 
     // Metodo per popolare i campi dell'evento da modificare
     public EventoBean inizializzaEvento() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
-
         Evento evento = GestioneEventoDAO.getEventoById(session.getIdEvento(), session.isPersistence());
-
         if (evento == null) {
             throw new EventoNonTrovatoException("L'evento non è stato trovato.");
         }
-
-        // Creare una bean per il trasferimento
-        EventoBean bean = new EventoBean();
-
-        bean.setTitolo(evento.getTitolo());
-        bean.setDescrizione(evento.getDescrizione());
-        bean.setData(evento.getData());
-        bean.setOrario(evento.getOrario());
-        bean.setLink(evento.getLink());
-        bean.setLimitePartecipanti(evento.getLimitePartecipanti());
-        return bean;
+        return BeanFactory.createEventoBean(evento);
     }
 
     public List<PartecipazioneBean> getPartecipazioniEvento() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Recupera le partecipazioni dal database o buffer
         List<Partecipazione> partecipazioni = PartecipazioneDAO.recuperaPartecipazioniPerEvento(session.getIdEvento(), session.isPersistence());
         if (partecipazioni.isEmpty()) {
-            throw new IllegalArgumentException("Non sono state trovate partecipazioni per l'evento specificato.");
+            mostraMessaggioErrore("Impossibile generare il Report", "Non sono state trovate partecipazioni per l'evento specificato.");
         }
-
         // Trasforma la lista di partecipazioni in una lista di bean
         List<PartecipazioneBean> partecipazioneBeans = new ArrayList<>();
         for (Partecipazione partecipazione : partecipazioni) {
-            PartecipazioneBean bean = new PartecipazioneBean();
-            bean.setNome(partecipazione.getNome());
-            bean.setCognome(partecipazione.getCognome());
-            bean.setEmail(partecipazione.getEmail());
-            bean.setDataIscrizione(partecipazione.getDataIscrizione());
-            partecipazioneBeans.add(bean);
+            partecipazioneBeans.add(createPartecipazioneBean(partecipazione));
         }
         return partecipazioneBeans;
     }
 
-    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
-
-        // Recupera l'evento corrente dal database o dal buffer
-        Evento eventoEsistente = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
+    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
 
         // Valida i dati forniti nella bean aggiornata
         String erroriEvento = validaEvento(updatedBean);
-
-        // Valida la data
         String erroriData = validaData(updatedBean);
-
-        // Valida il link
         String erroriLink = validaLink(updatedBean);
-
-        // Valida la fascia oraria
         String erroreFasciaOraria = validaFasciaOraria(updatedBean.getOrario(), updatedBean.getData(), session.getIdUtente(), idEvento);
 
         // Combina gli errori
@@ -167,26 +109,8 @@ public class GestioneEventoController {
             return false;
         }
 
-        // Crea un nuovo oggetto Evento con i dati aggiornati
-        Evento eventoAggiornato = new Evento(
-                updatedBean.getTitolo(),
-                updatedBean.getDescrizione(),
-                updatedBean.getData(),
-                updatedBean.getOrario(),
-                updatedBean.getLimitePartecipanti(),
-                eventoEsistente.getIscritti(),
-                eventoEsistente.getLink(),
-                eventoEsistente.getNomeOrganizzatore(),
-                eventoEsistente.getCognomeOrganizzatore(),
-                eventoEsistente.getStato(),
-                eventoEsistente.getIdEvento(),
-                eventoEsistente.getIdOrganizzatore()
-        );
-
-        // Salva l'evento aggiornato nel database o nel buffer
-        GestioneEventoDAO.aggiornaEvento(eventoAggiornato, session.isPersistence());
-
-        // L'aggiornamento è stato completato con successo
+        // Utilizza la Facade per aggiornare l'evento
+        Facade.getInstance().aggiornaEventoFacade(updatedBean, idEvento, session.isPersistence());
         return true;
     }
 

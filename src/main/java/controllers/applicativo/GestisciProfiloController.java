@@ -6,6 +6,7 @@ import engclasses.dao.PartecipanteDAO;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.UtenteNonTrovatoException;
+import engclasses.pattern.BeanFactory;
 import misc.Session;
 import model.Partecipante;
 import model.Organizzatore;
@@ -34,26 +35,11 @@ public class GestisciProfiloController {
         } else {
             utente = PartecipanteDAO.selezionaPartecipante(ID_UTENTE, idUtente, session.isPersistence());
         }
-
         if (utente == null) {
             throw new UtenteNonTrovatoException("L'utente con ID " + idUtente + " non è stato trovato.");
         }
-
         // Creare una bean per il trasferimento
-        RegistrazioneBean bean = new RegistrazioneBean();
-        if (utente instanceof Partecipante partecipante) {
-            bean.setNome(partecipante.getNome());
-            bean.setCognome(partecipante.getCognome());
-            bean.setUsername(partecipante.getUsername());
-            bean.setEmail(partecipante.getEmail());
-        } else {
-            Organizzatore organizzatore = (Organizzatore) utente;
-            bean.setNome(organizzatore.getNome());
-            bean.setCognome(organizzatore.getCognome());
-            bean.setUsername(organizzatore.getUsername());
-            bean.setEmail(organizzatore.getEmail());
-        }
-        return bean;
+        return BeanFactory.createRegistrazioneBean(utente);
     }
 
     // Aggiorna i dati del profilo

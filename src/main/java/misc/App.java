@@ -1,5 +1,6 @@
 package misc;
 
+import engclasses.exceptions.ViewFactoryException;
 import engclasses.pattern.Model;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -7,11 +8,9 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        // Inizializza gli oggetti necessari
-        Session sessione = new Session(false);
+    public void start(Stage primaryStage) throws ViewFactoryException {
 
-        // Usa la ViewFactory per mostrare la finestra di registrazione
+        Session sessione = new Session(false);
         Model.getInstance().getViewFactory().showRegistration(sessione);
     }
 

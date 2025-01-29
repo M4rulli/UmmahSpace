@@ -7,7 +7,7 @@ public class Partecipazione {
     private String cognome;
     private String username;
     private String email;
-    private String dataIscrizione;
+    private final String dataIscrizione;
 
     // Costruttore
     public Partecipazione(String idUtente, long idEvento, String nome, String cognome, String username, String email, String dataIscrizione) {
@@ -71,10 +71,6 @@ public class Partecipazione {
 
     public String getDataIscrizione() {
         return dataIscrizione;
-    }
-
-    public void setDataIscrizione(String dataIscrizione) {
-        this.dataIscrizione = dataIscrizione;
     }
 
 }

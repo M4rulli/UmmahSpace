@@ -61,7 +61,8 @@ public class ModificaEventoGUIController {
         saveButton.setOnAction(event -> {
             try {
                 onSaveButtonClicked();
-            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException e) {
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
+                     EventoNonTrovatoException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -103,7 +104,7 @@ public class ModificaEventoGUIController {
     }
 
     @FXML
-    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    private void onSaveButtonClicked() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         // Crea un bean con i dati aggiornati
         EventoBean updatedEvento = new EventoBean();
         updatedEvento.setTitolo(titoloField.getText());

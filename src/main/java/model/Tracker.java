@@ -71,7 +71,7 @@ public class Tracker {
         return motivazioniDigiuno != null ? motivazioniDigiuno : new HashSet<>();
     }
 
-    private Map<String, Boolean> preghiere = new HashMap<>();
+    private final Map<String, Boolean> preghiere = new HashMap<>();
 
     public void setPreghiera(String nome, boolean completata) {
         preghiere.put(nome, completata);

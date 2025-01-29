@@ -3,13 +3,14 @@ package engclasses.pattern;
 import engclasses.exceptions.GeolocalizzazioneFallitaException;
 import engclasses.exceptions.HttpRequestException;
 import engclasses.pattern.interfaces.GeolocalizzazioneAPI;
-import model.PosizioneGeografica;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import model.PosizioneGeografica;
 import org.json.JSONObject;
 
 /**

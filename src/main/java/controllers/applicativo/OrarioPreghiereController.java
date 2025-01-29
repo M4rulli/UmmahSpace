@@ -21,8 +21,8 @@ public class OrarioPreghiereController {
     public OrarioPreghiereController(GeolocalizzazioneAPI geoProvider, OrarioPreghiereAPI orarioPreghiere) throws GeolocalizzazioneFallitaException, HttpRequestException {
         // Ottieni la posizione geografica tramite l'adapter
         PosizioneGeografica posizione = geoProvider.getGeolocalizzazione();
-        double latitude = posizione.getLatitudine();
-        double longitude = posizione.getLongitudine();
+        double latitude = posizione.latitudine();
+        double longitude = posizione.longitudine();
 
         // Usa i dati di lat/long per ottenere gli orari delle preghiere per la data corrente
         Map<String, LocalTime> orariCalcolati = orarioPreghiere.getOrarioPreghiere(latitude, longitude, LocalDate.now());

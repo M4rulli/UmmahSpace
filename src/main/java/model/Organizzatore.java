@@ -3,7 +3,7 @@ package model;
 
 public class Organizzatore extends Utente {
 
-    private String titoloDiStudio;
+    private final String titoloDiStudio;
 
     // Costruttore
     public Organizzatore(String idUtente, String nome, String cognome, String username, String email, String password, Boolean stato, String titoloDiStudio) {
@@ -13,10 +13,6 @@ public class Organizzatore extends Utente {
 
     public String getTitoloDiStudio() {
         return titoloDiStudio;
-    }
-
-    public void setTitoloDiStudio(String titoloDiStudio) {
-        this.titoloDiStudio = titoloDiStudio;
     }
 
 }

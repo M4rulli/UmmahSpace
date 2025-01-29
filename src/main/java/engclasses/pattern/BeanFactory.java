@@ -2,10 +2,11 @@ package engclasses.pattern;
 
 import engclasses.beans.EventoBean;
 import engclasses.beans.GestioneTrackerBean;
+import engclasses.beans.PartecipazioneBean;
+import engclasses.beans.RegistrazioneBean;
 import engclasses.exceptions.EventoNonTrovatoException;
 import engclasses.exceptions.TrackerNonTrovatoException;
-import model.Evento;
-import model.Tracker;
+import model.*;
 
 import java.util.List;
 
@@ -59,6 +60,26 @@ public class BeanFactory {
         bean.setCognomeOrganizzatore(evento.getCognomeOrganizzatore());
         bean.setStato(evento.getStato());
 
+        return bean;
+    }
+
+    public static RegistrazioneBean createRegistrazioneBean(Utente utente) {
+        RegistrazioneBean bean = new RegistrazioneBean();
+        if (utente instanceof Partecipante || utente instanceof Organizzatore) {
+            bean.setNome(utente.getNome());
+            bean.setCognome(utente.getCognome());
+            bean.setUsername(utente.getUsername());
+            bean.setEmail(utente.getEmail());
+        }
+        return bean;
+    }
+
+    public static PartecipazioneBean createPartecipazioneBean(Partecipazione partecipazione) {
+        PartecipazioneBean bean = new PartecipazioneBean();
+        bean.setNome(partecipazione.getNome());
+        bean.setCognome(partecipazione.getCognome());
+        bean.setEmail(partecipazione.getEmail());
+        bean.setDataIscrizione(partecipazione.getDataIscrizione());
         return bean;
     }
 }

@@ -3,18 +3,16 @@ package controllers.applicativo;
 import engclasses.beans.EventoBean;
 import engclasses.dao.GestioneEventoDAO;
 import engclasses.dao.IscrizioneEventoDAO;
-import engclasses.dao.PartecipanteDAO;
 import engclasses.dao.PartecipazioneDAO;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
 import engclasses.exceptions.IscrizioneEventoException;
 import engclasses.pattern.BeanFactory;
+import engclasses.pattern.Facade;
 import misc.Session;
 import model.Evento;
-import model.Partecipante;
 import model.Partecipazione;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,9 +67,6 @@ public class IscrizioneEventoController {
                 return false;
             }
 
-            // Recupera i dati del partecipante dal DAO
-            Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), session.isPersistence());
-
             // Recupera i dati dell'evento dal DAO
             Evento evento = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
             if (evento == null) {
@@ -86,22 +81,9 @@ public class IscrizioneEventoController {
 
             // Incrementa il numero di iscritti
             IscrizioneEventoDAO.aggiornaNumeroIscritti(idEvento, 1, session.isPersistence());
-
-            // Crea l'oggetto Partecipazione
-            Partecipazione partecipazione = new Partecipazione(
-                    partecipante.getIdUtente(),
-                    idEvento,
-                    partecipante.getNome(),
-                    partecipante.getCognome(),
-                    partecipante.getUsername(),
-                    partecipante.getEmail(),
-                    LocalDate.now().toString()
-            );
-
-            // Salva la partecipazione
-            PartecipazioneDAO.salvaPartecipazione(partecipazione, session.isPersistence());
-
+            Facade.getInstance().iscriviPartecipanteFacade(idEvento, session.getIdUtente(), session.isPersistence());
             return true;
+
         }  catch (Exception e) {
             throw new IscrizioneEventoException("Errore durante l'iscrizione del partecipante.", e);
         }
@@ -119,7 +101,6 @@ public class IscrizioneEventoController {
             if (!rimozioneEffettuata) {
                 return false; // Errore nella rimozione
             }
-
             // Aggiorna il numero di iscritti (-1)
             IscrizioneEventoDAO.aggiornaNumeroIscritti(idEvento, -1, session.isPersistence());
 

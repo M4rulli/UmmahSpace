@@ -56,24 +56,7 @@ public class AggiungiEventoGUIController {
     private void saveNewEvent() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Ottieni i dati dai campi
         String titolo = titoloField.getText().trim();
-        String descrizione = descrizioneField.getText().trim();
-        String orarioInizio = orarioField1.getText().trim();
-        String orarioFine = orarioField2.getText().trim();
-        String link = linkField.getText().trim();
-        String limitePartecipantiText = limitePartecipantiField.getText().trim();
-
-        // Formatta l'orario
-        String orario = orarioInizio + " - " + orarioFine;
-        // Crea la bean con i dati di input
-        EventoBean evento = new EventoBean();
-        evento.setTitolo(titolo);
-        evento.setDescrizione(descrizione);
-        evento.setOrario(orario);
-        evento.setLink(link);
-        evento.setLimitePartecipanti(limitePartecipantiText);
-        evento.setData(selectedDate);
-        evento.setCognomeOrganizzatore(session.getCognomeOrganizzatore());
-        evento.setNomeOrganizzatore(session.getNomeOrganizzatore());
+        EventoBean evento = creaEventoBean(titolo);
 
         // Chiamata al Controller applicativo
         GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
@@ -84,6 +67,29 @@ public class AggiungiEventoGUIController {
             Stage currentStage = (Stage) annullaButton.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(currentStage);
         }
+    }
+
+    private EventoBean creaEventoBean(String titolo) {
+        String descrizione = descrizioneField.getText().trim();
+        String orarioInizio = orarioField1.getText().trim();
+        String orarioFine = orarioField2.getText().trim();
+        String link = linkField.getText().trim();
+        String limitePartecipantiText = limitePartecipantiField.getText().trim();
+
+        // Formatta l'orario
+        String orario = orarioInizio + " - " + orarioFine;
+
+        // Crea la bean con i dati di input
+        EventoBean evento = new EventoBean();
+        evento.setTitolo(titolo);
+        evento.setDescrizione(descrizione);
+        evento.setOrario(orario);
+        evento.setLink(link);
+        evento.setLimitePartecipanti(limitePartecipantiText);
+        evento.setData(selectedDate);
+        evento.setCognomeOrganizzatore(session.getCognomeOrganizzatore());
+        evento.setNomeOrganizzatore(session.getNomeOrganizzatore());
+        return evento;
     }
 
     @FXML

@@ -104,6 +104,7 @@ public class LoginController {
         session.setNome(partecipante.getNome());
     }
 
+
     // Metodo per recuperare il tracker di un partecipante
     private GestioneTrackerBean recuperaTracker(Partecipante partecipante, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException {
         Tracker tracker = GestioneTrackerDAO.getTracker(partecipante.getIdUtente(), persistence);
