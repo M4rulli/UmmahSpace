@@ -8,6 +8,7 @@ import engclasses.dao.PartecipazioneDAO;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
+import engclasses.exceptions.IscrizioneEventoException;
 import engclasses.pattern.BeanFactory;
 import misc.Session;
 import model.Evento;
@@ -60,18 +61,16 @@ public class IscrizioneEventoController {
         return eventiDelGiorno;
     }
 
-    public boolean iscriviPartecipante(long idEvento) {
+    public boolean iscriviPartecipante(long idEvento) throws IscrizioneEventoException {
         try {
-
             // Verifica se il partecipante è già iscritto a questo specifico evento
             if (PartecipazioneDAO.isPartecipanteIscritto(session.getIdUtente(), idEvento, session.isPersistence())) {
-                mostraMessaggioErrore(ERRORE,"Sei già iscritto a questo evento.");
+                mostraMessaggioErrore(ERRORE, "Sei già iscritto a questo evento.");
                 return false;
             }
 
             // Recupera i dati del partecipante dal DAO
             Partecipante partecipante = PartecipanteDAO.selezionaPartecipante("idUtente", session.getIdUtente(), session.isPersistence());
-
 
             // Recupera i dati dell'evento dal DAO
             Evento evento = GestioneEventoDAO.getEventoById(idEvento, session.isPersistence());
@@ -103,7 +102,8 @@ public class IscrizioneEventoController {
             PartecipazioneDAO.salvaPartecipazione(partecipazione, session.isPersistence());
 
             return true;
-        } catch (Exception e) {throw new RuntimeException("Errore durante l'iscrizione del partecipante.", e);
+        }  catch (Exception e) {
+            throw new IscrizioneEventoException("Errore durante l'iscrizione del partecipante.", e);
         }
     }
 

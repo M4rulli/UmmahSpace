@@ -1,4 +1,6 @@
 package engclasses.pattern.interfaces;
+import engclasses.exceptions.HttpRequestException;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
@@ -18,5 +20,5 @@ public interface OrarioPreghiereAPI {
      * longitudine e data specificate.
      */
 
-    Map<String, LocalTime> getOrarioPreghiere(double latitude, double longitude, LocalDate date);
+    Map<String, LocalTime> getOrarioPreghiere(double latitude, double longitude, LocalDate date) throws HttpRequestException;
 }

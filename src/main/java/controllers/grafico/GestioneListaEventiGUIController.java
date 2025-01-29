@@ -6,6 +6,8 @@ import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
 import engclasses.exceptions.ViewFactoryException;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -41,112 +43,99 @@ public class GestioneListaEventiGUIController {
 
         // Verifica se ci sono eventi
         if (eventi == null || eventi.isEmpty()) {
-            // Mostra un messaggio placeholder
-            Label placeholder = new Label("Non hai aggiunto ancora nessun evento.");
-            placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: #888; -fx-padding: 20; -fx-alignment: center;");
-            eventContainer.getChildren().add(placeholder);
+            mostraPlaceholder();
             return;
         }
 
         // Popola la GUI con gli eventi
         for (EventoBean evento : eventi) {
-            // Crea una sezione card-like per ogni evento
-            VBox card = new VBox(10);
-            card.setStyle("-fx-spacing: 15; -fx-padding: 10; -fx-background-color: rgba(255, 255, 255, 0.9); "
-                    + "-fx-border-radius: 15; -fx-background-radius: 15; "
-                    + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.05, 0, 2);");
-
-            // Crea un HBox per visualizzare titolo, data, orario e bottoni
-            HBox eventDetails = new HBox(20); // 20 è la distanza tra gli elementi
-            eventDetails.setStyle("-fx-padding: 10; -fx-alignment: center-left;");
-
-            // Aggiungi il titolo
-            Label titleLabel = new Label(evento.getTitolo());
-            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;");
-
-            // Aggiungi la data
-            Label dateLabel = new Label("Data: " + (evento.getData() != null ? evento.getData() : "N/A"));
-            dateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
-
-            // Aggiungi l'orario
-            Label timeLabel = new Label("Orario: " + (evento.getOrario() != null ? evento.getOrario() : "N/A"));
-            timeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
-
-            // Stato dell'evento (Aperto o Chiuso)
-            Label statusLabel = new Label(evento.isChiuso() ? "Chiuso" : "Aperto");
-            if (evento.isChiuso()) {
-                statusLabel.setStyle("-fx-text-fill: red;");
-            } else {
-                statusLabel.setStyle("-fx-text-fill: green;");
-            }
-
-            statusLabel.setStyle("-fx-font-weight: bold;");
-
-            // Contenitore separato per i bottoni
-            HBox buttonContainer = new HBox(10); // 10 è la distanza tra i bottoni
-            buttonContainer.setStyle("-fx-alignment: center-right;");
-
-            // Usa uno spazio flessibile per separare i bottoni
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS); // Questo forza lo spazio tra i dettagli e i bottoni
-
-            // Crea il bottone "Gestisci"
-            Button modificaButton = new Button("Gestisci");
-            // Disabilita il bottone se l'evento è chiuso
-            modificaButton.setDisable(!evento.isStato());
-            modificaButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10; ");
-            modificaButton.setOnAction(e -> {
-                try {
-                    onGestisciEventoClicked(evento.getIdEvento());
-                } catch (ViewFactoryException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-
-            // Crea il bottone "Elimina"
-            Button eliminaButton = new Button("Elimina");
-            eliminaButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 5 10;");
-            eliminaButton.setOnAction(e -> {
-                try {
-                    onEliminaEvento(evento);
-                } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-
-            // Crea il pulsante report
-            Button reportButton = new Button("Report");
-            reportButton.setStyle("-fx-background-color: #e0e0e0; " + // Grigio chiaro
-                            "-fx-text-fill: #333; " + // Colore testo scuro
-                            "-fx-padding: 5 10; "  // Spaziatura interna
-            );
-
-            // Azione del pulsante
-            reportButton.setOnAction(e -> {
-                try {
-                    onReportButtonClicked(evento.getIdEvento());
-                } catch (ViewFactoryException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-
-            // Aggiungi tutti i componenti all'HBox
-            eventDetails.getChildren().addAll(titleLabel, dateLabel, timeLabel, statusLabel, spacer, modificaButton, eliminaButton, reportButton);
-
-            // Aggiungi i dettagli dell'evento alla card
-            card.getChildren().add(eventDetails);
-
-            // Imposta il riferimento dell'evento alla card
-            card.setUserData(evento);
-
-            // Aggiungi la card al contenitore principale
-            eventContainer.getChildren().add(card);
+            eventContainer.getChildren().add(creaEventoCard(evento));
         }
 
         // Aggiunge uno stile globale al contenitore principale
-        eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10; ");
+        eventContainer.setStyle("-fx-spacing: 15; -fx-padding: 10;");
     }
 
+    /**
+     * Metodo che crea una card per un evento.
+     */
+    private VBox creaEventoCard(EventoBean evento) {
+        VBox card = new VBox(10);
+        card.setStyle("-fx-spacing: 15; -fx-padding: 10; -fx-background-color: rgba(255, 255, 255, 0.9); "
+                + "-fx-border-radius: 15; -fx-background-radius: 15; "
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.05, 0, 2);");
+
+        HBox eventDetails = new HBox(20);
+        eventDetails.setStyle("-fx-padding: 10; -fx-alignment: center-left;");
+
+        Label titleLabel = creaLabel(evento.getTitolo(), "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;");
+        Label dateLabel = creaLabel("Data: " + (evento.getData() != null ? evento.getData() : "N/A"), "-fx-font-size: 14px; -fx-text-fill: #666;");
+        Label timeLabel = creaLabel("Orario: " + (evento.getOrario() != null ? evento.getOrario() : "N/A"), "-fx-font-size: 14px; -fx-text-fill: #666;");
+
+        Label statusLabel = creaLabel(evento.isChiuso() ? "Chiuso" : "Aperto", evento.isChiuso() ? "-fx-text-fill: red; -fx-font-weight: bold;" : "-fx-text-fill: green; -fx-font-weight: bold;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Button modificaButton = creaBottone("Gestisci", "#4CAF50", evento.isStato(), e -> {
+            try {
+                onGestisciEventoClicked(evento.getIdEvento());
+            } catch (ViewFactoryException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        Button eliminaButton = creaBottone("Elimina", "#f44336", true, e -> {
+            try {
+                onEliminaEvento(evento);
+            } catch (DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        Button reportButton = creaBottone("Report", "#e0e0e0", true, e -> {
+            try {
+                onReportButtonClicked(evento.getIdEvento());
+            } catch (ViewFactoryException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        eventDetails.getChildren().addAll(titleLabel, dateLabel, timeLabel, statusLabel, spacer, modificaButton, eliminaButton, reportButton);
+        card.getChildren().add(eventDetails);
+        card.setUserData(evento);
+
+        return card;
+    }
+
+    /**
+     * Metodo di utilità per creare un Label con stile personalizzato.
+     */
+    private Label creaLabel(String text, String style) {
+        Label label = new Label(text);
+        label.setStyle(style);
+        return label;
+    }
+
+    /**
+     * Metodo di utilità per creare un Button con stile e azione personalizzata.
+     */
+    private Button creaBottone(String text, String color, boolean enabled, EventHandler<ActionEvent> action) {
+        Button button = new Button(text);
+        button.setDisable(!enabled);
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-padding: 5 10;");
+        button.setOnAction(action);
+        return button;
+    }
+
+    /**
+     * Mostra un messaggio placeholder quando non ci sono eventi.
+     */
+    private void mostraPlaceholder() {
+        Label placeholder = new Label("Non hai aggiunto ancora nessun evento.");
+        placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: #888; -fx-padding: 20; -fx-alignment: center;");
+        eventContainer.getChildren().add(placeholder);
+    }
     // Metodo per gestire l'eliminazione dell'evento
     @FXML
     private void onEliminaEvento(EventoBean evento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
@@ -165,6 +154,7 @@ public class GestioneListaEventiGUIController {
             }
         }
     }
+
 
     private void onGestisciEventoClicked(long idEvento) throws ViewFactoryException {
         // Imposta l'ID evento nella sessione
