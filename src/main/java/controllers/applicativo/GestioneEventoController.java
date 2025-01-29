@@ -10,7 +10,6 @@ import engclasses.pattern.Facade;
 import misc.Session;
 import model.Evento;
 import model.Partecipazione;
-
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +23,7 @@ import static engclasses.pattern.BeanFactory.createPartecipazioneBean;
 public class GestioneEventoController {
 
     private final Session session;
+    private static final String ERRORE_EVENTO_NON_TROVATO = "L'evento non è stato trovato.";
 
     public GestioneEventoController(Session session) {
         this.session = session;
@@ -59,7 +59,7 @@ public class GestioneEventoController {
     // Metodo per eliminare un evento
     public boolean eliminaEvento(long idEvento, String idUtente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
         if (idEvento <= 0) {
-            throw new EventoNonTrovatoException("L'evento non è stato trovato.");
+            throw new EventoNonTrovatoException(ERRORE_EVENTO_NON_TROVATO);
         }
         return GestioneEventoDAO.eliminaEvento(idEvento, idUtente, session.isPersistence());
     }
@@ -68,7 +68,7 @@ public class GestioneEventoController {
     public EventoBean inizializzaEvento() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         Evento evento = GestioneEventoDAO.getEventoById(session.getIdEvento(), session.isPersistence());
         if (evento == null) {
-            throw new EventoNonTrovatoException("L'evento non è stato trovato.");
+            throw new EventoNonTrovatoException(ERRORE_EVENTO_NON_TROVATO);
         }
         return BeanFactory.createEventoBean(evento);
     }
@@ -113,7 +113,7 @@ public class GestioneEventoController {
         // Recupera l'evento dal DAO
         Evento evento = GestioneEventoDAO.getEventoById(session.getIdEvento(), session.isPersistence());
         if (evento == null) {
-            throw new EventoNonTrovatoException("L'evento non è stato trovato.");
+            throw new EventoNonTrovatoException(ERRORE_EVENTO_NON_TROVATO);
         }
 
         // Aggiorna lo stato dell'evento a "chiuso"
@@ -275,7 +275,7 @@ public class GestioneEventoController {
         try {
             new URL(nuovoLink); // Se non è valido, genera un'eccezione
         } catch (Exception e) {
-            errori.append("Il link deve essere valido, es. 'https://example.com'.\n");
+            errori.append("Il formato del link deve essere valido, es. 'https://example.com'.\n");
         }
         return errori.toString();
     }

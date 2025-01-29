@@ -34,7 +34,6 @@ class IscrizioneEventoControllerTest {
     void setup() throws DatabaseConnessioneFallitaException {
         Session session = new Session(true);
         session.setIdUtente(USER_ID);
-        System.setProperty("javafx.runningTest", "true");
         controller = new IscrizioneEventoController(session);
 
         // Rimuove eventuali iscrizioni precedenti dell'utente all'evento

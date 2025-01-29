@@ -31,12 +31,6 @@ class GestioneTrackerDAOTest {
 
     private Tracker testTracker;
 
-    @BeforeAll
-    void setup() {
-        // Disabilita JavaFX per i test
-        System.setProperty("javafx.runningTest", "true");
-    }
-
     @BeforeEach
     void setupEach() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         // Crea un Tracker di test
