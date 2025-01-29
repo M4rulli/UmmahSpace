@@ -49,7 +49,7 @@ public class GestioneTrackerController {
     }
 
     // Metodo per calcolare il progresso
-    public GestioneTrackerBean aggiornaBarraConProgresso(boolean persistence) throws TrackerNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public GestioneTrackerBean aggiornaBarraConProgresso() throws TrackerNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         Tracker tracker = recuperaTracker();
 
         int goal = tracker.getGoal();

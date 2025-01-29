@@ -14,6 +14,7 @@ import java.sql.SQLException;
 public class GestioneEventoDAO {
 
     private static final List<Evento> eventiBuffer = new ArrayList<>();
+    private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
 
     private GestioneEventoDAO() {
 
@@ -159,7 +160,7 @@ public class GestioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return eventi;
     }
@@ -187,7 +188,7 @@ public class GestioneEventoDAO {
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 
@@ -211,7 +212,7 @@ public class GestioneEventoDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 
@@ -229,7 +230,7 @@ public class GestioneEventoDAO {
                 return true;
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         } return false;
     }
     
@@ -248,7 +249,7 @@ public class GestioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return null;  // Evento non trovato nel database
     }
@@ -273,7 +274,7 @@ public class GestioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return eventi;
     }

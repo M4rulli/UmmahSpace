@@ -18,6 +18,8 @@ public class OrganizzatoreDAO {
     // Buffer per memorizzare temporaneamente gli organizzatori
     private static final Map<String, Organizzatore> bufferOrganizzatori = new HashMap<>();
     private static final Set<String> CAMPI_VALIDI = Set.of("username", "idUtente", "email");
+    private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
+
 
     private OrganizzatoreDAO() {}
 
@@ -45,7 +47,7 @@ public class OrganizzatoreDAO {
 
             stmt.executeUpdate();
             } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 
@@ -86,7 +88,7 @@ public class OrganizzatoreDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return null; // Nessun organizzatore trovato
     }
@@ -116,7 +118,7 @@ public class OrganizzatoreDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return false;
     }

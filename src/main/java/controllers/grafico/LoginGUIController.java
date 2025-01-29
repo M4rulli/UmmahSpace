@@ -3,10 +3,7 @@ package controllers.grafico;
 import controllers.applicativo.LoginController;
 import engclasses.beans.GestioneTrackerBean;
 import engclasses.beans.LoginBean;
-import engclasses.exceptions.DatabaseConnessioneFallitaException;
-import engclasses.exceptions.DatabaseOperazioneFallitaException;
-import engclasses.exceptions.LoginFallitoException;
-import engclasses.exceptions.TrackerNonTrovatoException;
+import engclasses.exceptions.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -43,14 +40,20 @@ public class LoginGUIController {
     @FXML
     private void initialize() {
         // Assegna l'azione al link di registrazione
-        registrationLink.setOnAction(event -> onHyperLinkRegistrationClicked());
+        registrationLink.setOnAction(event -> {
+            try {
+                onHyperLinkRegistrationClicked();
+            } catch (ViewFactoryException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         // Assegna l'azione al bottone di login
         loginButton.setOnAction(event -> {
             try {
                 onLoginClicked();
             } catch (LoginFallitoException | DatabaseConnessioneFallitaException | DatabaseOperazioneFallitaException |
-                     TrackerNonTrovatoException e) {
+                     TrackerNonTrovatoException | ViewFactoryException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -60,7 +63,7 @@ public class LoginGUIController {
     }
 
     @FXML
-    private void onHyperLinkRegistrationClicked() {
+    private void onHyperLinkRegistrationClicked() throws ViewFactoryException {
         // Forza lo stato della persistenza su false
         session.setPersistence(false);
 
@@ -73,7 +76,7 @@ public class LoginGUIController {
     }
 
     @FXML
-    private void onLoginClicked() throws LoginFallitoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException {
+    private void onLoginClicked() throws LoginFallitoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException, ViewFactoryException {
         // Preleva i campi username e password dalla GUI
         String username = usernameField.getText();
         String password = passwordField.getText();

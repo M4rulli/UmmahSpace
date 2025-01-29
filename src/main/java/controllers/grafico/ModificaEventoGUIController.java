@@ -5,6 +5,7 @@ import engclasses.beans.EventoBean;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
+import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -50,7 +51,13 @@ public class ModificaEventoGUIController {
 
     @FXML
     public void initialize() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
-        backButton.setOnAction(event -> onBackButtonClicked());
+        backButton.setOnAction(event -> {
+            try {
+                onBackButtonClicked();
+            } catch (ViewFactoryException e) {
+                throw new RuntimeException(e);
+            }
+        });
         saveButton.setOnAction(event -> {
             try {
                 onSaveButtonClicked();
@@ -130,7 +137,7 @@ public class ModificaEventoGUIController {
     }
 
     @FXML
-    private void onBackButtonClicked() {
+    private void onBackButtonClicked() throws ViewFactoryException {
         Stage currentStage = (Stage) backButton.getScene().getWindow();
         if (saveButton.isDisable()) {
             Model.getInstance().getViewFactory().closeStage(currentStage);

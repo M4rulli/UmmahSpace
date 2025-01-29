@@ -5,6 +5,7 @@ import engclasses.beans.EventoBean;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
+import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -94,7 +95,13 @@ public class GestioneListaEventiGUIController {
             // Disabilita il bottone se l'evento è chiuso
             modificaButton.setDisable(!evento.isStato());
             modificaButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10; ");
-            modificaButton.setOnAction(e -> onGestisciEventoClicked(evento.getIdEvento()));
+            modificaButton.setOnAction(e -> {
+                try {
+                    onGestisciEventoClicked(evento.getIdEvento());
+                } catch (ViewFactoryException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             // Crea il bottone "Elimina"
             Button eliminaButton = new Button("Elimina");
@@ -115,7 +122,13 @@ public class GestioneListaEventiGUIController {
             );
 
             // Azione del pulsante
-            reportButton.setOnAction(e -> onReportButtonClicked(evento.getIdEvento()));
+            reportButton.setOnAction(e -> {
+                try {
+                    onReportButtonClicked(evento.getIdEvento());
+                } catch (ViewFactoryException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             // Aggiungi tutti i componenti all'HBox
             eventDetails.getChildren().addAll(titleLabel, dateLabel, timeLabel, statusLabel, spacer, modificaButton, eliminaButton, reportButton);
@@ -153,7 +166,7 @@ public class GestioneListaEventiGUIController {
         }
     }
 
-    private void onGestisciEventoClicked(long idEvento) {
+    private void onGestisciEventoClicked(long idEvento) throws ViewFactoryException {
         // Imposta l'ID evento nella sessione
         session.setIdEvento(idEvento);
         Stage currentStage = (Stage) eventContainer.getScene().getWindow();
@@ -161,7 +174,7 @@ public class GestioneListaEventiGUIController {
         Model.getInstance().getViewFactory().showModificaEvento(session);
     }
 
-    private void onReportButtonClicked(long idEvento) {
+    private void onReportButtonClicked(long idEvento) throws ViewFactoryException {
         session.setIdEvento(idEvento);
         Model.getInstance().getViewFactory().showReportView(session);
     }

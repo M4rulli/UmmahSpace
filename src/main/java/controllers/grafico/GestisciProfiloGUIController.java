@@ -5,6 +5,7 @@ import engclasses.beans.RegistrazioneBean;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.UtenteNonTrovatoException;
+import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -48,7 +49,13 @@ public class GestisciProfiloGUIController {
 
     @FXML
     public void initialize() throws UtenteNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
-        backButton.setOnAction(event -> onBackButtonClicked());
+        backButton.setOnAction(event -> {
+            try {
+                onBackButtonClicked();
+            } catch (ViewFactoryException e) {
+                throw new RuntimeException(e);
+            }
+        });
         saveButton.setOnAction(event -> {
             try {
                 onSaveButtonClicked();
@@ -57,6 +64,8 @@ public class GestisciProfiloGUIController {
             }
         });
         editButton.setOnAction(event -> onEditButtonClicked());
+
+
 
         // Recupera i dati dell'utente
         RegistrazioneBean bean = gestisciProfiloController.inizializzaProfilo(session.getIdUtente());
@@ -110,7 +119,7 @@ public class GestisciProfiloGUIController {
     }
 
     @FXML
-    private void onBackButtonClicked() {
+    private void onBackButtonClicked() throws ViewFactoryException {
         // Controlla se le modifiche sono abilitate
         if (saveButton.isDisable()) { // Nessuna modifica abilitata
 

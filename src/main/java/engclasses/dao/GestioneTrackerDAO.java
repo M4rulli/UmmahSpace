@@ -15,6 +15,7 @@ public class GestioneTrackerDAO {
 
     // Buffer per memorizzare i tracker
     private static final Map<String, Tracker> trackerBuffer = new HashMap<>();
+    private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
 
     private GestioneTrackerDAO() {}
 
@@ -64,7 +65,7 @@ public class GestioneTrackerDAO {
                 return tracker;
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return null;
     }
@@ -93,7 +94,7 @@ public class GestioneTrackerDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 

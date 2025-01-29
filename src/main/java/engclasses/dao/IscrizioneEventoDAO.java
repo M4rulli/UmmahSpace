@@ -11,6 +11,8 @@ import java.util.List;
 public class IscrizioneEventoDAO {
 
     private static final List<Evento> eventiBuffer = new ArrayList<>();
+    private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
+
     // Popola inizialmente il buffer con eventi hard-coded
     static {
         eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", "50", 10, "www.evento1.com", "Mario", "Rossi", true, 1, ""));
@@ -79,7 +81,7 @@ public class IscrizioneEventoDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return eventiPerMeseAnno;
     }
@@ -103,7 +105,7 @@ public class IscrizioneEventoDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 

@@ -1,14 +1,19 @@
 package engclasses.pattern;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import engclasses.exceptions.HttpRequestException;
 import engclasses.pattern.interfaces.OrarioPreghiereAPI;
 import org.json.JSONObject;
 
@@ -94,6 +99,17 @@ public class AlAdhanAdapter implements OrarioPreghiereAPI {
         int hour = Integer.parseInt(parts[0]);
         int minute = Integer.parseInt(parts[1]);
         return LocalTime.of(hour, minute);
+    }
+
+    private HttpResponse<String> inviaRichiesta(HttpRequest request, HttpClient client) throws HttpRequestException {
+        try {
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Rilancia l'interruzione
+            throw new HttpRequestException("Thread interrotto durante la richiesta HTTP", e);
+        } catch (IOException e) {
+            throw new HttpRequestException("Errore di I/O durante la richiesta HTTP", e);
+        }
     }
 
 }

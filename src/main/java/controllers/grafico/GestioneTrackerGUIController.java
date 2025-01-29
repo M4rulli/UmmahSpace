@@ -203,7 +203,7 @@ public class GestioneTrackerGUIController {
         GestioneTrackerController gestioneTrackerController = new GestioneTrackerController(session);
 
         // Ottieni i dati del tracker tramite il controller applicativo e crea la Bean temporanea per trasmetterli
-        GestioneTrackerBean updatedBean = gestioneTrackerController.aggiornaBarraConProgresso(session.isPersistence());
+        GestioneTrackerBean updatedBean = gestioneTrackerController.aggiornaBarraConProgresso();
 
         // Aggiorna la barra di progresso
         quranProgressBar.setProgress(updatedBean.getProgresso());

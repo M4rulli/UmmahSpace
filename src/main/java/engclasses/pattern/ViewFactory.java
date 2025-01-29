@@ -1,6 +1,7 @@
 package engclasses.pattern;
 
 import controllers.grafico.*;
+import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,14 +23,15 @@ import java.io.IOException;
 public class ViewFactory {
 
 
-    private void showStage(FXMLLoader loader, String title) {
+    private void showStage(FXMLLoader loader, String title) throws ViewFactoryException {
         try {
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root));
             stage.show();
-        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra: " + title, e);
+        } catch (IOException e) {
+            throw new ViewFactoryException("Errore durante il caricamento della finestra: " + title, e);
         }
     }
 
@@ -37,19 +39,19 @@ public class ViewFactory {
         stage.close();
     }
 
-    public void showRegistration(Session session) {
+    public void showRegistration(Session session) throws ViewFactoryException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/RegistrazioneView.fxml"));
         loader.setController(new RegistrazioneGUIController(session));
         showStage(loader, "UmmahSpace - Registrazione");
     }
 
-    public void showLogin(Session session) {
+    public void showLogin(Session session) throws ViewFactoryException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/LoginView.fxml"));
         loader.setController(new LoginGUIController(session));
         showStage(loader, "UmmahSpace - Accesso");
     }
 
-    public void showMainView(Session session) {
+    public void showMainView(Session session) throws ViewFactoryException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainView.fxml"));
         loader.setController(new MainViewGUIController(session));
         Parent root;
@@ -62,11 +64,11 @@ public class ViewFactory {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ViewFactoryException("Errore durante il caricamento della vista principale", e);
         }
     }
 
-    public void loadCalendarioView(Pane parentContainer, Session session) {
+    public void loadCalendarioView(Pane parentContainer, Session session) throws ViewFactoryException {
         try {
             // Crea e configura il loader per il file FXML del calendario
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/CalendarioView.fxml"));
@@ -80,27 +82,29 @@ public class ViewFactory {
             parentContainer.getChildren().add(calendarioView);
 
         } catch (IOException e) {
-            throw new RuntimeException("Errore durante il caricamento di CalendarioView.", e);
+            throw new ViewFactoryException("Errore durante il caricamento di CalendarioView.", e);
         }
     }
 
-    public void loadTrackerView(Pane parentContainer, Session session) {
+    public void loadTrackerView(Pane parentContainer, Session session) throws ViewFactoryException {
         if (!session.isOrganizzatore()) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/TrackerView.fxml"));
                 GestioneTrackerGUIController trackerController = new GestioneTrackerGUIController(session);
                 loader.setController(trackerController);
                 Parent trackerView = loader.load();
+
                 // Svuota il contenitore e aggiunge il contenuto del Tracker
                 parentContainer.getChildren().clear();
                 parentContainer.getChildren().add(trackerView);
 
-            } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento di TrackerView.fxml", e);
+            } catch (IOException e) {
+                throw new ViewFactoryException("Errore durante il caricamento di TrackerView.", e);
             }
         }
     }
 
-    public void loadListaEventiView(Pane parentContainer, Session session) {
+    public void loadListaEventiView(Pane parentContainer, Session session) throws ViewFactoryException {
         try {
             FXMLLoader loader;
             Parent view;
@@ -110,47 +114,46 @@ public class ViewFactory {
                 loader = new FXMLLoader(getClass().getResource("/ListaEventiView.fxml"));
                 GestioneListaEventiGUIController listaEventiController = new GestioneListaEventiGUIController(session);
                 loader.setController(listaEventiController);
-                view = loader.load();
             } else {
                 // Carica la vista per il partecipante
                 loader = new FXMLLoader(getClass().getResource("/PartecipazioniView.fxml"));
                 PartecipazioniGUIController partecipazioniGUIController = new PartecipazioniGUIController(session);
                 loader.setController(partecipazioniGUIController);
-                view = loader.load();
             }
+            view = loader.load();
 
             // Svuota il contenitore e aggiunge la vista caricata
             parentContainer.getChildren().clear();
             parentContainer.getChildren().add(view);
 
-        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della vista.", e);
+        } catch (IOException e) {
+            throw new ViewFactoryException("Errore durante il caricamento della ListaEventiView.", e);
         }
     }
 
-    public void showSettings(Session session) {
+    public void showSettings(Session session) throws ViewFactoryException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestisciProfiloView.fxml"));
         loader.setController(new GestisciProfiloGUIController(session));
         showStage(loader, "Gestione Profilo");
     }
 
-    public void showEventiGiornalieri(Session session) {
+    public void showEventiGiornalieri(Session session) throws ViewFactoryException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventiGiornalieriView.fxml"));
             loader.setController(new EventiGiornalieriGUIController(session));
             Parent root = loader.load();
-
-            // Configura la scena
             Stage stage = new Stage();
             stage.setTitle("Eventi Giornalieri");
             stage.setResizable(false);
             Scene scene = new Scene(root, 600, 400);
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Eventi Giornalieri", e);
+        } catch (IOException e) {
+            throw new ViewFactoryException("Errore durante il caricamento della finestra Eventi Giornalieri", e);
         }
     }
 
-    public void showAggiungiEvento(Session session, String selectedDate  ) {
+    public void showAggiungiEvento(Session session, String selectedDate  ) throws ViewFactoryException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AggiungiEventoView.fxml"));
             loader.setController(new AggiungiEventoGUIController(session, selectedDate)); // Passa la ViewFactory
@@ -161,34 +164,21 @@ public class ViewFactory {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
+        } catch (IOException e) {
+            throw new ViewFactoryException("Errore durante il caricamento della finestra Eventi Organizzatore", e);
         }
     }
 
-    public void showModificaEvento(Session session) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModificaEventoView.fxml"));
-            loader.setController(new ModificaEventoGUIController(session));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Modifica Evento");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
-        }
+    public void showModificaEvento(Session session) throws ViewFactoryException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModificaEventoView.fxml"));
+        loader.setController(new ModificaEventoGUIController(session));
+        showStage(loader, "Modifica Evento");
     }
 
-    public void showReportView(Session session) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ReportView.fxml"));
-            loader.setController(new ReportGUIController(session));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Genera un report");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {throw new RuntimeException("Errore durante il caricamento della finestra Modifica Evento", e);
-        }
+    public void showReportView(Session session) throws ViewFactoryException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ReportView.fxml"));
+        loader.setController(new ReportGUIController(session));
+        showStage(loader, "Genera un Report");
     }
 
 }

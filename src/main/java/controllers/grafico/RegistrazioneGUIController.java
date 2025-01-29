@@ -5,6 +5,7 @@ import engclasses.beans.RegistrazioneBean;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.RegistrazioneFallitaException;
+import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -52,11 +53,17 @@ public class RegistrazioneGUIController {
             try {
                 onSignUpClicked();
             } catch (RegistrazioneFallitaException | DatabaseConnessioneFallitaException |
-                     DatabaseOperazioneFallitaException e) {
+                     DatabaseOperazioneFallitaException | ViewFactoryException e) {
                 throw new RuntimeException(e);
             }
         });
-        loginLink.setOnAction(event -> onHyperLinkLoginClicked());
+        loginLink.setOnAction(event -> {
+            try {
+                onHyperLinkLoginClicked();
+            } catch (ViewFactoryException e) {
+                throw new RuntimeException(e);
+            }
+        });
         // Configura il ToggleSwitch
         persistenceSwitch.setOnMouseClicked(event -> togglePersistence());
         persistenceSwitch.setSelected(persistence);
@@ -73,7 +80,7 @@ public class RegistrazioneGUIController {
     }
 
     @FXML
-    public void onSignUpClicked() throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public void onSignUpClicked() throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ViewFactoryException {
 
         // Raccoglie i dati dalla UI
         String nome = nomeField.getText().trim();
@@ -121,7 +128,7 @@ public class RegistrazioneGUIController {
     }
 
     @FXML
-    private void onHyperLinkLoginClicked() {
+    private void onHyperLinkLoginClicked() throws ViewFactoryException {
         // Forza la persistenza a true
         session.setPersistence(true);
         // Apri la schermata di login tramite il Model

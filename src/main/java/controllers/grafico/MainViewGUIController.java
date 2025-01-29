@@ -1,6 +1,9 @@
 package controllers.grafico;
 
 import controllers.applicativo.OrarioPreghiereController;
+import engclasses.exceptions.GeolocalizzazioneFallitaException;
+import engclasses.exceptions.HttpRequestException;
+import engclasses.exceptions.ViewFactoryException;
 import engclasses.pattern.AlAdhanAdapter;
 import engclasses.pattern.GeolocalizzazioneIPAdapter;
 import javafx.fxml.FXML;
@@ -65,7 +68,7 @@ public class MainViewGUIController {
     }
 
     @FXML
-    private void initialize() {
+    private void initialize() throws GeolocalizzazioneFallitaException, HttpRequestException, ViewFactoryException {
         HBox.setHgrow(box1, Priority.ALWAYS);
         HBox.setHgrow(box2, Priority.ALWAYS);
         HBox.setHgrow(box3, Priority.ALWAYS);
@@ -74,8 +77,20 @@ public class MainViewGUIController {
         // Imposta il messaggio di benvenuto
         setWelcomeMessage();
         // Configura l'handler per il bottone del profilo e del logout
-        profileButton.setOnAction(event -> onProfileButtonClicked());
-        logoutButton.setOnAction(event -> onLogoutButtonClicked());
+        profileButton.setOnAction(event -> {
+            try {
+                onProfileButtonClicked();
+            } catch (ViewFactoryException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        logoutButton.setOnAction(event -> {
+            try {
+                onLogoutButtonClicked();
+            } catch (ViewFactoryException e) {
+                throw new RuntimeException(e);
+            }
+        });
         // Carica la sotto-vista del Calendario
         Model.getInstance().getViewFactory().loadCalendarioView(calendarioContainer, session);
         // Carica la sotto-vista del Tracker
@@ -90,7 +105,11 @@ public class MainViewGUIController {
         if (eventiTab != null) {
             eventiTab.setOnSelectionChanged(event -> {
                 if (eventiTab.isSelected()) {
-                    Model.getInstance().getViewFactory().loadListaEventiView(eventiContainer, session);
+                    try {
+                        Model.getInstance().getViewFactory().loadListaEventiView(eventiContainer, session);
+                    } catch (ViewFactoryException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         }
@@ -122,14 +141,14 @@ public class MainViewGUIController {
 
 
     @FXML
-    public void onProfileButtonClicked() {
+    public void onProfileButtonClicked() throws ViewFactoryException {
         Stage currentStage = (Stage) profileButton.getScene().getWindow();
         Model.getInstance().getViewFactory().closeStage(currentStage);
         Model.getInstance().getViewFactory().showSettings(session);
     }
 
     // Metodo per gestire il click sul pulsante
-    private void onLogoutButtonClicked() {
+    private void onLogoutButtonClicked() throws ViewFactoryException {
         boolean conferma = mostraMessaggioConfermaConScelta("Conferma Logout", "Sei sicuro di voler effettuare il logout?");
         if (conferma) {
             Stage stage = (Stage) logoutButton.getScene().getWindow();
@@ -152,7 +171,7 @@ public class MainViewGUIController {
     }
 
     @FXML
-    public void inizializzaOrariPreghiere() {
+    public void inizializzaOrariPreghiere() throws GeolocalizzazioneFallitaException, HttpRequestException {
         // Instanzia il controller applicativo
         OrarioPreghiereController orarioPreghiereController = new OrarioPreghiereController(new GeolocalizzazioneIPAdapter(), new AlAdhanAdapter());
 

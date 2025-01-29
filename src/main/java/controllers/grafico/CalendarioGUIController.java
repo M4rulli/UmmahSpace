@@ -5,6 +5,7 @@ import engclasses.beans.EventoBean;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.exceptions.EventoNonTrovatoException;
+import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -193,10 +194,18 @@ public class CalendarioGUIController {
 
             if (session.isOrganizzatore()) {
                 // Mostra la finestra per aggiungere gli eventi
-                Model.getInstance().getViewFactory().showAggiungiEvento(session, selectedDate);
+                try {
+                    Model.getInstance().getViewFactory().showAggiungiEvento(session, selectedDate);
+                } catch (ViewFactoryException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
                 // Mostra la finestra per i partecipanti con gli eventi disponibili
-                Model.getInstance().getViewFactory().showEventiGiornalieri(session);
+                try {
+                    Model.getInstance().getViewFactory().showEventiGiornalieri(session);
+                } catch (ViewFactoryException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }

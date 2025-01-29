@@ -14,6 +14,8 @@ import java.util.List;
 
 public class PartecipazioneDAO {
     private static final List<Partecipazione> partecipazioniBuffer = new ArrayList<>();
+    private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
+
 
     private PartecipazioneDAO() {}
 
@@ -47,7 +49,7 @@ public class PartecipazioneDAO {
 
             stmt.executeUpdate();
             } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 
@@ -77,7 +79,7 @@ public class PartecipazioneDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return false;
     }
@@ -125,7 +127,7 @@ public class PartecipazioneDAO {
                 ));
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return partecipazioni;
     }
@@ -173,7 +175,7 @@ public class PartecipazioneDAO {
                 ));
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return partecipazioni;
     }

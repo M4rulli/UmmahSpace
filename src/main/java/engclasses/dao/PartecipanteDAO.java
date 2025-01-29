@@ -17,6 +17,8 @@ public class PartecipanteDAO {
     // Buffer per memorizzare temporaneamente i partecipanti
     private static final Map<String, Partecipante> bufferPartecipanti = new HashMap<>();
     private static final Set<String> CAMPI_VALIDI = Set.of("username", "idUtente", "email");
+    private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
+
 
     private PartecipanteDAO() {}
 
@@ -50,7 +52,7 @@ public class PartecipanteDAO {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
     }
 
@@ -93,7 +95,7 @@ public class PartecipanteDAO {
                 );
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return null;
     }
@@ -139,7 +141,7 @@ public class PartecipanteDAO {
                 return true;
             }
         } catch (SQLException e) {
-            throw new DatabaseOperazioneFallitaException("Errore durante l'aggiornamento del database", e);
+            throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
         return false;
     }

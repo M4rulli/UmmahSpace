@@ -1,5 +1,7 @@
 package controllers.applicativo;
 
+import engclasses.exceptions.GeolocalizzazioneFallitaException;
+import engclasses.exceptions.HttpRequestException;
 import engclasses.pattern.interfaces.GeolocalizzazioneAPI;
 import engclasses.pattern.interfaces.OrarioPreghiereAPI;
 import model.PosizioneGeografica;
@@ -16,9 +18,9 @@ public class OrarioPreghiereController {
      * Costruttore della classe OrarioPreghiereController.
      * Ottiene automaticamente la posizione geografica utilizzando l'adapter fornito, poi la calcola con l'API degli orari.
      */
-    public OrarioPreghiereController(GeolocalizzazioneAPI geoProvider, OrarioPreghiereAPI orarioPreghiere) {
+    public OrarioPreghiereController(GeolocalizzazioneAPI geoProvider, OrarioPreghiereAPI orarioPreghiere) throws GeolocalizzazioneFallitaException, HttpRequestException {
         // Ottieni la posizione geografica tramite l'adapter
-        PosizioneGeografica posizione = geoProvider.getGeoLocation();
+        PosizioneGeografica posizione = geoProvider.getGeolocalizzazione();
         double latitude = posizione.getLatitudine();
         double longitude = posizione.getLongitudine();
 
