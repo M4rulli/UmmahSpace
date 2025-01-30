@@ -7,16 +7,14 @@ public abstract class Utente {
     protected String email;
     protected String password;
     protected String idUtente;
-    protected Boolean stato;
 
-    protected Utente(String nome, String cognome, String username, String email, String password, String idUtente, Boolean stato) {
+    protected Utente(String nome, String cognome, String username, String email, String password, String idUtente) {
         this.nome = nome;
         this.cognome = cognome;
         this.username = username;
         this.email = email;
         this.password = password;
         this.idUtente = idUtente; // Genera un UUID univoco
-        this.stato = stato;
     }
 
     // Getter e Setter
@@ -64,7 +62,4 @@ public abstract class Utente {
        return idUtente;
     }
 
-    public boolean isStato() {
-        return stato;
-    }
 }

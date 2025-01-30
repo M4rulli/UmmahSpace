@@ -48,8 +48,7 @@ public class RegistrazioneController {
                 bean.getCognome(),
                 bean.getUsername(),
                 bean.getEmail(),
-                bean.getPassword(),
-                true
+                bean.getPassword()
         );
 
         // Salva l'ID, l'username, il nome dell'utente e lo stato della persistenza nella sessione
@@ -75,7 +74,6 @@ public class RegistrazioneController {
                 bean.getUsername(),
                 bean.getEmail(),
                 bean.getPassword(),
-                true,
                 bean.getTitoloDiStudio()
         );
 

@@ -39,7 +39,7 @@ public class OrganizzatoreDAO {
 
     // Salva un organizzatore nel database
     private static void salvaInDb(Organizzatore organizzatore) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
-        String query = "INSERT INTO Organizzatori (idUtente, nome, cognome, username, email, password, stato, titoloDiStudio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Organizzatori (idUtente, nome, cognome, username, email, password, titoloDiStudio) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -82,7 +82,6 @@ public class OrganizzatoreDAO {
                             rs.getString("username"),
                             rs.getString("email"),
                             rs.getString("password"),
-                            rs.getBoolean("stato"),
                             rs.getString("titoloDiStudio")
                     );
                 }
@@ -142,8 +141,7 @@ public class OrganizzatoreDAO {
         stmt.setString(4, organizzatore.getUsername());
         stmt.setString(5, organizzatore.getEmail());
         stmt.setString(6, organizzatore.getPassword());
-        stmt.setBoolean(7, organizzatore.isStato());
-        stmt.setString(8, organizzatore.getTitoloDiStudio());
+        stmt.setString(7, organizzatore.getTitoloDiStudio());
     }
 
     private static void setUserParameters(PreparedStatement stmt, String nome, String cognome, String username, String email, String password, String idUtente) throws SQLException {

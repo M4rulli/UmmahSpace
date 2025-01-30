@@ -38,7 +38,7 @@ public class PartecipanteDAO {
 
     // Salva un partecipante nel database
     private static void salvaInDb(Partecipante partecipante) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
-        String query = "INSERT INTO Partecipanti (idUtente, nome, cognome, username, email, password, stato) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Partecipanti (idUtente, nome, cognome, username, email, password) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -48,7 +48,6 @@ public class PartecipanteDAO {
             stmt.setString(4, partecipante.getUsername());
             stmt.setString(5, partecipante.getEmail());
             stmt.setString(6, partecipante.getPassword());
-            stmt.setBoolean(7, partecipante.isStato());
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -90,8 +89,7 @@ public class PartecipanteDAO {
                         rs.getString("cognome"),  // Cognome
                         rs.getString("username"), // Username
                         rs.getString("email"),    // Email
-                        rs.getString("password"), // Password
-                        rs.getBoolean("stato")    // Stato
+                        rs.getString("password") // Password
                 );
             }
         } catch (SQLException e) {

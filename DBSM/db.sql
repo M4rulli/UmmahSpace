@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS Partecipanti (
     cognome VARCHAR(100) NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    stato BOOLEAN NOT NULL DEFAULT TRUE
+    password VARCHAR(255) NOT NULL
 );
 
 -- Tabella Eventi
@@ -52,7 +51,6 @@ CREATE TABLE Organizzatori (
     username VARCHAR(100) UNIQUE NOT NULL,              -- Username unico
     email    VARCHAR(255) UNIQUE NOT NULL,              -- Email unica
     password VARCHAR(255)        NOT NULL,              -- Password dell'utente
-    stato    BOOLEAN             NOT NULL DEFAULT FALSE, -- Stato (es. attivo/inattivo)
     titoloDiStudio TEXT NOT NULL                         -- Titolo di Studio
 );
 

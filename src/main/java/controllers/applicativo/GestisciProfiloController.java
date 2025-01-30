@@ -124,8 +124,7 @@ public class GestisciProfiloController {
                     updatedBean.getCognome(),
                     updatedBean.getUsername(),
                     updatedBean.getEmail(),
-                    updatedBean.getPassword(),
-                    utente.isStato()
+                    updatedBean.getPassword()
             );
             return PartecipanteDAO.aggiornaPartecipante(partecipanteAggiornato, persistence);
         } else {
@@ -137,7 +136,6 @@ public class GestisciProfiloController {
                     updatedBean.getUsername(),
                     updatedBean.getEmail(),
                     updatedBean.getPassword(),
-                    true,
                     organizzatoreEsistente.getTitoloDiStudio()
             );
             return OrganizzatoreDAO.aggiornaOrganizzatore(organizzatoreAggiornato, persistence);
