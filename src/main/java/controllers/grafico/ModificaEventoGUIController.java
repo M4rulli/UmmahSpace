@@ -114,24 +114,16 @@ public class ModificaEventoGUIController {
         updatedEvento.setLink(linkField.getText().trim());
         updatedEvento.setLimitePartecipanti(limitePartecipantiField.getText().trim());
 
-        boolean success = gestioneEventoController.aggiornaEvento(updatedEvento, session.getIdEvento());
-
-        if (success) {
-            initializeEvent(
-                    updatedEvento.getTitolo(),
-                    updatedEvento.getDescrizione(),
-                    updatedEvento.getData(),
-                    updatedEvento.getOrario(),
-                    updatedEvento.getLink(),
-                    updatedEvento.getLimitePartecipanti()
-            );
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Conferma");
-            alert.setHeaderText(null);
-            alert.setContentText("Evento modificato con successo!");
-            alert.showAndWait();
-        }
+        gestioneEventoController.aggiornaEvento(updatedEvento, session.getIdEvento());
+        initializeEvent(
+                updatedEvento.getTitolo(),
+                updatedEvento.getDescrizione(),
+                updatedEvento.getData(),
+                updatedEvento.getOrario(),
+                updatedEvento.getLink(),
+                updatedEvento.getLimitePartecipanti()
+        );
+        mostraMessaggioConferma("Conferma", "Evento modificato con successo!");
     }
 
     @FXML

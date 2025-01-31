@@ -1,8 +1,10 @@
 package controllers.applicativo;
 
 import engclasses.beans.EventoBean;
+import engclasses.dao.GestioneEventoDAO;
 import engclasses.exceptions.*;
 import misc.Session;
+import model.Evento;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class GestioneEventiControllerTest {
 
     private GestioneEventoController controller;
-    private static final long EVENT_ID = 1001L; // ID di un evento esistente
-    private static final String UTENTE_ID = "5145bbfc-dcde-4c98-a42e-2502753feb8c"; // ID di un organizzatore valido
+    private static final long EVENT_ID = 1004; // ID di un evento esistente
+    private static final String UTENTE_ID = "organizzatore123"; // ID di un organizzatore valido
 
     /**
      * Configurazione iniziale del test.
@@ -31,6 +33,26 @@ class GestioneEventiControllerTest {
         controller = new GestioneEventoController(session);
     }
 
+    // Crea l'evento prima di ogni test
+    @BeforeEach
+    void setupEach() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException {
+        // Elimina l'evento se esiste già per evitare problemi con modifiche o duplicati
+        if (GestioneEventoDAO.getEventoById(EVENT_ID, true) != null) {
+            controller.eliminaEvento(EVENT_ID, UTENTE_ID);
+        }
+        Evento evento = new Evento();
+        evento.setIdOrganizzatore(UTENTE_ID);
+        evento.setIdEvento(EVENT_ID);
+        evento.setTitolo("Evento di Test");
+        evento.setDescrizione("Descrizione di Test");
+        evento.setData("2025-03-15");
+        evento.setOrario("15:00 - 17:00");
+        evento.setLimitePartecipanti("100");
+
+        GestioneEventoDAO.aggiungiEvento(evento, true);
+    }
+
+
     /**
      * Test: Cancellazione di un evento esistente.
      * Verifica che un organizzatore possa cancellare con successo un evento.
@@ -39,8 +61,6 @@ class GestioneEventiControllerTest {
     void testEliminaEventoSuccess() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         EventoBean evento = new EventoBean();
         evento.setIdEvento(EVENT_ID);
-
-
         boolean result = controller.eliminaEvento(evento.getIdEvento(),UTENTE_ID);
         assertTrue(result, "L'evento deve essere cancellato con successo.");
     }
@@ -50,13 +70,16 @@ class GestioneEventiControllerTest {
      * Verifica che un organizzatore possa modificare un evento con successo.
      */
     @Test
-    void testModificaEventoSuccess() throws EventoNonTrovatoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    void testModificaEventoSuccess() {
         EventoBean evento = new EventoBean();
         evento.setIdEvento(EVENT_ID);
         evento.setTitolo("Nuovo Titolo Evento");
+        evento.setDescrizione("Descrizione di Test");
+        evento.setOrario("23:00 - 23:30");
+        evento.setLimitePartecipanti("150");
+        evento.setData("2025-05-19");
 
-        boolean result = controller.eliminaEvento(evento.getIdEvento(),UTENTE_ID);
-        assertTrue(result, "L'evento deve essere modificato con successo.");
+        assertDoesNotThrow(() -> controller.aggiornaEvento(evento, evento.getIdEvento()));
     }
 
     /**
@@ -71,7 +94,8 @@ class GestioneEventiControllerTest {
         Exception exception = assertThrows(ValidazioneEventoException.class, () ->
                 controller.aggiungiEvento(evento));
 
-        assertTrue(exception.getMessage().contains("Errore durante l'aggiunta dell'evento"),
+        assertTrue(exception.getMessage().contains("Il titolo dell'evento è obbligatorio")
+                        || exception.getMessage().contains("L'orario dell'evento non può essere vuoto"),
                 "L'errore deve indicare il fallimento dell'aggiunta.");
     }
 }

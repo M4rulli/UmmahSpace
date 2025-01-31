@@ -63,13 +63,10 @@ public class AggiungiEventoGUIController {
 
         // Chiamata al Controller applicativo
         GestioneEventoController gestioneEventoController = new GestioneEventoController(session);
-        boolean sucess = gestioneEventoController.aggiungiEvento(evento);
-
-        if (sucess) {
-            mostraMessaggioConferma("Conferma", "Evento aggiunto con successo!");
-            Stage currentStage = (Stage) annullaButton.getScene().getWindow();
-            Model.getInstance().getViewFactory().closeStage(currentStage);
-        }
+        gestioneEventoController.aggiungiEvento(evento);
+        mostraMessaggioConferma("Conferma", "Evento aggiunto con successo!");
+        Stage currentStage = (Stage) annullaButton.getScene().getWindow();
+        Model.getInstance().getViewFactory().closeStage(currentStage);
     }
 
     private EventoBean creaEventoBean(String titolo) {

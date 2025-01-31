@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class GestioneEventiDAOTest {
 
     // Costanti per identificare un evento valido e uno non esistente
-    private static final long VALID_EVENT_ID = 1001;
+    private static final long VALID_EVENT_ID = 1003;
     private static final long INVALID_EVENT_ID = 9999;
-    private static final String VALID_ORGANIZER_ID = "organizer123";
+    private static final String VALID_ORGANIZER_ID = "organizzatore123";
 
     // Dati fittizi per un evento di test
     private static final String TITOLO = "La Dunya e la Akhira";
@@ -37,6 +37,10 @@ class GestioneEventiDAOTest {
 
     @BeforeEach
     void setupEach() throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+
+        // Elimina l'evento se esiste già, per evitare il problema del duplicate entry
+        GestioneEventoDAO.eliminaEvento(VALID_EVENT_ID, VALID_ORGANIZER_ID, true);
+
         // Crea un evento di test con dati fittizi
         testEvento = new Evento(TITOLO, DESCRIZIONE, DATA, ORARIO, LIMITE_PARTECIPANTI, ISCRITTI, LINK,
                 NOME_ORGANIZZATORE, COGNOME_ORGANIZZATORE, STATO, VALID_EVENT_ID, VALID_ORGANIZER_ID);

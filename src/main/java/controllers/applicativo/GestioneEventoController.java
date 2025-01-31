@@ -42,17 +42,18 @@ public class GestioneEventoController {
     }
 
     // Metodo per aggiungere un nuovo evento per un organizzatore
-    public boolean aggiungiEvento(EventoBean eventoBean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ValidazioneEventoException {
+    public void aggiungiEvento(EventoBean eventoBean) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ValidazioneEventoException {
         String erroriData = validaEvento(eventoBean);
         String erroriLink = validaLink(eventoBean);
         String erroreFasciaOraria = validaFasciaOraria(eventoBean.getOrario(), eventoBean.getData(), session.getIdUtente(), eventoBean.getIdEvento());
         String errori = erroriData + erroreFasciaOraria + erroriLink;
 
+
         // Se ci sono errori nella validazione, lancia l'eccezione
         if (!errori.isEmpty()) {
             throw new ValidazioneEventoException(errori);
         }
-        return Facade.getInstance().aggiungiEventoFacade(eventoBean, session.getIdUtente(), session.isPersistence());
+        Facade.getInstance().aggiungiEventoFacade(eventoBean, session.getIdUtente(), session.isPersistence());
     }
 
 
@@ -87,7 +88,7 @@ public class GestioneEventoController {
         return partecipazioneBeans;
     }
 
-    public boolean aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException, ValidazioneEventoException {
+    public void aggiornaEvento(EventoBean updatedBean, long idEvento) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, EventoNonTrovatoException, ValidazioneEventoException {
 
         // Valida i dati forniti nella bean aggiornata
         String erroriEvento = validaEvento(updatedBean);
@@ -105,7 +106,6 @@ public class GestioneEventoController {
 
         // Utilizza la Facade per aggiornare l'evento
         Facade.getInstance().aggiornaEventoFacade(updatedBean, idEvento, session.isPersistence());
-        return true;
     }
 
     // Metodo per aggiornare lo stato di un evento
@@ -130,7 +130,6 @@ public class GestioneEventoController {
         // Validazione campi obbligatori
         validaCampo(eventoBean.getTitolo(), "Il titolo dell'evento", errori);
         validaCampo(eventoBean.getDescrizione(), "La descrizione dell'evento", errori);
-        validaCampo(eventoBean.getOrario(), "L'orario dell'evento", errori);
 
         // Validazione descrizione (lunghezza massima)
         validaLunghezza(eventoBean.getDescrizione(), errori);
@@ -179,18 +178,18 @@ public class GestioneEventoController {
     private void validaLimitePartecipanti(EventoBean eventoBean, List<String> errori) {
         String limite = eventoBean.getLimitePartecipanti();
         if (limite == null || limite.trim().isEmpty()) {
-            errori.add("Il limite dei partecipanti è obbligatorio.");
+            errori.add("Il limite dei partecipanti è obbligatorio.\n");
             return;
         }
         try {
             int numero = Integer.parseInt(limite.trim());
             if (numero <= 0) {
-                errori.add("Il limite dei partecipanti deve essere maggiore di zero.");
+                errori.add("Il limite dei partecipanti deve essere maggiore di zero.\n");
             } else {
                 eventoBean.setLimitePartecipanti(String.valueOf(numero));
             }
         } catch (NumberFormatException e) {
-            errori.add("Il limite dei partecipanti deve essere un numero valido.");
+            errori.add("Il limite dei partecipanti deve essere un numero valido.\n");
         }
     }
 
@@ -226,19 +225,31 @@ public class GestioneEventoController {
                 }
             }
         }
-
         // Ritorna eventuali errori come stringa
         return errori.toString();
     }
 
     private String validaFasciaOraria(String orarioNuovoEvento, String dataNuovoEvento, String idOrganizzatore, long idEventoCorrente) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         StringBuilder errori = new StringBuilder();
+
+        // Controlla se l'orario è nullo, vuoto o esattamente " - "
+        if (orarioNuovoEvento == null || orarioNuovoEvento.trim().equals("-") || orarioNuovoEvento.trim().equals(" - ")) {
+            errori.append("L'orario dell'evento non può essere vuoto.");
+            return errori.toString();
+        }
+
         // Recupera gli eventi per la stessa data e organizzatore
         List<Evento> eventiEsistenti = GestioneEventoDAO.recuperaEventoPerData(dataNuovoEvento, idOrganizzatore, session.isPersistence());
         // Suddivide l'orario in orario di inizio e fine
         String[] orari = orarioNuovoEvento.split(" - ");
-        String orarioInizioNuovoEvento = orari[0];
-        String orarioFineNuovoEvento = orari[1];
+        String orarioInizioNuovoEvento = orari[0].trim();
+        String orarioFineNuovoEvento = orari[1].trim();
+
+        // Controlla che entrambi gli orari siano presenti e validi
+        if (orarioInizioNuovoEvento.isEmpty() || orarioFineNuovoEvento.isEmpty()) {
+            errori.append("Entrambi gli orari (inizio e fine) devono essere specificati nel formato HH:mm - HH:mm.\n");
+            return errori.toString();
+        }
 
         // Controlla sovrapposizioni con ogni evento esistente
         for (Evento evento : eventiEsistenti) {
