@@ -55,7 +55,7 @@ public class Facade {
     }
 
     // Metodo di facciata per aggiungere un nuovo evento
-    public boolean aggiungiEventoFacade(EventoBean eventoBean, String idOrganizzatore, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public void aggiungiEventoFacade(EventoBean eventoBean, String idOrganizzatore, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
 
         // Crea un identificatore per l'evento
         long idEvento = System.currentTimeMillis();
@@ -77,7 +77,7 @@ public class Facade {
         );
 
         // Salva l'evento nel database o nel buffer
-        return GestioneEventoDAO.aggiungiEvento(nuovoEvento, persistence);
+        GestioneEventoDAO.aggiungiEvento(nuovoEvento, persistence);
     }
 
     // Metodo per creare e salvare una partecipazione
