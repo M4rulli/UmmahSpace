@@ -98,12 +98,18 @@ public class PartecipazioniGUIController {
         }
 
         // Stato dell'evento (Aperto o Chiuso)
-        Label statusLabel = new Label(partecipazione.isChiuso() ? "Chiuso" : "Aperto");
-        if (partecipazione.isChiuso()) {
+        Label statusLabel = new Label();
+        if (!partecipazione.isStato()) { // Se l'evento è stato chiuso manualmente (stato = false)
+            statusLabel.setText("Chiuso");
             statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-        } else {
+        } else if (partecipazione.isPieno()) { // Se l'evento è ancora attivo (stato = true) ma è pieno
+            statusLabel.setText("Pieno");
+            statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else { // Se l'evento è ancora attivo (stato = true) e non è pieno, allora è aperto
+            statusLabel.setText("Aperto");
             statusLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
         }
+
 
         // Pulsante per annullare l'iscrizione
         Button detailButton = new Button("Disiscriviti");

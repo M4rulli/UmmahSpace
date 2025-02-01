@@ -28,7 +28,7 @@ public class IscrizioneEventoDAO {
     // Metodo per ottenere tutti gli eventi nel buffer
     public static List<Evento> getEventiPerMeseAnnoBuffer(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
-        for (Evento evento : GestioneEventoDAO.eventiBuffer) {
+        for (Evento evento : GestioneEventoDAO.getEventiBuffer()) {
             String[] dataSplit = evento.getData().split("-");
             int eventoAnno = Integer.parseInt(dataSplit[0]);
             int eventoMese = Integer.parseInt(dataSplit[1]);
@@ -103,7 +103,7 @@ public class IscrizioneEventoDAO {
     }
 
     private static void aggiornaNumeroIscrittiNelBuffer(long idEvento, int incremento) {
-        for (Evento evento : GestioneEventoDAO.eventiBuffer) { // Itera direttamente sulla lista
+        for (Evento evento : GestioneEventoDAO.getEventiBuffer()) { // Itera direttamente sulla lista
             if (evento.getIdEvento() == idEvento) {
                 int nuoviIscritti = evento.getIscritti() + incremento;
                 if (nuoviIscritti < 0) {

@@ -77,17 +77,22 @@ public class EventiGiornalieriGUIController {
             // Cambia il cursore quando ci si passa sopra
             linkLabel.setCursor(Cursor.HAND);
         }
+
         Label statusLabel = new Label();
-        if (evento.isChiuso()) {
+        if (!evento.isStato()) { // Se l'evento è stato chiuso manualmente (stato = false)
             statusLabel.setText("Chiuso");
             statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-        } else {
+        } else if (evento.isPieno()) { // Se l'evento è ancora attivo (stato = true) ma è pieno
+            statusLabel.setText("Pieno");
+            statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else { // Se l'evento è ancora attivo (stato = true) e non è pieno, allora è aperto
             statusLabel.setText("Aperto");
             statusLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
         }
 
+
         Button registerButton = new Button("Registrati all'evento");
-        registerButton.setDisable(evento.isChiuso());
+        registerButton.setDisable(evento.isPieno());
         registerButton.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-border-radius: 5; -fx-padding: 5 10;");
         registerButton.setOnAction(e -> onRegistratiButton(evento));
 

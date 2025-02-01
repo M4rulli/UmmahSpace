@@ -13,12 +13,16 @@ import java.sql.SQLException;
 
 public class GestioneEventoDAO {
 
-    public static final List<Evento> eventiBuffer = new ArrayList<>();
+    private static final List<Evento> eventiBuffer = new ArrayList<>();
+
+    // Metodo per ottenere una versione non modificabile della lista
+    public static List<Evento> getEventiBuffer() {
+        return Collections.unmodifiableList(eventiBuffer);
+    }
+
     private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
 
-    private GestioneEventoDAO() {
-
-    }
+    private GestioneEventoDAO() {}
 
     // Recupera tutti gli eventi associati a un organizzatore (dal buffer o database)
     public static List<Evento> getEventiByOrganizzatore(String idUtente, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {

@@ -102,7 +102,7 @@ public class EventoBean {
         this.stato = stato;
     }
 
-    public boolean isChiuso() {
+    public boolean isPieno() {
         return !stato || iscritti >= Integer.parseInt(limitePartecipanti);
     }
 
