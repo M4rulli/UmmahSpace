@@ -69,9 +69,18 @@ public class GestioneListaEventiGUIController {
         Label dateLabel = creaLabel("Data: " + (evento.getData() != null ? evento.getData() : "N/A"), "-fx-font-size: 14px; -fx-text-fill: #666;");
         Label timeLabel = creaLabel("Orario: " + (evento.getOrario() != null ? evento.getOrario() : "N/A"), "-fx-font-size: 14px; -fx-text-fill: #666;");
 
+        String statoEvento;
+        if (!evento.isStato()) {
+            statoEvento = "Chiuso";
+        } else if (evento.isPieno()) {
+            statoEvento = "Pieno";
+        } else {
+            statoEvento = "Aperto";
+        }
+
         Label statusLabel = creaLabel(
-                !evento.isStato() ? "Chiuso" : evento.isPieno() ? "Pieno" : "Aperto",
-                !evento.isStato() || evento.isPieno() ? "-fx-text-fill: red; -fx-font-weight: bold;" : "-fx-text-fill: green; -fx-font-weight: bold;"
+                statoEvento,
+                evento.isStato() || evento.isPieno() ? "-fx-text-fill: red; -fx-font-weight: bold;" : "-fx-text-fill: green; -fx-font-weight: bold;"
         );
 
         Region spacer = new Region();
