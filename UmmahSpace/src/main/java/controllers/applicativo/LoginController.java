@@ -99,7 +99,7 @@ public class LoginController {
         if (tracker != null) {
             return BeanFactory.createTrackerBeanFromFactory(tracker);
         } else {
-            return null;
+            throw new TrackerNonTrovatoException("Nessun tracker trovato per il partecipante: " + partecipante.getUsername());
         }
     }
 }

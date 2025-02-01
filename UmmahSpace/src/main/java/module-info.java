@@ -11,7 +11,7 @@ module com.project.ummahspace {
     requires javafx.swing;
     requires layout;
 
-    exports misc; // Esporta il pacchetto principale per l'applicazione
+    exports misc;
     exports controllers.grafico;
     exports controllers.applicativo;
     exports engclasses.beans;

@@ -220,5 +220,5 @@ public class PartecipazioneDAO {
                 partecipazione.getIdEvento() == idEvento && partecipazione.getIdUtente().equals(idUtente)
         );
     }
-    
+
 }

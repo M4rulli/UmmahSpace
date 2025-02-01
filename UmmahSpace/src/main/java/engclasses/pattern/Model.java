@@ -19,11 +19,11 @@ public class Model {
         this.viewFactory = new ViewFactory();
     }
 
-    // Metodo per ottenere l'istanza singleton
+    // Metodo Singleton con double-checked locking
     public static Model getInstance() {
-        if (model == null) {
-            synchronized (Model.class) {
-                if (model == null) {
+        if (model == null) { // Primo controllo senza sincronizzazione
+            synchronized (Model.class) { // Blocca l'accesso da altri thread
+                if (model == null) { // Secondo controllo per evitare problemi di concorrenza
                     model = new Model();
                 }
             }

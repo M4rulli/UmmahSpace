@@ -67,4 +67,3 @@ CREATE TABLE IF NOT EXISTS Partecipazioni (
     FOREIGN KEY (idUtente) REFERENCES Partecipanti(idUtente),
     FOREIGN KEY (idEvento) REFERENCES Eventi(idEvento)
 );
-

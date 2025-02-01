@@ -36,7 +36,7 @@ public class Connect {
         try {
             if (this.conn == null || this.conn.isClosed()) {
                 // Carica il file di configurazione
-                String dbConfigPath = System.getProperty("user.dir") + "/src/main/java/misc/config/db.properties";
+                String dbConfigPath = System.getProperty("user.dir") + "/UmmahSpace/src/main/java/misc/config/db.properties";
                 InputStream input = new FileInputStream(dbConfigPath);
                 Properties properties = new Properties();
 

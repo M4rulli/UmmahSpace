@@ -10,14 +10,7 @@ import java.util.List;
 
 public class IscrizioneEventoDAO {
 
-    private static final List<Evento> eventiBuffer = new ArrayList<>();
     private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
-
-    // Popola inizialmente il buffer con eventi hard-coded
-    static {
-        eventiBuffer.add(new Evento("Evento 1", "Descrizione 1", "2025-01-01", "10:00", "50", 10, "www.evento1.com", "Mario", "Rossi", true, 1, ""));
-        eventiBuffer.add(new Evento("Evento 2", "Descrizione 2", "2025-01-02", "15:00", "30", 5, "www.evento2.com", "Luca", "Bianchi", true, 2, ""));
-    }
 
     private IscrizioneEventoDAO() { }
 
@@ -35,7 +28,7 @@ public class IscrizioneEventoDAO {
     // Metodo per ottenere tutti gli eventi nel buffer
     public static List<Evento> getEventiPerMeseAnnoBuffer(int mese, int anno) {
         List<Evento> eventiPerMeseAnno = new ArrayList<>();
-        for (Evento evento : eventiBuffer) {
+        for (Evento evento : GestioneEventoDAO.eventiBuffer) {
             String[] dataSplit = evento.getData().split("-");
             int eventoAnno = Integer.parseInt(dataSplit[0]);
             int eventoMese = Integer.parseInt(dataSplit[1]);
@@ -110,7 +103,7 @@ public class IscrizioneEventoDAO {
     }
 
     private static void aggiornaNumeroIscrittiNelBuffer(long idEvento, int incremento) {
-        for (Evento evento : eventiBuffer) { // Itera direttamente sulla lista
+        for (Evento evento : GestioneEventoDAO.eventiBuffer) { // Itera direttamente sulla lista
             if (evento.getIdEvento() == idEvento) {
                 int nuoviIscritti = evento.getIscritti() + incremento;
                 if (nuoviIscritti < 0) {

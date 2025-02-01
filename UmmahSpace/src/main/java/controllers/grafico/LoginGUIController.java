@@ -80,8 +80,8 @@ public class LoginGUIController {
     @FXML
     private void onLoginClicked() throws LoginFallitoException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, TrackerNonTrovatoException, ViewFactoryException {
         // Preleva i campi username e password dalla GUI
-        String username = usernameField.getText();
-        String password = passwordField.getText();
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText().trim();
 
         // Crea una bean con i campi prelevati
         LoginBean loginBean = new LoginBean();

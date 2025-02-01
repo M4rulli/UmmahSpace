@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class GestioneEventoDAO {
 
-    private static final List<Evento> eventiBuffer = new ArrayList<>();
+    public static final List<Evento> eventiBuffer = new ArrayList<>();
     private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
 
     private GestioneEventoDAO() {
@@ -30,11 +30,11 @@ public class GestioneEventoDAO {
     }
 
     // Aggiunge un nuovo evento (buffer o database)
-    public static boolean aggiungiEvento(Evento nuovoEvento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+    public static void aggiungiEvento(Evento nuovoEvento, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
-            return salvaEventoInDb(nuovoEvento);
+            salvaEventoInDb(nuovoEvento);
         } else {
-            return salvaEventoNelBuffer(nuovoEvento);
+            salvaEventoNelBuffer(nuovoEvento);
         }
     }
 
@@ -85,12 +85,8 @@ public class GestioneEventoDAO {
     }
 
     // Salva un evento nel buffer
-    private static boolean salvaEventoNelBuffer(Evento nuovoEvento) {
-        try {
-            eventiBuffer.add(nuovoEvento);
-            return true;
-        } catch (Exception e) {return false;
-        }
+    private static void salvaEventoNelBuffer(Evento nuovoEvento) {
+        eventiBuffer.add(nuovoEvento);
     }
 
     // Aggiorna un evento nel buffer
@@ -166,7 +162,7 @@ public class GestioneEventoDAO {
     }
 
     // Salva un evento nel database
-    private static boolean salvaEventoInDb(Evento evento) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
+    private static void salvaEventoInDb(Evento evento) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "INSERT INTO Eventi (idEvento, idUtente, titolo, descrizione, data, orario, link, nomeOrganizzatore, cognomeOrganizzatore, limitePartecipanti, iscritti, stato) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Connect.getInstance().getConnection();
@@ -186,7 +182,6 @@ public class GestioneEventoDAO {
             stmt.setBoolean(12, evento.getStato());
 
             stmt.executeUpdate();
-            return true;
         } catch (SQLException e) {
             throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         }
@@ -233,7 +228,7 @@ public class GestioneEventoDAO {
             throw new DatabaseOperazioneFallitaException(ERRORE_AGGIORNAMENTO_DB, e);
         } return false;
     }
-    
+
     // Recupera un evento dal database tramite ID
     private static Evento recuperaEventoDaDb(long idEvento) throws DatabaseOperazioneFallitaException, DatabaseConnessioneFallitaException {
         String query = "SELECT titolo, descrizione, data, orario, limitePartecipanti, iscritti, link, " +

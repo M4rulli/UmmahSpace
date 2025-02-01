@@ -82,7 +82,7 @@ public class PartecipanteDAO {
             ResultSet rs = stmt.executeQuery();
 
             // Se il partecipante esiste, lo crea e lo restituisce
-            if (rs.first()) {
+            if (rs.next()) {
                 return new Partecipante(
                         rs.getString("idUtente"),  // ID Utente
                         rs.getString("nome"),     // Nome
@@ -107,13 +107,13 @@ public class PartecipanteDAO {
     }
 
     private static boolean aggiornaInDb(Partecipante partecipanteAggiornato) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
-        String query = "UPDATE partecipanti SET nome = ?, cognome = ?, username = ?, email = ?, password = ? WHERE idUtente = ?";
+        String query = "UPDATE Partecipanti SET nome = ?, cognome = ?, username = ?, email = ?, password = ? WHERE idUtente = ?";
         try (Connection conn = Connect.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Se la password è null, recuperala dal database
             if (partecipanteAggiornato.getPassword() == null) {
-                String queryRecuperaPassword = "SELECT password FROM partecipanti WHERE idUtente = ?";
+                String queryRecuperaPassword = "SELECT password FROM Partecipanti WHERE idUtente = ?";
                 try (PreparedStatement stmtRecuperaPassword = conn.prepareStatement(queryRecuperaPassword)) {
                     stmtRecuperaPassword.setString(1, partecipanteAggiornato.getIdUtente());
                     ResultSet rs = stmtRecuperaPassword.executeQuery();

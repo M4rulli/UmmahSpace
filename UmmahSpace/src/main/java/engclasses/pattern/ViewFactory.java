@@ -46,7 +46,7 @@ public class ViewFactory {
     }
 
     public void showLogin(Session session) throws ViewFactoryException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/LoginView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LoginView.fxml"));
         loader.setController(new LoginGUIController(session));
         showStage(loader, "UmmahSpace - Accesso");
     }
