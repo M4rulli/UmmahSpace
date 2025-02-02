@@ -1,4 +1,4 @@
-package misc;
+package controllers.applicativo;
 
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -18,9 +18,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 
-public class PDFExporter {
+public class PDFExporterController {
 
-    private PDFExporter() {}
+    private PDFExporterController() {}
 
     /**
      * Esporta il contenuto di un nodo JavaFX in un file PDF.
@@ -84,4 +84,5 @@ public class PDFExporter {
             }
         }
     }
+
 }

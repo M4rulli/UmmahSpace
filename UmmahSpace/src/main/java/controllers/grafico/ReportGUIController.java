@@ -28,7 +28,7 @@ import java.util.TreeMap;
 
 import static misc.MessageUtils.mostraMessaggioConferma;
 import static misc.MessageUtils.mostraMessaggioErrore;
-import static misc.PDFExporter.export;
+import static controllers.applicativo.PDFExporterController.export;
 
 public class ReportGUIController {
 
