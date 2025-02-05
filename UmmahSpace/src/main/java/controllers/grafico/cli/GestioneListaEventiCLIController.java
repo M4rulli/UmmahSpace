@@ -68,7 +68,14 @@ public class GestioneListaEventiCLIController {
         System.out.println("🕒 Orario: " + evento.getOrario());
         System.out.println("👥 Partecipanti: " + evento.getIscritti() + "/" + evento.getLimitePartecipanti());
 
-        String stato = !evento.isStato() ? "Chiuso ❌" : (evento.isPieno() ? "Pieno ❌" : "Aperto ✅");
+        String stato;
+        if (!evento.isStato()) {
+            stato = "Chiuso ❌";
+        } else if (evento.isPieno()) {
+            stato = "Pieno ❌";
+        } else {
+            stato = "Aperto ✅";
+        }
         System.out.println("📌 Stato: " + stato);
     }
 

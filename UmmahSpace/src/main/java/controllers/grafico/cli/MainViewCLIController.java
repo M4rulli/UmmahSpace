@@ -18,6 +18,7 @@ public class MainViewCLIController {
 
     private final Session session;
     private final Scanner scanner = new Scanner(System.in);
+    private static final Random RANDOM = new Random();
 
     public MainViewCLIController(Session session) {
         this.session = session;
@@ -147,8 +148,7 @@ public class MainViewCLIController {
                 "Ogni piccolo passo è un passo verso il successo.",
                 "Il tempo è prezioso. Pianifica con saggezza e lascia il resto ad Allah."
         };
-        Random random = new Random();
-        return messages[random.nextInt(messages.length)];
+        return messages[RANDOM.nextInt(messages.length)];
     }
 
     private String getDataFormattata() {

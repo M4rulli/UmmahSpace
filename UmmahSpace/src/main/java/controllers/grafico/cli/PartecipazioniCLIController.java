@@ -71,8 +71,15 @@ public class PartecipazioniCLIController {
         } else {
             System.out.println("🔗 Nessun link disponibile.");
         }
-
-        System.out.println("📌 Stato: " + (evento.isStato() ? (evento.isPieno() ? "Pieno ❌" : "Aperto ✅") : "Chiuso ❌"));
+        String stato;
+        if (!evento.isStato()) {
+            stato = "Chiuso ❌";
+        } else if (evento.isPieno()) {
+            stato = "Pieno ❌";
+        } else {
+            stato = "Aperto ✅";
+        }
+        System.out.println("📌 Stato: " + stato);
     }
 
     private void disiscrivitiDaEvento(List<EventoBean> eventi) {
