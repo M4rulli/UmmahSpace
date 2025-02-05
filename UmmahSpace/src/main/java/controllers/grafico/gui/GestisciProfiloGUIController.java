@@ -1,4 +1,4 @@
-package controllers.grafico.GUI;
+package controllers.grafico.gui;
 
 import controllers.applicativo.GestisciProfiloController;
 import engclasses.beans.RegistrazioneBean;
@@ -104,7 +104,7 @@ public class GestisciProfiloGUIController {
 
         if (success) {
             session.setNome(updatedBean.getNome());
-            session.setCurrentUsername(updatedBean.getUsername());
+            session.setUsername(updatedBean.getUsername());
             initializeProfile(
                     updatedBean.getNome(),
                     updatedBean.getCognome(),

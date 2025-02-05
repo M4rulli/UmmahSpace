@@ -1,4 +1,4 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.OrarioPreghiereController;
 import engclasses.exceptions.*;
@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 
 public class MainViewCLIController {
@@ -22,7 +23,7 @@ public class MainViewCLIController {
         this.session = session;
     }
 
-    public void mostraMenuPrincipale() throws DatabaseConnessioneFallitaException, TrackerNonTrovatoException, DatabaseOperazioneFallitaException {
+    public void mostraMenuPrincipale() {
         while (true) {
             System.out.println("\n=== UmmahSpace ===");
             System.out.println("Benvenuto, " + session.getNome() + "!");
@@ -146,7 +147,8 @@ public class MainViewCLIController {
                 "Ogni piccolo passo è un passo verso il successo.",
                 "Il tempo è prezioso. Pianifica con saggezza e lascia il resto ad Allah."
         };
-        return messages[(int) (Math.random() * messages.length)];
+        Random random = new Random();
+        return messages[random.nextInt(messages.length)];
     }
 
     private String getDataFormattata() {

@@ -27,6 +27,7 @@ public class Session {
     private String cognomeOrganizzatore;
     private long idEvento;
     private List<EventoBean> eventiDelGiorno;
+    private String username;
 
 
     public Session(boolean persistence) {
@@ -47,7 +48,11 @@ public class Session {
         this.persistence = persistence;
     }
 
-    public void setCurrentUsername(String username) { this.idUtente = username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getUsername() {
+        return username;
+    }
 
     public void setIdUtente(String idUtente) {
         this.idUtente = idUtente;

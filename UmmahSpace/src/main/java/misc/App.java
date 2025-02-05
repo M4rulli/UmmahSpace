@@ -1,6 +1,6 @@
 package misc;
 
-import controllers.grafico.CLI.RegistrazioneCLIController;
+import controllers.grafico.cli.RegistrazioneCLIController;
 import engclasses.exceptions.ViewFactoryException;
 import engclasses.pattern.Model;
 import javafx.application.Application;

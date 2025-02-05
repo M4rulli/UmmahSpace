@@ -52,7 +52,7 @@ public class RegistrazioneController {
 
         // Salva l'ID, l'username, il nome dell'utente e lo stato della persistenza nella sessione
         session.setIdUtente(idUtente);
-        session.setCurrentUsername(bean.getUsername());
+        session.setUsername(bean.getUsername());
         session.setNome(bean.getNome());
 
         // Salva il partecipante nel DAO
@@ -76,7 +76,7 @@ public class RegistrazioneController {
 
         // Salva l'ID, l'username, il nome dell'utente e lo stato della persistenza nella sessione
         session.setIdUtente(idUtente);
-        session.setCurrentUsername(bean.getUsername());
+        session.setUsername(bean.getUsername());
         session.setNome(bean.getNome());
         session.setCognomeOrganizzatore(bean.getCognome());
         session.setNomeOrganizzatore(bean.getNome());

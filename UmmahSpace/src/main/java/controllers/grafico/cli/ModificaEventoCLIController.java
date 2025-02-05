@@ -1,4 +1,4 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;

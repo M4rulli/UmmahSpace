@@ -1,6 +1,6 @@
 package engclasses.pattern;
 
-import controllers.grafico.GUI.*;
+import controllers.grafico.gui.*;
 import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

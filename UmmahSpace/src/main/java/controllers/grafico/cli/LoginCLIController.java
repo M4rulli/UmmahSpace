@@ -1,4 +1,4 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.LoginController;
 import engclasses.beans.GestioneTrackerBean;
@@ -79,13 +79,13 @@ public class LoginCLIController {
 
         if (trackerBean != null && trackerBean != ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come partecipante
-            session.setCurrentUsername(loginBean.getUsername());
+            session.setUsername(loginBean.getUsername());
             session.setTracker(trackerBean);
             System.out.println("\n✅ Login effettuato con successo!");
             mostraMenuPrincipale();
         } else if (trackerBean == ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come organizzatore
-            session.setCurrentUsername(loginBean.getUsername());
+            session.setUsername(loginBean.getUsername());
             System.out.println("\n✅ Login effettuato con successo! (Modalità Organizzatore)");
             mostraMenuPrincipale();
         } else {
@@ -93,7 +93,7 @@ public class LoginCLIController {
         }
     }
 
-    private void mostraMenuPrincipale() throws DatabaseConnessioneFallitaException, TrackerNonTrovatoException, DatabaseOperazioneFallitaException {
+    private void mostraMenuPrincipale() {
         MainViewCLIController mainViewCLIController = new MainViewCLIController(session);
         mainViewCLIController.mostraMenuPrincipale();
     }

@@ -1,11 +1,9 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.RegistrazioneController;
 import engclasses.beans.RegistrazioneBean;
 import engclasses.exceptions.*;
 import misc.Session;
-
-import java.util.Objects;
 import java.util.Scanner;
 
 public class RegistrazioneCLIController {
@@ -34,7 +32,7 @@ public class RegistrazioneCLIController {
                     try {
                         onSignUpClicked();
                     } catch (RegistrazioneFallitaException | DatabaseConnessioneFallitaException |
-                             DatabaseOperazioneFallitaException | ViewFactoryException e) {
+                             DatabaseOperazioneFallitaException e) {
                         System.out.println("❌ Errore durante la registrazione: " + e.getMessage());
                     }
                     break;
@@ -54,76 +52,81 @@ public class RegistrazioneCLIController {
         }
     }
 
-    private void onSignUpClicked() throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ViewFactoryException {
-        boolean registrazioneRiuscita;
-        while (true) {
-            System.out.println("\n📌 Inserisci i tuoi dati per la registrazione o digita 'back' per tornare indietro:");
+    private void onSignUpClicked() throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+        System.out.println("\n📌 Inserisci i tuoi dati per la registrazione o digita 'back' per tornare indietro:");
 
-            if (!listenOrganizzatoreCLI()) return;
+        if (!listenOrganizzatoreCLI()) return;
 
-            String nome = leggiInput("Nome: ");
-            if (nome.equals("back")) return; // 🔄 Torna al menu senza reinvocarlo
-
-            String cognome = leggiInput("Cognome: ");
-            if (cognome.equals("back")) return;
-
-            String username = leggiInput("Username: ");
-            if (username.equals("back")) return;
-
-            String password = leggiInput("Password: ");
-            if (password.equals("back")) return;
-
-            String confirmPassword = leggiInput("Conferma Password: ");
-            if (confirmPassword.equals("back")) return;
-
-            String email = leggiInput("Email: ");
-            if (email.equals("back")) return;
-
-            String titoloDiStudio = null;
-            if (session.isOrganizzatore()) {
-                while (titoloDiStudio == null || titoloDiStudio.trim().isEmpty()) {
-                    titoloDiStudio = leggiInput("Titolo di Studio (obbligatorio): ");
-
-                    if (titoloDiStudio.equalsIgnoreCase("back")) return; // 🔄 Torna al menu principale
-
-                    if (titoloDiStudio.trim().isEmpty()) {
-                        System.out.println("❌ Il titolo di studio è obbligatorio per gli organizzatori. Riprova.");
-                    }
-                }
-            }
-
-            // Creazione del bean per la registrazione
-            RegistrazioneBean registrazioneBean = new RegistrazioneBean();
-            registrazioneBean.setNome(nome);
-            registrazioneBean.setCognome(cognome);
-            registrazioneBean.setUsername(username);
-            registrazioneBean.setPassword(password);
-            registrazioneBean.setConfirmPassword(confirmPassword);
-            registrazioneBean.setEmail(email);
-            registrazioneBean.setTitoloDiStudio(session.isOrganizzatore() && !Objects.requireNonNull(titoloDiStudio).isEmpty() ? titoloDiStudio : null);
-
-            // Chiamata al Controller Applicativo per la registrazione
-            RegistrazioneController registrazioneController = new RegistrazioneController(session);
-
-            try {
-                registrazioneRiuscita = registrazioneController.registraUtente(registrazioneBean, session.isPersistence());
-
-                if (registrazioneRiuscita) {
-                    System.out.println("\n✅ Registrazione completata con successo!\n");
-                    MainViewCLIController mainViewCLIController = new MainViewCLIController(session);
-                    mainViewCLIController.mostraMenuPrincipale();
-                    return;
-                } else {
-                    System.out.println("\n❌ Registrazione fallita. Riprova.");
-                }
-
-            } catch (RegistrazioneFallitaException | DatabaseConnessioneFallitaException |
-                     DatabaseOperazioneFallitaException | TrackerNonTrovatoException e) {
-                System.out.println("\n❌ Errore durante la registrazione: " + e.getMessage());
-                System.out.println("🔄 Riprova inserendo i dati correttamente.");
-            }
+        try {
+            RegistrazioneBean registrazioneBean = creaRegistrazioneBean();
+            eseguiRegistrazione(registrazioneBean);
+        } catch (NullPointerException ignored) {
+            System.out.println("🔄 Operazione annullata, ritorno al menu.");
         }
     }
+
+    /**
+     * Metodo per leggere i campi obbligatori in modo unificato.
+     */
+    private String leggiCampoObbligatorio(String messaggio) {
+        String valore;
+        while (true) {
+            valore = leggiInput(messaggio);
+            if (valore.equalsIgnoreCase("back")) return null;
+            if (!valore.trim().isEmpty()) return valore;
+            System.out.println("❌ Questo campo è obbligatorio. Riprova.");
+        }
+    }
+
+    /**
+     * Metodo per gestire il titolo di studio solo per gli organizzatori.
+     */
+    private String leggiTitoloDiStudioSeOrganizzatore() {
+        if (!session.isOrganizzatore()) return null;
+        return leggiCampoObbligatorio("Titolo di Studio (obbligatorio): ");
+    }
+
+    /**
+     * Crea e popola il bean di registrazione con i dati forniti dall'utente.
+     */
+    private RegistrazioneBean creaRegistrazioneBean() {
+        String nome = leggiCampoObbligatorio("Nome: ");
+        String cognome = leggiCampoObbligatorio("Cognome: ");
+        String username = leggiCampoObbligatorio("Username: ");
+        String password = leggiCampoObbligatorio("Password: ");
+        String confirmPassword = leggiCampoObbligatorio("Conferma Password: ");
+        String email = leggiCampoObbligatorio("Email: ");
+        String titoloDiStudio = leggiTitoloDiStudioSeOrganizzatore();
+
+        if (nome == null || cognome == null || username == null || password == null || confirmPassword == null || email == null)
+            throw new NullPointerException();
+
+        RegistrazioneBean registrazioneBean = new RegistrazioneBean();
+        registrazioneBean.setNome(nome);
+        registrazioneBean.setCognome(cognome);
+        registrazioneBean.setUsername(username);
+        registrazioneBean.setPassword(password);
+        registrazioneBean.setConfirmPassword(confirmPassword);
+        registrazioneBean.setEmail(email);
+        registrazioneBean.setTitoloDiStudio(titoloDiStudio);
+
+        return registrazioneBean;
+    }
+
+    /**
+     * Gestisce la registrazione chiamando il controller applicativo.
+     */
+    private void eseguiRegistrazione(RegistrazioneBean registrazioneBean) throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
+        RegistrazioneController registrazioneController = new RegistrazioneController(session);
+
+        if (registrazioneController.registraUtente(registrazioneBean, session.isPersistence())) {
+            System.out.println("\n✅ Registrazione completata con successo!\n");
+            new MainViewCLIController(session).mostraMenuPrincipale();
+        } else {
+            System.out.println("\n❌ Registrazione fallita. Riprova.");
+        }
+    }
+
 
     public void onHyperLinkLoginClicked() {
         session.setPersistence(true);

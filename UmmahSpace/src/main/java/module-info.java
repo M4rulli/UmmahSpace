@@ -23,7 +23,7 @@ module com.project.ummahspace {
     opens controllers.applicativo to javafx.fxml;
     opens engclasses.beans to javafx.fxml;
     exports engclasses.pattern;
-    exports controllers.grafico.GUI;
-    opens controllers.grafico.GUI to javafx.fxml;
+    exports controllers.grafico.gui;
+    opens controllers.grafico.gui to javafx.fxml;
 
 }

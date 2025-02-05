@@ -1,4 +1,4 @@
-package controllers.grafico.GUI;
+package controllers.grafico.gui;
 
 import controllers.applicativo.GestioneTrackerController;
 import engclasses.beans.GestioneTrackerBean;

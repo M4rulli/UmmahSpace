@@ -1,4 +1,4 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.GestisciProfiloController;
 import engclasses.beans.RegistrazioneBean;
@@ -89,7 +89,7 @@ public class GestisciProfiloCLIController {
 
             if (success) {
                 session.setNome(bean.getNome());
-                session.setCurrentUsername(bean.getUsername());
+                session.setUsername(bean.getUsername());
                 System.out.println("✅ Modifiche salvate con successo!");
             } else {
                 System.out.println("❌ Errore nel salvataggio delle modifiche.");

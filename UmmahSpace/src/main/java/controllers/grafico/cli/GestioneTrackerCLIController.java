@@ -1,4 +1,4 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.GestioneTrackerController;
 import engclasses.beans.GestioneTrackerBean;
@@ -13,6 +13,7 @@ public class GestioneTrackerCLIController {
 
     private final Session session;
     private final Scanner scanner = new Scanner(System.in);
+    private static final String MSG_ERRORE_AGGIORNAMENTO = "❌ Errore durante l'aggiornamento: ";
 
     public GestioneTrackerCLIController(Session session) {
         this.session = session;
@@ -106,7 +107,7 @@ public class GestioneTrackerCLIController {
             session.setTracker(updatedBean);
             System.out.println("✅ Lettura aggiunta con successo!");
         } catch (Exception e) {
-            System.out.println("❌ Errore durante l'aggiornamento: " + e.getMessage());
+            System.out.println(MSG_ERRORE_AGGIORNAMENTO + e.getMessage());
         }
     }
 
@@ -129,7 +130,7 @@ public class GestioneTrackerCLIController {
             session.setTracker(updatedBean);
             System.out.println("✅ Obiettivo impostato con successo!");
         } catch (Exception e) {
-            System.out.println("❌ Errore durante l'aggiornamento: " + e.getMessage());
+            System.out.println(MSG_ERRORE_AGGIORNAMENTO + e.getMessage());
         }
     }
 
@@ -153,7 +154,7 @@ public class GestioneTrackerCLIController {
             session.setTracker(updatedBean);
             System.out.println("✅ Preghiere salvate con successo!");
         } catch (Exception e) {
-            System.out.println("❌ Errore durante l'aggiornamento: " + e.getMessage());
+            System.out.println(MSG_ERRORE_AGGIORNAMENTO + e.getMessage());
         }
     }
 
@@ -190,7 +191,7 @@ public class GestioneTrackerCLIController {
             session.setTracker(updatedBean);
             System.out.println("✅ Digiuno salvato con successo!");
         } catch (Exception e) {
-            System.out.println("❌ Errore durante l'aggiornamento: " + e.getMessage());
+            System.out.println(MSG_ERRORE_AGGIORNAMENTO + e.getMessage());
         }
     }
 }

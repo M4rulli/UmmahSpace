@@ -1,4 +1,4 @@
-package controllers.grafico.GUI;
+package controllers.grafico.gui;
 
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;
@@ -69,19 +69,19 @@ public class GestioneListaEventiGUIController {
         Label dateLabel = creaLabel("Data: " + (evento.getData() != null ? evento.getData() : "N/A"), "-fx-font-size: 14px; -fx-text-fill: #666;");
         Label timeLabel = creaLabel("Orario: " + (evento.getOrario() != null ? evento.getOrario() : "N/A"), "-fx-font-size: 14px; -fx-text-fill: #666;");
 
-        String statoEvento;
-        if (!evento.isStato()) {
-            statoEvento = "Chiuso";
-        } else if (evento.isPieno()) {
-            statoEvento = "Pieno";
-        } else {
-            statoEvento = "Aperto";
+
+        Label statusLabel = new Label();
+        if (!evento.isStato()) { // Se l'evento è stato chiuso manualmente (stato = false)
+            statusLabel.setText("Chiuso");
+            statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else if (evento.isPieno()) { // Se l'evento è ancora attivo (stato = true) ma è pieno
+            statusLabel.setText("Pieno");
+            statusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else { // Se l'evento è ancora attivo (stato = true) e non è pieno, allora è aperto
+            statusLabel.setText("Aperto");
+            statusLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
         }
 
-        Label statusLabel = creaLabel(
-                statoEvento,
-                evento.isStato() || evento.isPieno() ? "-fx-text-fill: red; -fx-font-weight: bold;" : "-fx-text-fill: green; -fx-font-weight: bold;"
-        );
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

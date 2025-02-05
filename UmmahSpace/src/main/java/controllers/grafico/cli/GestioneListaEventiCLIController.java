@@ -1,4 +1,4 @@
-package controllers.grafico.CLI;
+package controllers.grafico.cli;
 
 import controllers.applicativo.GestioneEventoController;
 import engclasses.beans.EventoBean;
@@ -15,6 +15,7 @@ public class GestioneListaEventiCLIController {
     private final Session session;
     private final Scanner scanner = new Scanner(System.in);
     private final GestioneEventoController gestioneEventoController;
+    private static final String MSG_SCELTA_NON_VALIDA = "❌ Scelta non valida.";
 
     public GestioneListaEventiCLIController(Session session) {
         this.session = session;
@@ -57,7 +58,7 @@ public class GestioneListaEventiCLIController {
             case 1 -> gestisciEvento(eventi);
             case 2 -> eliminaEvento(eventi);
             case 3 -> System.out.println("🔙 Ritorno al menu principale...");
-            default -> System.out.println("❌ Scelta non valida.");
+            default -> System.out.println(MSG_SCELTA_NON_VALIDA);
         }
     }
 
@@ -77,7 +78,7 @@ public class GestioneListaEventiCLIController {
         scanner.nextLine();
 
         if (scelta < 1 || scelta > eventi.size()) {
-            System.out.println("❌ Scelta non valida.");
+            System.out.println(MSG_SCELTA_NON_VALIDA);
             return;
         }
 
@@ -95,7 +96,7 @@ public class GestioneListaEventiCLIController {
         scanner.nextLine();
 
         if (scelta < 1 || scelta > eventi.size()) {
-            System.out.println("❌ Scelta non valida.");
+            System.out.println(MSG_SCELTA_NON_VALIDA);
             return;
         }
 
