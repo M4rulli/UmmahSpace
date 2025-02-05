@@ -1,4 +1,4 @@
-package controllers.grafico;
+package controllers.grafico.GUI;
 
 import controllers.applicativo.LoginController;
 import engclasses.beans.GestioneTrackerBean;
@@ -94,7 +94,7 @@ public class LoginGUIController {
 
         if (trackerBean != null && trackerBean != ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come partecipante
-            session.setCurrentUsername(username);
+            session.setCurrentUsername(loginBean.getUsername());
             session.setTracker(trackerBean);
 
             // Mostra messaggio di successo e passa alla MainView
@@ -105,7 +105,7 @@ public class LoginGUIController {
 
         } else if (trackerBean == ORGANIZZATORE_PLACEHOLDER) {
             // Caso: login come organizzatore
-            session.setCurrentUsername(username);
+            session.setCurrentUsername(loginBean.getUsername());
 
             // Mostra messaggio di successo e passa alla MainView
             mostraMessaggioConferma("Successo", "Login effettuato con successo!");

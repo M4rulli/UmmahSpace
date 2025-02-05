@@ -30,7 +30,6 @@ public class RegistrazioneController {
         if (!errori.isEmpty()) {
             throw new RegistrazioneFallitaException(errori);
         }
-
         // Registra l'organizzatore o il partecipante
         if (session.isOrganizzatore()) {
             registraOrganizzatore(bean, persistence);
@@ -61,8 +60,6 @@ public class RegistrazioneController {
 
         // Salva il Tracker associato al partecipante nel TrackerDAO
         GestioneTrackerDAO.saveOrUpdateTracker(partecipante.getTrackerSpirituale(), session.isPersistence());
-
-        // Log dell'operazione
     }
 
     private void registraOrganizzatore(RegistrazioneBean bean, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {

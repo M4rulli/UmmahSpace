@@ -1,4 +1,4 @@
-package controllers.grafico;
+package controllers.grafico.GUI;
 
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;

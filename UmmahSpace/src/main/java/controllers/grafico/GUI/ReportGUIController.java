@@ -1,4 +1,4 @@
-package controllers.grafico;
+package controllers.grafico.GUI;
 
 
 import engclasses.beans.EventoBean;

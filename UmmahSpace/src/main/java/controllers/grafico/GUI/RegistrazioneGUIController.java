@@ -1,4 +1,4 @@
-package controllers.grafico;
+package controllers.grafico.GUI;
 
 import controllers.applicativo.RegistrazioneController;
 import engclasses.beans.RegistrazioneBean;
@@ -13,6 +13,7 @@ import engclasses.pattern.Model;
 import misc.Session;
 import org.controlsfx.control.ToggleSwitch;
 
+import static misc.MessageUtils.mostraMessaggioConferma;
 import static misc.MessageUtils.mostraMessaggioErrore;
 
 public class RegistrazioneGUIController {
@@ -82,6 +83,7 @@ public class RegistrazioneGUIController {
         });
     }
 
+
     @FXML
     public void onSignUpClicked() throws RegistrazioneFallitaException, DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException, ViewFactoryException {
 
@@ -118,11 +120,7 @@ public class RegistrazioneGUIController {
         }
 
         // Se la registrazione ha avuto successo, mostra il messaggio di conferma e cambia scena
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Successo");
-        alert.setHeaderText(null);
-        alert.setContentText("Registrazione completata con successo!");
-        alert.showAndWait();
+        mostraMessaggioConferma("Successo","Registrazione completata con successo!" );
 
         // Cambia scena utilizzando la ViewFactory
         Stage stage = (Stage) registratiButton.getScene().getWindow();
@@ -152,4 +150,6 @@ public class RegistrazioneGUIController {
     private void listenOrganizzatoreCheckBox() {
         session.setIsOrganizzatore(organizzatoreCheckBox.isSelected()); // Aggiorna lo stato nella sessione
     }
+
+
 }

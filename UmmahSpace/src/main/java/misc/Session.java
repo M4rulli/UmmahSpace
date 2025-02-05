@@ -28,6 +28,7 @@ public class Session {
     private long idEvento;
     private List<EventoBean> eventiDelGiorno;
 
+
     public Session(boolean persistence) {
         this.persistence = persistence;
     }
@@ -46,9 +47,7 @@ public class Session {
         this.persistence = persistence;
     }
 
-    public void setCurrentUsername(String newUsername) {
-        // Username dell'utente attualmente connesso
-    }
+    public void setCurrentUsername(String username) { this.idUtente = username; }
 
     public void setIdUtente(String idUtente) {
         this.idUtente = idUtente;
@@ -97,4 +96,5 @@ public class Session {
     public void setEventiDelGiorno(List<EventoBean> eventiDelGiorno) {
         this.eventiDelGiorno = eventiDelGiorno;
     }
+
 }

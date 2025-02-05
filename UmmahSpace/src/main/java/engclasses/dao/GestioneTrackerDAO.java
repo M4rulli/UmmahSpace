@@ -1,14 +1,26 @@
 package engclasses.dao;
 
+import com.opencsv.*;
+import com.opencsv.exceptions.CsvException;
+import engclasses.exceptions.CsvProcessingException;
 import engclasses.exceptions.DatabaseConnessioneFallitaException;
 import engclasses.exceptions.DatabaseOperazioneFallitaException;
 import engclasses.pattern.Connect;
 import model.Tracker;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GestioneTrackerDAO {
@@ -16,6 +28,9 @@ public class GestioneTrackerDAO {
     // Buffer per memorizzare i tracker
     private static final Map<String, Tracker> trackerBuffer = new HashMap<>();
     private static final String ERRORE_AGGIORNAMENTO_DB = "Errore durante l'aggiornamento del database";
+    private static final String CSV_FOLDER = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "UmmahSpace";
+    private static final String CSV_FILE_PATH = CSV_FOLDER + File.separator + "trackers.csv";
+    private static final String ERRORE_CSV = "Errore nel caricamento del Tracker da CSV";
 
     private GestioneTrackerDAO() {}
 
@@ -29,9 +44,12 @@ public class GestioneTrackerDAO {
 
     public static void saveOrUpdateTracker(Tracker tracker, boolean persistence) throws DatabaseConnessioneFallitaException, DatabaseOperazioneFallitaException {
         if (persistence) {
-            saveOrUpdateTrackerInDb(tracker); // Salva o aggiorna nel database
+            // Scriviamo nel Database
+            saveOrUpdateTrackerInDb(tracker);
+            // Scriviamo nel CSV
+            saveOrUpdateTrackerInCsv(tracker);
         } else {
-            saveOrUpdateTrackerInBuffer(tracker); // Salva o aggiorna nel buffer
+            saveOrUpdateTrackerInBuffer(tracker);
         }
     }
 
@@ -105,5 +123,78 @@ public class GestioneTrackerDAO {
     private static void saveOrUpdateTrackerInBuffer(Tracker tracker) {
         trackerBuffer.put(tracker.getIdUtente(), tracker);
     }
+
+    // Metodo per salvare o aggiornare un Tracker nel CSV
+    public static void saveOrUpdateTrackerInCsv(Tracker tracker) {
+        ensureCsvFileExists();
+
+        List<String[]> rows;
+        boolean updated = false;
+        try {
+            // Leggi il file CSV esistente
+            try (CSVReader reader = new CSVReader(new FileReader(CSV_FILE_PATH))) {
+                rows = reader.readAll();
+            }
+            // Cerca e aggiorna il tracker esistente
+            for (int i = 0; i < rows.size(); i++) {
+                if (rows.get(i)[1].equals(tracker.getIdUtente())) {
+                    rows.set(i, trackerToCsvRow(tracker));
+                    updated = true;
+                    break;
+                }
+            }
+            // Se il tracker non esiste, aggiungilo
+            if (!updated) {
+                rows.add(trackerToCsvRow(tracker));
+            }
+            // Scrivi il nuovo contenuto nel CSV
+            try (CSVWriter writer = new CSVWriter(new FileWriter(CSV_FILE_PATH))) {
+                writer.writeAll(rows);
+            }
+
+        } catch (IOException | CsvException e) {
+            throw new CsvProcessingException(ERRORE_CSV, e);
+        }
+    }
+
+    // Metodo di supporto per convertire un Tracker in una riga CSV
+    private static String[] trackerToCsvRow(Tracker tracker) {
+        return new String[]{
+                String.valueOf(tracker.getLetturaCorano()),
+                tracker.getIdUtente(),
+                String.valueOf(tracker.getGoal()),
+                String.valueOf(tracker.getProgresso()),
+                String.valueOf(tracker.isHaDigiunato()),
+                tracker.getNoteDigiuno(),
+                String.valueOf(tracker.getPreghiera("Fajr")),
+                String.valueOf(tracker.getPreghiera("Dhuhr")),
+                String.valueOf(tracker.getPreghiera("Asr")),
+                String.valueOf(tracker.getPreghiera("Maghrib")),
+                String.valueOf(tracker.getPreghiera("Isha"))
+        };
+    }
+
+    // Metodo per assicurarsi che il file CSV esista
+    private static void ensureCsvFileExists() {
+        try {
+            Path folderPath = Paths.get(CSV_FOLDER);
+            if (!Files.exists(folderPath)) {
+                Files.createDirectories(folderPath);
+            }
+            Path filePath = Paths.get(CSV_FILE_PATH);
+            if (!Files.exists(filePath)) {
+                Files.createFile(filePath);
+                try (CSVWriter writer = new CSVWriter(new FileWriter(CSV_FILE_PATH))) {
+                    writer.writeNext(new String[]{
+                            "letturaCorano", "idUtente", "goal", "progress", "haDigiunato", "noteDigiuno",
+                            "fajr", "dhuhr", "asr", "maghrib", "isha"
+                    });
+                }
+            }
+        } catch (IOException e) {
+            throw new CsvProcessingException(ERRORE_CSV, e);
+        }
+    }
+
 
 }

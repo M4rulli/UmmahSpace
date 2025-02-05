@@ -1,4 +1,4 @@
-package controllers.grafico;
+package controllers.grafico.GUI;
 
 import controllers.applicativo.GestisciProfiloController;
 import engclasses.beans.RegistrazioneBean;
@@ -103,6 +103,8 @@ public class GestisciProfiloGUIController {
         boolean success = profileController.aggiornaProfilo(updatedBean, currentPassword, newPassword, confirmPassword);
 
         if (success) {
+            session.setNome(updatedBean.getNome());
+            session.setCurrentUsername(updatedBean.getUsername());
             initializeProfile(
                     updatedBean.getNome(),
                     updatedBean.getCognome(),

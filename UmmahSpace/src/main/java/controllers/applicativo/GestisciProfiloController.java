@@ -142,8 +142,6 @@ public class GestisciProfiloController {
         }
     }
 
-
-    // Modifica la password
     // Validazione e cambio password
     private String validaPassword(String currentPassword, String newPassword, String confirmPassword, Utente utente, StringBuilder errori) {
         if (currentPassword != null && !currentPassword.isEmpty() &&

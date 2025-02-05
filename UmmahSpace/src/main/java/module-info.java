@@ -10,9 +10,9 @@ module com.project.ummahspace {
     requires kernel;
     requires javafx.swing;
     requires layout;
+    requires com.opencsv;
 
     exports misc;
-    exports controllers.grafico;
     exports controllers.applicativo;
     exports engclasses.beans;
     exports model;
@@ -20,9 +20,10 @@ module com.project.ummahspace {
     exports engclasses.pattern.interfaces;
 
 
-    opens controllers.grafico to javafx.fxml;
     opens controllers.applicativo to javafx.fxml;
     opens engclasses.beans to javafx.fxml;
     exports engclasses.pattern;
+    exports controllers.grafico.GUI;
+    opens controllers.grafico.GUI to javafx.fxml;
 
 }

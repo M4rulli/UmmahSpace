@@ -1,6 +1,6 @@
 package engclasses.pattern;
 
-import controllers.grafico.*;
+import controllers.grafico.GUI.*;
 import engclasses.exceptions.ViewFactoryException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -72,7 +72,7 @@ public class ViewFactory {
         try {
             // Crea e configura il loader per il file FXML del calendario
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/CalendarioView.fxml"));
-            loader.setController(new controllers.grafico.CalendarioGUIController(session)); // Associa il controller personalizzato
+            loader.setController(new CalendarioGUIController(session)); // Associa il controller personalizzato
 
             // Carica la vista dal file FXML
             Parent calendarioView = loader.load();
