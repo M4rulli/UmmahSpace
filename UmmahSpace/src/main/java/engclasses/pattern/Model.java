@@ -15,7 +15,7 @@ public class Model {
     private final ViewFactory viewFactory;
 
     // Costruttore privato per impedire l'istanziazione diretta
-    private Model() {
+    protected Model() {
         this.viewFactory = new ViewFactory();
     }
 
